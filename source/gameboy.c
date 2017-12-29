@@ -1007,13 +1007,9 @@ void sub_14B3()
     CopyTilemapSection_Height_12_Dest_9800(GameType_1P_Tilemap);
     ClearA0BytesFromC000();
     
-    //hl = $C200
-    //de = $2723
-    //c  = $2
-    CopyTilemapSection_Width_6(, &memory[0xC200], 2);
+    CopyTilemapSection_Width_6(byte_2723, &memory[0xC200], 2);
     
-    //de = $C201
-    sub_14F1();
+    sub_14F1(&memory[0xC201]);
     
     memory[0xC212] = memory[0xFFC0];
     
@@ -1034,16 +1030,26 @@ void stub_14F0()
     //This function does nothing
 }
 
-void sub_14F1()
+void sub_14F1(u8 *dst)
 {
     memory[0xDFE0] = 1;
-    sub_14F6();
+    sub_14F6(dst);
 }
 
 
-void sub_14F6()
+void sub_14F6(u8 *dst)
 {
     //Unimplemented
+    u32 idx = ((memory[0xFFC1] - 0x1C) * 2) &  7; //GB code doesn't bounds check
+    
+    const u8 byte_150C[] =
+    {
+      0x70, 0x37, 0x70, 0x77, 0x80, 0x37, 0x80, 0x77
+    };
+    
+    *dst++ = byte_150C[idx++];
+    *dst++ = byte_150C[idx++];
+    *dst++ = byte_150C[idx++];
 }
 
 
