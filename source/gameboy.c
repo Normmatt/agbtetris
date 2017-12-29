@@ -88,7 +88,7 @@ void sub_1F3()
 
 void VBlank_Interrupt_Handler()
 {
-    debugPrint("VBlank_Interrupt_Handler called");
+    //debugPrint("VBlank_Interrupt_Handler called");
     //Unimplemented
     if (memory[0xFFCE] != 0)
     {
@@ -357,11 +357,11 @@ void InitCopyrightScreen()
 
 void DelayStateHandler()
 {
-    debugPrint("DelayStateHandler called"); 
+    //debugPrint("DelayStateHandler called"); 
     if(gDelay != 0)
         return;
     
-    debugPrint("DelayStateHandler passed"); 
+    //debugPrint("DelayStateHandler passed"); 
     gState = 0x6; 
 }
 
@@ -369,7 +369,7 @@ void DelayStateHandler()
 void sub_419()
 {
     //Unimplemented
-    debugPrint("sub_419 called");
+    //debugPrint("sub_419 called");
     
     memory[0xFFE9] = 0;
     memory[0xFF98] = 0;
@@ -1018,7 +1018,7 @@ void sub_14B3()
     else
         memory[0xC212] = 0x1D;
     
-    sub_26C5();
+    DrawCurrentBlock_C000_R2();
     sub_157B();
     
     //LCDC = $D3
@@ -1030,14 +1030,14 @@ void stub_14F0()
     //This function does nothing
 }
 
-void sub_14F1(u8 *dst)
+void sub_14F1(vu8 *dst)
 {
     memory[0xDFE0] = 1;
     sub_14F6(dst);
 }
 
 
-void sub_14F6(u8 *dst)
+void sub_14F6(vu8 *dst)
 {
     //Unimplemented
     u32 idx = ((memory[0xFFC1] - 0x1C) * 2) &  7; //GB code doesn't bounds check
@@ -1068,24 +1068,86 @@ void sub_157B()
 void sub_1589()
 {
     //Unimplemented
+    debugPrint("sub_1589 called");
+    
+    sub_17CA(&memory[0xC210]);
+    
+    if(gJoyHeld & GBKEY_START)
+    {
+        sub_15C7(&memory[0xC210]);
+    }
+    else if(gJoyHeld & GBKEY_A)
+    {
+        sub_15DB(&memory[0xC210]);
+    }
+    else if(gJoyHeld & GBKEY_RIGHT)
+    {
+        if(memory[0xFFC0] == 0x77)
+        {
+            sub_15C3();
+        }
+        else
+        {
+            memory[0xFFC0] = 0x77;
+            memory[0xDFE0] = 1;
+            memory[0xC212] = 1;
+            sub_15C2(&memory[0xC213], 0x1D);
+        }
+    }
+    else if(gJoyHeld & GBKEY_LEFT)
+    {
+        if(memory[0xFFC0] == 0x37)
+        {
+            sub_15C3();
+        }
+        else
+        {
+            memory[0xFFC0] = 0x37;
+            memory[0xDFE0] = 1;
+            memory[0xC212] = 1;
+            sub_15C2(&memory[0xC213], 0x1C);
+        }
+    }
 }
 
 
-void sub_15C2()
+void sub_15C2(vu8 *something, u8 val)
 {
     //Unimplemented
+    //[de] = a
+    *something = val;
+    sub_15C3();
 }
 
 
-void sub_15C7()
+void sub_15C3()
 {
-    //Unimplemented
+    DrawCurrentBlock_C000_R2();
 }
 
 
-void sub_15DB()
+void sub_15C7(vu8 *recursion_level)
 {
-    //Unimplemented
+    memory[0xDFE0] = 2;
+    
+    //TODO: Confirm these states are correct
+    if(memory[0xFFC0] == 0x37)
+    {
+        gState = 0x10;
+    }
+    else
+    {
+        gState = 0x12;
+    }
+    
+    sub_15C2(recursion_level, 0);
+}
+
+
+void sub_15DB(vu8 *recursion_level)
+{
+    gState = 0xF;
+    sub_15C2(recursion_level, 0);
 }
 
 
@@ -1143,9 +1205,16 @@ void sub_17B9()
 }
 
 
-void sub_17CA()
+//Returns gJoyHeld in B
+void sub_17CA(vu8* state)
 {
     //Unimplemented
+    if(gDelay)
+        return;
+    
+    gDelay = 0x10;
+    
+    *state ^= 0x80;
 }
 
 
@@ -1636,27 +1705,39 @@ void sub_26B9()
 }
 
 
-void sub_26C5()
+void DrawCurrentBlock_C000_R2()
 {
-    //Unimplemented
+    DrawCurrentBlock_C000(2);
 }
 
 
-void sub_26C7()
+void DrawCurrentBlock_C000(u8 recursion_level)
 {
-    //Unimplemented
+    UpdateBlocks_Recursion_Level = recursion_level;
+    curBlock_Dest_Low = 0;
+    curBlock_Dest_High = 0xC0;
+    
+    UpdateBlocks(&memory[0xC200]);
 }
 
 
-void DrawCurrentBlock()
+void DrawCurrentBlock_C010()
 {
-    //Unimplemented
+    UpdateBlocks_Recursion_Level = 1;
+    curBlock_Dest_Low = 0x10;
+    curBlock_Dest_High = 0xC0;
+    
+    UpdateBlocks(&memory[0xC200]);
 }
 
 
-void DrawPreviewBlock()
+void DrawPreviewBlock_C020()
 {
-    //Unimplemented
+    UpdateBlocks_Recursion_Level = 1;
+    curBlock_Dest_Low = 0x20;
+    curBlock_Dest_High = 0xC0;
+    
+    UpdateBlocks(&memory[0xC210]);
 }
 
 
@@ -1861,7 +1942,7 @@ void DrawScore()
 
 void OAM_DMA_Transfer()
 {
-    debugPrint("OAM_DMA_Transfer called.");
+    //debugPrint("OAM_DMA_Transfer called.");
     for(int i=0; i<0x80; i+=4)
     {
         u8 Y = memory[0xC000+i] - 16;
@@ -1888,9 +1969,11 @@ void OAM_DMA_Transfer()
 }
 
 
-void UpdateBlocks()
+void UpdateBlocks(vu8 *src)
 {
     //Unimplemented
+    
+    debugPrint("UpdateBlocks called.");
 }
 
 

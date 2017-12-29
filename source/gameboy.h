@@ -28,11 +28,17 @@ typedef void (*Handler)(void);    /* A pointer to a handler function */
 #define REG_NR51        (*(vu8  *) (REG_BASE + 0x81))
 #define REG_NR52        (*(vu8  *) (REG_BASE + 0x84))
 
-#define gJoyPressed memory[0xFF80]
-#define gJoyHeld memory[0xFF81]
-#define VBlank_Occured memory[0xFF85]
-#define gDelay memory[0xFFA6]
-#define gState memory[0xFFE1]
+#define gJoyPressed                                     memory[0xFF80]
+#define gJoyHeld                                        memory[0xFF81]
+#define VBlank_Occured                                  memory[0xFF85]
+#define curPiece_Tile                                   memory[0xFF89]
+#define curBlock_Dest_High                              memory[0xFF8D]
+#define curBlock_Dest_Low                               memory[0xFF8E]
+#define UpdateBlocks_Recursion_Level                    memory[0xFF8F]
+#define curPiece_X                                      memory[0xFF92]
+#define curPiece_Y                                      memory[0xFF93]
+#define gDelay                                          memory[0xFFA6]
+#define gState                                          memory[0xFFE1]
 
 enum {
    GBKEY_RIGHT=1,
@@ -141,14 +147,15 @@ void sub_149B();
 void HandleGameTypeMusicScreen();
 void sub_14B3();
 void stub_14F0();
-void sub_14F1(u8 *dst);
-void sub_14F6(u8 *dst);
+void sub_14F1(vu8 *dst);
+void sub_14F6(vu8 *dst);
 void sub_1514();
 void sub_157B();
 void sub_1589();
-void sub_15C2();
-void sub_15C7();
-void sub_15DB();
+void sub_15C2(vu8 *something, u8 val);
+void sub_15C3();
+void sub_15C7(vu8 *recursion_level);
+void sub_15DB(vu8 *recursion_level);
 void sub_15DF();
 void sub_1623();
 void sub_168D();
@@ -158,7 +165,7 @@ void sub_174A();
 void sub_174F();
 void sub_17B2();
 void sub_17B9();
-void sub_17CA();
+void sub_17CA(vu8* state);
 void CopyTilemapSection_Width_6();
 void ClearA0BytesFromC000();
 void sub_17F9();
@@ -235,10 +242,10 @@ void sub_25F5();
 void sub_262D();
 void sub_26A5();
 void sub_26B9();
-void sub_26C5();
-void sub_26C7();
-void DrawCurrentBlock();
-void DrawPreviewBlock();
+void DrawCurrentBlock_C000_R2();
+void DrawCurrentBlock_C000(u8 recursion_level);
+void DrawCurrentBlock_C010();
+void DrawPreviewBlock_C020();
 void sub_26FD();
 void sub_270A();
 void Stub_Interrupt_Handler();
@@ -263,7 +270,7 @@ void sub_2A7E();
 void DrawScore_C3();
 void DrawScore();
 void OAM_DMA_Transfer();
-void UpdateBlocks();
+void UpdateBlocks(vu8 *src);
 void sub_6552();
 void UpdateAudio();
 void sub_683D();
