@@ -11,6 +11,7 @@
 #include "debugprint.h"
 #include "gameboy.h"
 #include "gameboy_data.h"
+#include "blockinfo.h"
 
 //Memory Map
 //9800 is now 06009800
@@ -167,8 +168,9 @@ loop:
     
     //Wait for GB Vblank 148
     //Probably should be set to GBA 160
-    while (REG_VCOUNT >= SCREEN_HEIGHT);
-    while (REG_VCOUNT < SCREEN_HEIGHT);
+    //while (REG_VCOUNT >= SCREEN_HEIGHT);
+    //while (REG_VCOUNT < SCREEN_HEIGHT);
+    VBlankIntrWait();
     
     REG_DISPCNT = MODE_0 | BG0_ENABLE | OBJ_ON;// | WIN0_ON;
     
@@ -1971,9 +1973,37 @@ void OAM_DMA_Transfer()
 
 void UpdateBlocks(vu8 *src)
 {
-    //Unimplemented
+    //Unimplemented - Partial
     
     debugPrint("UpdateBlocks called.");
+    
+    vu8 *temp_src = src;
+    
+    if(*src)
+    {
+        if(*src == 0x80)
+        {
+            memory[0xFF95] = *src;
+        }
+        else
+        {
+            temp_src += 0x10;
+            UpdateBlocks_Recursion_Level--;
+            if(UpdateBlocks_Recursion_Level)
+                UpdateBlocks(temp_src);
+            else
+                return;
+        }
+    }
+
+    //Copy loop
+    for(int i=0; i<7; i++)
+    {
+        memory[0xFF86+i] = *src++;
+    }
+    
+    u32 tile = curPiece_Tile;
+    //2B05
 }
 
 
