@@ -833,13 +833,15 @@ void sub_DFD()
 
 void sub_E11()
 {
-    //Unimplemented
+    sub_E21();
+    DrawCurrentBlock_C000(3);
 }
 
 
 void sub_E1A()
 {
-    //Unimplemented
+    gState = 0x1F;
+    memory[0xFFCC] = 0x1F;
 }
 
 
@@ -869,13 +871,15 @@ void sub_EEE()
 
 void sub_F02()
 {
-    //Unimplemented
+    sub_F12();
+    DrawCurrentBlock_C000(2);
 }
 
 
 void sub_F0B()
 {
-    //Unimplemented
+    gState = 0x1F;
+    memory[0xFFCC] = 0x1F;
 }
 
 
@@ -923,13 +927,58 @@ void sub_113C()
 
 void sub_1176()
 {
-    //Unimplemented
+    //IE = 1;
+    if(gDelay)
+        return;
+    
+    ClearA0BytesFromC000();
+    
+    memory[0xFFEF] = 0;
+    
+    //b = $27
+    //c = $79
+    sub_11A3();
+    j_ResetSound();
+    
+    if(memory[0xFFD7] != 5)
+    {
+        if(memory[0xFFD8] != 5)
+        {
+            memory[0xFFD6] = 1;
+        }
+    }
+    
+    gState = 0x16;
 }
 
 
-void sub_11A3()
+void sub_11A3(u8 b, u8 c)
 {
-    //Unimplemented
+    if(!memory[0xFFCC])
+    {
+        return;
+    }
+    
+    memory[0xFFCC] = 0;
+    if(memory[0xFFCD] != 0x29)
+    {
+        if(memory[0xFFD0] != c)
+        {
+            memory[0xFFCF] = b;
+        }
+        return;
+    }
+    
+    if(memory[0xFFD0] == b)
+    {
+        memory[0xFFCF] = c;
+        memory[0xFFCE] = c;
+    }
+    else
+    {
+        memory[0xFFCF] = 2;
+        memory[0xFFCE] = 2;
+    }
 }
 
 
@@ -947,7 +996,13 @@ void sub_1216()
 
 void HandleRocketScreen()
 {
-    //Unimplemented
+    if(gDelay)
+        return;
+    
+    memory[0xC210] = 0;
+    memory[0xC220] = 0;
+    gDelay = 0xFF;
+    gState = 0x28;
 }
 
 
@@ -983,13 +1038,25 @@ void sub_1317()
 
 void sub_1369()
 {
-    //Unimplemented
+    if(gDelay)
+        return;
+    
+    DisableLCD();
+    LoadFontData();
+    sub_22F3();
+    
+    //LCDC = $93
+    
+    gState = 5;
 }
 
 
 void sub_137F()
 {
-    //Unimplemented
+    if(gDelay)
+        return;
+    
+    gState = 0x2E;
 }
 
 
@@ -1001,13 +1068,29 @@ void sub_1388()
 
 void sub_13B5()
 {
-    //Unimplemented
+    if(gDelay)
+        return;
+    
+    memory[0xC210] = 0;
+    memory[0xC220] = 0;
+    gDelay = 0xA0;
+    gState = 0x30;
 }
 
 
 void sub_13CB()
 {
-    //Unimplemented
+    if(gDelay)
+    {
+        gState = 0x31;
+        gDelay = 0x80;
+        //a = 0x2F
+        FillPlayArea();
+    }
+    else
+    {
+        sub_145E();
+    }
 }
 
 
@@ -1025,7 +1108,13 @@ void sub_1419()
 
 void sub_1449()
 {
-    //Unimplemented
+    DisableLCD();
+    LoadFontData();
+    j_ResetSound();
+    sub_22F3();
+    //LCDC = $93
+    
+    gState = 0x10;
 }
 
 
@@ -1425,7 +1514,21 @@ void sub_1BC3()
 
 void sub_1C29()
 {
-    //Unimplemented
+    sub_1C68();
+    
+    if(memory[0xFFAB])
+        return;
+    
+    sub_579();
+    sub_5AF();
+    sub_5F0();
+    sub_2515();
+    sub_20F7();
+    sub_2199();
+    sub_25F5();
+    sub_22AD();
+    AddScoreForTetris();
+    sub_620();
 }
 
 
@@ -1461,7 +1564,20 @@ void sub_1D38()
 
 void LoseHandler()
 {
-    //Unimplemented
+    memory[0xC200] = 0x80;
+    memory[0xC210] = 0x80;
+    DrawCurrentBlock_C010();
+    DrawCurrentBlock_C020();
+    
+    memory[0xFF98] = 0x00;
+    memory[0xFF9C] = 0x00;
+    sub_22F3();
+    
+    //a = $87
+    FillPlayArea();
+    
+    gDelay = 0x46;
+    gState = 0x0D;
 }
 
 
@@ -1485,7 +1601,12 @@ void sub_1DDF()
 
 void sub_1E1B()
 {
-    //Unimplemented
+    if(gDelay)
+        return;
+    
+    memory[0xC0C6] = 1;
+    
+    gDelay = 5;
 }
 
 
@@ -1503,7 +1624,7 @@ void sub_1E8C()
 
 void sub_1E96()
 {
-    //Unimplemented
+    DrawCurrentBlock_C000(0x0A);
 }
 
 
@@ -1527,7 +1648,10 @@ void sub_1F32()
 
 void sub_1F71()
 {
-    //Unimplemented
+    if(!gJoyHeld)
+        return;
+    
+    gState = 2;
 }
 
 
@@ -1545,13 +1669,59 @@ void CopyTilemapSectionWidth8()
 
 void AddScoreForTetris()
 {
-    //Unimplemented
+    //Unverified
+    if(memory[0xFFC0] != 0x37)
+        return;
+    
+    if(gState)
+        return;
+    
+    if(memory[0xFFE3] != 0x05)
+        return;
+    
+    u32 points;
+    
+    if(memory[0xC0AC])
+    {
+        points = 0x40;
+        if(memory[0xC0AC + (5*1)])
+        {
+            points = 0x100;
+            if(memory[0xC0AC + (5*2)])
+            {
+                points = 0x300;
+                if(memory[0xC0AC + (5*3)])
+                {
+                    points = 0x1200;
+                }
+            }
+        }
+    }
+    else
+    {
+        return;
+    }
+    
+    int score = memory[0xC0A0] | memory[0xC0A1] << 8 | memory[0xC0A2] << 16;
+    
+    //This might need to be done once more?
+    for(int i=0; i<memory[0xFFA9]; i++)
+    {
+        AddToScore(&score, points);
+    }
+    
+    memory[0xC0A0] = (score >>  0) & 0xFF;
+    memory[0xC0A1] = (score >>  8) & 0xFF;
+    memory[0xC0A2] = (score >> 16) & 0xFF;
 }
 
 
 void FillPlayArea()
 {
-    //Unimplemented
+    //Unimplemented - Partial
+    memory[0xFFE3] = 2;
+    
+    sub_2038();
 }
 
 
@@ -1581,7 +1751,14 @@ void sub_20CC()
 
 void sub_20F7()
 {
-    //Unimplemented
+    if((gJoyPressed & (GBKEY_RIGHT|GBKEY_LEFT|GBKEY_DOWN)) == GBKEY_DOWN)
+    {
+        sub_20CC();
+    }
+    else
+    {
+        sub_20FF();
+    }
 }
 
 
@@ -1611,7 +1788,10 @@ void sub_22AD()
 
 void sub_22F3()
 {
-    //Unimplemented
+    for(int i=0; i<9; i++)
+    {
+        memory[0xC0A3+i] = 0;
+    }
 }
 
 
