@@ -937,7 +937,7 @@ void sub_1176()
     
     //b = $27
     //c = $79
-    sub_11A3();
+    sub_11A3(0x27,0x79);
     j_ResetSound();
     
     if(memory[0xFFD7] != 5)
@@ -1567,7 +1567,7 @@ void LoseHandler()
     memory[0xC200] = 0x80;
     memory[0xC210] = 0x80;
     DrawCurrentBlock_C010();
-    DrawCurrentBlock_C020();
+    DrawPreviewBlock_C020();
     
     memory[0xFF98] = 0x00;
     memory[0xFF9C] = 0x00;

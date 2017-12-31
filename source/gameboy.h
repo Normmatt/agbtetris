@@ -126,7 +126,7 @@ void sub_10CE();
 void sub_10E9();
 void sub_113C();
 void sub_1176();
-void sub_11A3();
+void sub_11A3(u8 b, u8 c);
 void InitRocketScreen();
 void sub_1216();
 void HandleRocketScreen();
