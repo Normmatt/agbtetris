@@ -5,7 +5,13 @@
 
 typedef struct {   
     const sTileInfo *tilemap;
-    u16 flags; //oam flags?	  
+    union {
+		struct {
+				u8 flagsL;
+				u8 flagsH;
+		};
+		u16 flags; //oam flags?	  
+	}; 
 } sBlockInfo;
 
 const sBlockInfo off_2C68 = { .tilemap = &L_Block_Rotated_0, .flags = 0xF0EF };

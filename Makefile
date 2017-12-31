@@ -32,9 +32,9 @@ MUSIC		:=
 #---------------------------------------------------------------------------------
 ARCH	:=	-mthumb -mthumb-interwork
 
-CFLAGS	:=	-g -Wall -O2 -std=c99\
+CFLAGS	:=	-g -Wall -O2 -std=c99 \
 		-mcpu=arm7tdmi -mtune=arm7tdmi\
- 		-fomit-frame-pointer\
+ 		-fomit-frame-pointer -fno-inline-small-functions\
 		-ffast-math \
 		$(ARCH)
 

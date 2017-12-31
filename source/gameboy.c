@@ -1016,9 +1016,9 @@ void sub_14B3()
     memory[0xC212] = memory[0xFFC0];
     
     if(memory[0xFFC0] == 0x37)
-        memory[0xC212] = 0x1C;
+        memory[0xC213] = 0x1C;
     else
-        memory[0xC212] = 0x1D;
+        memory[0xC213] = 0x1D;
     
     DrawCurrentBlock_C000_R2();
     sub_157B();
@@ -1042,7 +1042,11 @@ void sub_14F1(vu8 *dst)
 void sub_14F6(vu8 *dst)
 {
     //Unimplemented
-    u32 idx = ((memory[0xFFC1] - 0x1C) * 2) &  7; //GB code doesn't bounds check
+    u32 idx = ((memory[0xFFC1] - 0x1C) * 2); //GB code doesn't bounds check
+    
+    //char str[40];
+    //sprintf(str, "idx = %02X", idx);
+    //debugPrint(str);
     
     const u8 byte_150C[] =
     {
@@ -1051,7 +1055,7 @@ void sub_14F6(vu8 *dst)
     
     *dst++ = byte_150C[idx++];
     *dst++ = byte_150C[idx++];
-    *dst++ = byte_150C[idx++];
+    *dst++ = memory[0xFFC1];
 }
 
 
@@ -1063,13 +1067,19 @@ void sub_1514()
 
 void sub_157B()
 {
-    //Unimplemented
+    if((memory[0xFFC1] - 0x17) == 8)
+    {
+        memory[0xDFE8] = 0xFF;
+    }
+    else
+    {
+        memory[0xDFE8] = (memory[0xFFC1] - 0x17);
+    }
 }
 
 
 void sub_1589()
 {
-    //Unimplemented
     debugPrint("sub_1589 called");
     
     sub_17CA(&memory[0xC210]);
@@ -1115,7 +1125,6 @@ void sub_1589()
 
 void sub_15C2(vu8 *something, u8 val)
 {
-    //Unimplemented
     //[de] = a
     *something = val;
     sub_15C3();
@@ -1155,7 +1164,36 @@ void sub_15DB(vu8 *recursion_level)
 
 void sub_15DF()
 {
-    //Unimplemented
+    debugPrint("sub_15DF called");
+    
+    DisableLCD();
+    CopyTilemapSection_Height_12_Dest_9800(TypeA_Level_Select_Tilemap);
+    sub_1960();
+    ClearA0BytesFromC000();
+    CopyTilemapSection_Width_6(byte_272F, &memory[0xC200], 1);
+    
+    //Unused code?
+    //ld      de, byte_C201
+    //ld      a, [byte_FFC2]
+    //ld      hl, byte_1679
+    sub_17B2();
+    
+    DrawCurrentBlock_C000_R2();
+    
+    sub_17F9();
+    sub_192E();
+    
+    //LCDC = $D3
+    gState = 0x11;
+    
+    if(memory[0xFFC7])
+    {
+       gState = 0x15; 
+    }
+    else
+    {
+        sub_157B();
+    }
 }
 
 
@@ -1197,7 +1235,7 @@ void sub_174F()
 
 void sub_17B2()
 {
-    //Unimplemented
+    memory[0xDFE0] = 1;
 }
 
 
@@ -1220,7 +1258,7 @@ void sub_17CA(vu8* state)
 }
 
 
-void CopyTilemapSection_Width_6(u8 *src, u16 *dst, u32 height)
+void CopyTilemapSection_Width_6(u8 *src, u8 *dst, u32 height)
 {
     //Unimplemented
     for(int y=0; y<height; y++)
@@ -1230,7 +1268,7 @@ void CopyTilemapSection_Width_6(u8 *src, u16 *dst, u32 height)
             *dst++ = *src++;
         }
         
-        dst += 4; //TODO: Verify this gameboy uses $10
+        dst += 0x10-6;
     }
     *dst = 0x80;
 }
@@ -1709,12 +1747,15 @@ void sub_26B9()
 
 void DrawCurrentBlock_C000_R2()
 {
+    debugPrint("DrawCurrentBlock_C000_R2 called.");
     DrawCurrentBlock_C000(2);
 }
 
 
 void DrawCurrentBlock_C000(u8 recursion_level)
 {
+    debugPrint("DrawCurrentBlock_C000 called.");
+    
     UpdateBlocks_Recursion_Level = recursion_level;
     curBlock_Dest_Low = 0;
     curBlock_Dest_High = 0xC0;
@@ -1725,16 +1766,19 @@ void DrawCurrentBlock_C000(u8 recursion_level)
 
 void DrawCurrentBlock_C010()
 {
+    debugPrint("DrawCurrentBlock_C010 called.");
+    
     UpdateBlocks_Recursion_Level = 1;
     curBlock_Dest_Low = 0x10;
     curBlock_Dest_High = 0xC0;
-    
+
     UpdateBlocks(&memory[0xC200]);
 }
 
 
 void DrawPreviewBlock_C020()
 {
+    debugPrint("DrawPreviewBlock_C020 called.");
     UpdateBlocks_Recursion_Level = 1;
     curBlock_Dest_Low = 0x20;
     curBlock_Dest_High = 0xC0;
@@ -1975,6 +2019,8 @@ void UpdateBlocks(vu8 *src)
 {
     //Unimplemented - Partial
     
+    char str[100];
+    
     debugPrint("UpdateBlocks called.");
     
     vu8 *temp_src = src;
@@ -1988,8 +2034,8 @@ void UpdateBlocks(vu8 *src)
         else
         {
             temp_src += 0x10;
-            UpdateBlocks_Recursion_Level--;
-            if(UpdateBlocks_Recursion_Level)
+            s8 temp_r = (s8)UpdateBlocks_Recursion_Level--;
+            if(temp_r)
                 UpdateBlocks(temp_src);
             else
                 return;
@@ -1997,13 +2043,169 @@ void UpdateBlocks(vu8 *src)
     }
 
     //Copy loop
+    //setup 0xFF86 through 0xFF8D
     for(int i=0; i<7; i++)
     {
         memory[0xFF86+i] = *src++;
     }
     
-    u32 tile = curPiece_Tile;
+    u8 tile = curPiece_Tile;
+    
+    sprintf(str, "tile = %02X", tile);
+    debugPrint(str);
+    
+    if(tile > sizeof(BlockInfoList))
+    {
+        sprintf(str, "tile is too high %02X", tile);
+        debugPrint(str);
+        return;
+    }
+        
     //2B05
+    const sBlockInfo *blockInfo = BlockInfoList[tile];
+    const sTileInfo *tileInfo = blockInfo->tilemap;
+    u8 *tileData = (u8*)tileInfo->data - 1;
+    u8 *rotation_info = (u8*)tileInfo->rotation_info;
+    
+    sprintf(str, "tileData = %08X", tileData);
+    debugPrint(str);
+    
+    sprintf(str, "rotation_info = %08X", rotation_info);
+    debugPrint(str);
+    
+    memory[0xFF90] = blockInfo->flagsL;
+    memory[0xFF91] = blockInfo->flagsH;
+    
+    while(1)
+    {
+        //2B20
+        tileData++;
+        memory[0xFF94] = memory[0xFF8C];
+        
+        sprintf(str, "*tileData = %02X", *tileData);
+        debugPrint(str);
+        
+        if(*tileData == 0xFF)
+        {
+            memory[0xFF95] = 0;
+            
+            temp_src += 0x10;
+            s8 temp_r = (s8)(UpdateBlocks_Recursion_Level--);
+            if(temp_r > 0)
+            {
+                sprintf(str, "UpdateBlocks_Recursion_Level = %02X", UpdateBlocks_Recursion_Level);
+                debugPrint(str);
+                UpdateBlocks(temp_src);
+            }
+            else
+            {
+                debugPrint("UpdateBlocks finished.");
+                return;
+            }
+        }
+        else if(*tileData == 0xFD)
+        {
+            //2B2E
+            memory[0xFF94] = memory[0xFF8C] ^ 0x20;
+            tileData++;
+        }
+        else if(*tileData == 0xFE)
+        {
+            //2B3C
+            //2B38
+            //rotation_info++;
+            //rotation_info++;
+            continue;
+        }
+        
+        //2B40
+        //de = rotation_info
+        u8 b,c;
+        curPiece_Tile = *tileData;
+        b = memory[0xFF87];
+        c = *rotation_info++;
+        
+        //Adjust Y position - TODO Fix
+        sprintf(str, "c = %02X", c);
+        debugPrint(str);
+        sprintf(str, "memory[0xFF87] = %02X", memory[0xFF87]);
+        debugPrint(str);
+        sprintf(str, "memory[0xFF88] = %02X", memory[0xFF88]);
+        debugPrint(str);
+        sprintf(str, "memory[0xFF8B] = %02X", memory[0xFF8B]);
+        debugPrint(str);
+        sprintf(str, "memory[0xFF90] = %02X", memory[0xFF90]);
+        debugPrint(str);
+        sprintf(str, "memory[0xFF91] = %02X", memory[0xFF91]);
+        debugPrint(str);
+        if(memory[0xFF8B] & (1<<6))
+        {
+            //2B53
+            curPiece_Y = b - memory[0xFF90] - 8;
+        }
+        else
+        {
+            //2B4D
+            u32 temp_y = memory[0xFF90] + b + c;
+            
+            if(temp_y > 0x100)
+               temp_y = (temp_y & 0xFF) + 1; 
+            curPiece_Y = temp_y;
+        }
+        
+        sprintf(str, "curPiece_Y = %02X", curPiece_Y);
+        debugPrint(str);
+        
+        //rotation_info++;
+        
+        b = memory[0xFF88];
+        c = *rotation_info++;
+        
+        //Adjust X position - TODO Fix
+        if(memory[0xFF8B] & (1<<5))
+        {
+            //2B72
+            curPiece_X = b - memory[0xFF91] - 8;
+        }
+        else
+        {
+            //2B6E
+            u32 temp_x = memory[0xFF91] + b + c;
+            
+            if(temp_x > 0x100)
+               temp_x = (temp_x & 0xFF) + 1; 
+            curPiece_X = temp_x;
+        }
+        
+        sprintf(str, "curPiece_X = %02X", curPiece_X);
+        debugPrint(str);
+        
+        sprintf(str, "curPiece_Tile = %02X", curPiece_Tile);
+        debugPrint(str);
+        
+        //2B7E
+        u16 adr = curBlock_Dest_High << 8 | curBlock_Dest_Low;
+        vu8 *dst = &memory[adr];
+        if(!memory[0xFF95])
+        {
+            //If not hidden
+            *dst++ = curPiece_Y;
+        }
+        else
+        {
+            //If Hidden draw off screen
+            *dst++ = 0xFF;
+        }
+        
+        *dst++ = curPiece_X;
+        *dst++ = curPiece_Tile;
+        *dst++ = memory[0xFF94] | memory[0xFF8B] | memory[0xFF8A];
+        
+        adr += 4;
+        curBlock_Dest_High = (adr & 0xFF00) >> 8;
+        curBlock_Dest_Low  = (adr & 0x00FF);
+    }
+    
 }
 
 
