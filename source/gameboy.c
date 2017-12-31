@@ -370,7 +370,6 @@ void DelayStateHandler()
 
 void sub_419()
 {
-    //Unimplemented
     //debugPrint("sub_419 called");
     
     memory[0xFFE9] = 0;
@@ -429,12 +428,50 @@ void sub_419()
 void sub_48C()
 {
     //Unimplemented
+    
+    memory[0xFFC0] = 0x37;
+    memory[0xFFC2] = 0x09;
+    
+    memory[0xFFC5] = 0x00;
+    memory[0xFFB0] = 0x00;
+    memory[0xFFED] = 0x00;
+    memory[0xFFEA] = 0x00;
+    
+    memory[0xFFEB] = 0x63;
+    memory[0xFFEC] = 0x30;
+    
+    if(memory[0xFFE4] == 0x02)
+    {
+        memory[0xFFC0] = 0x77;
+        memory[0xFFC3] = 0x09;
+        memory[0xFFC4] = 0x02;
+        memory[0xFFEB] = 0x64;
+        memory[0xFFEC] = 0x30;
+        memory[0xFFB0] = 0x11;
+        memory[0xFFE4] = 0x1;
+    }
+    else
+    {
+        memory[0xFFE4] = 0x2;
+    }
+    
+    gState = 0x0A;
+    
+    DisableLCD();
+    
+    LoadFontData();
+    
+    CopyTilemapSection_Height_12_Dest_9800(GameType_1P_Tilemap);
+    
+    ClearA0BytesFromC000();
+    
+    //LCDC = $D3
 }
 
 
 void sub_4E1()
 {
-    //Unimplemented
+    memory[0xFFE9] = 0xFF;
 }
 
 
@@ -567,13 +604,19 @@ void sub_5AF()
 
 void sub_5EA()
 {
-    //Unimplemented
+    //Unused?
+    
+    memory[0xFFED] = 0;
+    
+    gJoyHeld = 0;
+    memory[0xFFEE] = gJoyPressed;
+    gJoyPressed = memory[0xFFED];
 }
 
 
-void nullsub_2()
+void sub_5EF()
 {
-    //Unimplemented
+    //This does nothing
 }
 
 
@@ -585,7 +628,13 @@ void sub_5F0()
 
 void sub_620()
 {
-    //Unimplemented
+    if(!memory[0xFFE4])
+        return;
+    
+    if(memory[0xFFE9])
+        return;
+    
+    gJoyPressed = memory[0xFFEE];
 }
 
 
@@ -663,7 +712,8 @@ void sub_87B()
 
 void sub_892()
 {
-    //Unimplemented
+    DisableLCD();
+    sub_895();
 }
 
 
@@ -1567,97 +1617,204 @@ void sub_22F3()
 
 void sub_22FE()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x02)
+        return;
+    
+    //hl = $9A22
+    //de = $CA22
+    sub_2506(&memory[0xCA22], (u16*)(VRAM+0x9800 + (0x222*2)));
 }
 
 
 void sub_230D()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x03)
+        return;
+    
+    //hl = $9A02
+    //de = $CA02
+    sub_2506(&memory[0xCA02], (u16*)(VRAM+0x9800 + (0x202*2)));
 }
 
 
 void sub_231C()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x04)
+        return;
+    
+    //hl = $99E2
+    //de = $C9E2
+    sub_2506(&memory[0xCA02], (u16*)(VRAM+0x9800 + (0x1E2*2)));
 }
 
 
 void sub_232B()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x05)
+        return;
+    
+    //hl = $99C2
+    //de = $C9C2
+    sub_2506(&memory[0xC9C2], (u16*)(VRAM+0x9800 + (0x1C2*2)));
 }
 
 
 void sub_233A()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x06)
+        return;
+    
+    //hl = $99A2
+    //de = $C9A2
+    sub_2506(&memory[0xC9A2], (u16*)(VRAM+0x9800 + (0x1A2*2)));
 }
 
 
 void sub_2349()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x07)
+        return;
+    
+    //hl = $9982
+    //de = $C982
+    sub_2506(&memory[0xC982], (u16*)(VRAM+0x9800 + (0x182*2)));
 }
 
 
 void sub_2358()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x08)
+        return;
+    
+    //hl = $9962
+    //de = $C962
+    sub_2506(&memory[0xC962], (u16*)(VRAM+0x9800 + (0x162*2)));
+    
+    if(memory[0xFFC5])
+    {
+        //2375
+        if(gState != 0x1A)
+        {
+            if(memory[0xFFD4])
+            {
+                memory[0xDFE0] = 5;
+            }
+        }
+    }
+    else
+    {
+        //236D
+        if(!gState)
+        {
+            memory[0xDFF8] = 1;
+        }
+    }
 }
 
 
 void sub_2383()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x09)
+        return;
+    
+    //hl = $9942
+    //de = $C942
+    sub_2506(&memory[0xC942], (u16*)(VRAM+0x9800 + (0x142*2)));
 }
 
 
 void sub_2392()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x0A)
+        return;
+    
+    //hl = $9922
+    //de = $C922
+    sub_2506(&memory[0xC922], (u16*)(VRAM+0x9800 + (0x122*2)));
 }
 
 
 void sub_23A1()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x0B)
+        return;
+    
+    //hl = $9902
+    //de = $C902
+    sub_2506(&memory[0xC902], (u16*)(VRAM+0x9800 + (0x102*2)));
 }
 
 
 void sub_23B0()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x0C)
+        return;
+    
+    //hl = $98E2
+    //de = $C8E2
+    sub_2506(&memory[0xC8E2], (u16*)(VRAM+0x9800 + (0xE2*2)));
 }
 
 
 void sub_23BF()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x0D)
+        return;
+    
+    //hl = $98C2
+    //de = $C8C2
+    sub_2506(&memory[0xC8C2], (u16*)(VRAM+0x9800 + (0xC2*2)));
 }
 
 
 void sub_23CE()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x0E)
+        return;
+    
+    //hl = $98A2
+    //de = $C8A2
+    sub_2506(&memory[0xC8A2], (u16*)(VRAM+0x9800 + (0xA2*2)));
 }
 
 
 void sub_23DD()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x0F)
+        return;
+    
+    //hl = $9882
+    //de = $C882
+    sub_2506(&memory[0xC882], (u16*)(VRAM+0x9800 + (0x82*2)));
 }
 
 
 void sub_23EC()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x10)
+        return;
+    
+    //hl = $9862
+    //de = $C862
+    sub_2506(&memory[0xC862], (u16*)(VRAM+0x9800 + (0x62*2)));
+    
+    sub_24AB();
 }
 
 
 void sub_23FE()
 {
-    //Unimplemented
+    if(memory[0xFFE3] == 0x11)
+        return;
+    
+    //hl = $9842
+    //de = $C842
+    sub_2506(&memory[0xC842], (u16*)(VRAM+0x9800 + (0x42*2)));
+    
+    //hl = $9C6D
+    sub_249B();
+    
+    memory[0xFFE0] = 1;
 }
 
 
@@ -1669,7 +1826,7 @@ void sub_2417()
     
     //hl = $9822
     //de = $C822
-    sub_2506();
+    sub_2506(&memory[0xC822], (u16*)(VRAM+0x9800 + (0x22*2)));
     
     //hl = $986D
     sub_249B();
@@ -1703,9 +1860,18 @@ void sub_24AB()
 }
 
 
-void sub_2506()
+void sub_2506(vu8 *src, u16 *dst)
 {
     //Unimplemented
+    //DE = src
+    //HL = dst
+    
+    for(int i=0; i<10; i++)
+    {
+        *dst++ = *src++;
+    }
+    
+    memory[0xFFE3]++;
 }
 
 
@@ -1735,13 +1901,21 @@ void sub_262D()
 
 void sub_26A5()
 {
-    //Unimplemented
+    for(int i=0; i<0x1B; i++)
+    {
+        memory[0xC0AC+i] = 0;
+    }
+    
+    for(int i=0; i<3; i++)
+    {
+        memory[0xC0A0+i] = 0;
+    }
 }
 
 
 void sub_26B9()
 {
-    //Unimplemented
+    //Unimplemented - Unused?
 }
 
 
@@ -1892,17 +2066,17 @@ void sub_2835()
     //This function does nothing
 }
 
-void stub_283E()
-{
-    //Unimplemented
-}
-
 
 void CopyDataTo8000()
 {
     //Unimplemented
 }
 
+
+void stub_283E()
+{
+    //Unimplemented
+}
 
 void CopyTilemapSection_Height_12_Dest_9800(u8 *src)
 {
@@ -2211,7 +2385,7 @@ void UpdateBlocks(vu8 *src)
 
 void sub_6552()
 {
-    //Unimplemented
+    //This does nothing
 }
 
 
@@ -2235,7 +2409,23 @@ void sub_6854()
 
 void sub_6879()
 {
-    //Unimplemented
+    if(memory[0xDFF0] == 1)
+    {
+        sub_68A8();
+    }
+    else if(memory[0xDFF0] == 2)
+    {
+        sub_683D();
+    }
+    
+    if(memory[0xDFF1] == 1)
+    {
+        sub_68F3();
+    }
+    else if(memory[0xDFF1] == 2)
+    {
+        sub_6854();
+    }
 }
 
 
@@ -2334,22 +2524,45 @@ void sub_69BC()
     //Unimplemented
 }
 
-
-void sub_69C9()
+//Copy from hl to sound wave pattern ram
+void sub_69C9(u8 *src)
 {
-    //Unimplemented
+    for(int i=0; i<0x10; i++)
+    {
+        REG_WAVERAM[i] = *src++;
+    }
 }
 
 
 void ResetSound()
 {
-    //Unimplemented
+    memory[0xDFE1] = 0;
+    memory[0xDFE9] = 0;
+    memory[0xDFF1] = 0;
+    memory[0xDFF9] = 0;
+    memory[0xDF9F] = 0;
+    memory[0xDFAF] = 0;
+    memory[0xDFBF] = 0;
+    memory[0xDFCF] = 0;
+    REG_NR51 = 0xFF;
+    memory[0xDF78] = 0;
+    
+    sub_69F8();
 }
 
 
 void sub_69F8()
 {
-    //Unimplemented
+    REG_NR12 = 8;
+    REG_NR22 = 8;
+    REG_NR42 = 8;
+    
+    REG_NR14 = 0x80;
+    REG_NR24 = 0x80;
+    REG_NR44 = 0x80;
+    
+    REG_NR10 = 0;
+    REG_NR30 = 0;
 }
 
 
@@ -2367,13 +2580,32 @@ void sub_6A2E()
 
 void sub_6A4E()
 {
-    //Unimplemented
+    ResetSound();
 }
 
 
 void sub_6A52()
 {
-    //Unimplemented
+    if(memory[0xDFE8] == 0)
+        return;
+    
+    if(memory[0xDFE8] == 0xFF)
+    {
+        sub_6A4E();
+        return;
+    }
+    
+    memory[0xDFE9] = memory[0xDFE8];
+    
+    //ld      b, a
+    //ld      hl, off_6530
+    //and     $1F
+    //unused args?
+    sub_69AD();
+    
+    sub_6B44();
+    
+    sub_6A6D();
 }
 
 

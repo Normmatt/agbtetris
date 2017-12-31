@@ -27,6 +27,7 @@ typedef void (*Handler)(void);    /* A pointer to a handler function */
 #define REG_NR50        (*(vu8  *) (REG_BASE + 0x80))
 #define REG_NR51        (*(vu8  *) (REG_BASE + 0x81))
 #define REG_NR52        (*(vu8  *) (REG_BASE + 0x84))
+#define REG_WAVERAM     ( (vu8  *) (REG_BASE + 0x90))
 
 #define gJoyPressed                                     memory[0xFF80]
 #define gJoyHeld                                        memory[0xFF81]
@@ -74,7 +75,7 @@ void sub_4E6();
 void sub_579();
 void sub_5AF();
 void sub_5EA();
-void nullsub_2();
+void sub_5EF();
 void sub_5F0();
 void sub_620();
 void sub_62D();
@@ -235,7 +236,7 @@ void sub_2417();
 void sub_242C();
 void sub_249B();
 void sub_24AB();
-void sub_2506();
+void sub_2506(vu8 *src, u16 *dst);
 void sub_2515();
 void sub_25C7();
 void sub_25F5();
@@ -292,7 +293,7 @@ void sub_69A1();
 void sub_69A9();
 void sub_69AD();
 void sub_69BC();
-void sub_69C9();
+void sub_69C9(u8 *src);
 void ResetSound();
 void sub_69F8();
 void sub_6A0E();
