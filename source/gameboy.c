@@ -1797,7 +1797,7 @@ void sub_22F3()
 
 void sub_22FE()
 {
-    if(memory[0xFFE3] == 0x02)
+    if(memory[0xFFE3] != 0x02)
         return;
     
     //hl = $9A22
@@ -1808,7 +1808,7 @@ void sub_22FE()
 
 void sub_230D()
 {
-    if(memory[0xFFE3] == 0x03)
+    if(memory[0xFFE3] != 0x03)
         return;
     
     //hl = $9A02
@@ -1819,7 +1819,7 @@ void sub_230D()
 
 void sub_231C()
 {
-    if(memory[0xFFE3] == 0x04)
+    if(memory[0xFFE3] != 0x04)
         return;
     
     //hl = $99E2
@@ -1830,7 +1830,7 @@ void sub_231C()
 
 void sub_232B()
 {
-    if(memory[0xFFE3] == 0x05)
+    if(memory[0xFFE3] != 0x05)
         return;
     
     //hl = $99C2
@@ -1841,7 +1841,7 @@ void sub_232B()
 
 void sub_233A()
 {
-    if(memory[0xFFE3] == 0x06)
+    if(memory[0xFFE3] != 0x06)
         return;
     
     //hl = $99A2
@@ -1852,7 +1852,7 @@ void sub_233A()
 
 void sub_2349()
 {
-    if(memory[0xFFE3] == 0x07)
+    if(memory[0xFFE3] != 0x07)
         return;
     
     //hl = $9982
@@ -1863,7 +1863,7 @@ void sub_2349()
 
 void sub_2358()
 {
-    if(memory[0xFFE3] == 0x08)
+    if(memory[0xFFE3] != 0x08)
         return;
     
     //hl = $9962
@@ -1894,7 +1894,7 @@ void sub_2358()
 
 void sub_2383()
 {
-    if(memory[0xFFE3] == 0x09)
+    if(memory[0xFFE3] != 0x09)
         return;
     
     //hl = $9942
@@ -1905,7 +1905,7 @@ void sub_2383()
 
 void sub_2392()
 {
-    if(memory[0xFFE3] == 0x0A)
+    if(memory[0xFFE3] != 0x0A)
         return;
     
     //hl = $9922
@@ -1916,7 +1916,7 @@ void sub_2392()
 
 void sub_23A1()
 {
-    if(memory[0xFFE3] == 0x0B)
+    if(memory[0xFFE3] != 0x0B)
         return;
     
     //hl = $9902
@@ -1927,7 +1927,7 @@ void sub_23A1()
 
 void sub_23B0()
 {
-    if(memory[0xFFE3] == 0x0C)
+    if(memory[0xFFE3] != 0x0C)
         return;
     
     //hl = $98E2
@@ -1938,7 +1938,7 @@ void sub_23B0()
 
 void sub_23BF()
 {
-    if(memory[0xFFE3] == 0x0D)
+    if(memory[0xFFE3] != 0x0D)
         return;
     
     //hl = $98C2
@@ -1949,7 +1949,7 @@ void sub_23BF()
 
 void sub_23CE()
 {
-    if(memory[0xFFE3] == 0x0E)
+    if(memory[0xFFE3] != 0x0E)
         return;
     
     //hl = $98A2
@@ -1960,7 +1960,7 @@ void sub_23CE()
 
 void sub_23DD()
 {
-    if(memory[0xFFE3] == 0x0F)
+    if(memory[0xFFE3] != 0x0F)
         return;
     
     //hl = $9882
@@ -1971,7 +1971,7 @@ void sub_23DD()
 
 void sub_23EC()
 {
-    if(memory[0xFFE3] == 0x10)
+    if(memory[0xFFE3] != 0x10)
         return;
     
     //hl = $9862
@@ -1984,7 +1984,7 @@ void sub_23EC()
 
 void sub_23FE()
 {
-    if(memory[0xFFE3] == 0x11)
+    if(memory[0xFFE3] != 0x11)
         return;
     
     //hl = $9842
@@ -2001,7 +2001,7 @@ void sub_23FE()
 void sub_2417()
 {
     //Unimplemented - Partial
-    if(memory[0xFFE3] == 0x12)
+    if(memory[0xFFE3] != 0x12)
         return;
     
     //hl = $9822
