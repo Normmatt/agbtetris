@@ -1199,7 +1199,103 @@ void sub_14F6(vu8 *dst)
 
 void sub_1514()
 {
-    //Unimplemented
+    //Select Music Type
+    //Differs slightly from original code in that theres no looping to dpad checks on B button...
+    debugPrint("sub_1514 called");
+    
+    debugPrintf("0xC200 = 0x%02X", memory[0xC200]);
+    sub_17CA(&memory[0xC200]);
+    debugPrintf("0xC200 = 0x%02X", memory[0xC200]);
+    
+    if(gJoyHeld & GBKEY_START)
+    {
+        sub_15C7(&memory[0xC210]);
+    }
+    else if(gJoyHeld & GBKEY_A)
+    {
+        sub_15C7(&memory[0xC210]);
+    }
+    else if(gJoyHeld & GBKEY_B)
+    {
+        if(!memory[0xFFC5])
+        {
+            gState = 0x0E;
+            sub_15C2(&memory[0xC201], 0);
+        }
+    }
+    else if(gJoyHeld & GBKEY_UP)
+    {
+        if(memory[0xFFC1] == 0x1C)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else if(memory[0xFFC1] == 0x1D)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else
+        {
+            memory[0xFFC1] -= 2;
+            sub_14F1(&memory[0xC201]);
+            sub_157B();
+        }
+    }
+    else if(gJoyHeld & GBKEY_DOWN)
+    {
+        if(memory[0xFFC1] == 0x1E)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else if(memory[0xFFC1] == 0x1F)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else
+        {
+            memory[0xFFC1] += 2;
+            sub_14F1(&memory[0xC201]);
+            sub_157B();
+        }
+    }
+    else if(gJoyHeld & GBKEY_RIGHT)
+    {
+        if(memory[0xFFC1] == 0x1D)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else if(memory[0xFFC1] == 0x1F)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else
+        {
+            memory[0xFFC1]++;
+            sub_14F1(&memory[0xC201]);
+            sub_157B();
+        }
+    }
+    else if(gJoyHeld & GBKEY_LEFT)
+    {
+        if(memory[0xFFC1] == 0x1C)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else if(memory[0xFFC1] == 0x1E)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else
+        {
+            memory[0xFFC1]--;
+            sub_14F1(&memory[0xC201]);
+            sub_157B();
+        }
+    }
+    else
+    {
+        //Any other time just update existing sprite
+        sub_15C3();
+    }
 }
 
 
@@ -1218,6 +1314,7 @@ void sub_157B()
 
 void sub_1589()
 {
+    //Select Game Type
     debugPrint("sub_1589 called");
     
     debugPrintf("0xC210 = 0x%02X", memory[0xC210]);
