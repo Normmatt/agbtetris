@@ -1,7 +1,8 @@
 #ifndef DEBUGPRINT_INCLUDE
 #define DEBUGPRINT_INCLUDE
 
-void debugPrint(char *str);
+void debugPrint(const char *str);
+void debugPrintf(const char *str, ...);
 
 #endif
 

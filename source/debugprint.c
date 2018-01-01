@@ -5,6 +5,7 @@
 #include <gba_input.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 //Only works in no$gba
 //
@@ -16,7 +17,17 @@
 //  totalclks         show total number of clock cycles since coldboot
 //  lastclks          show number of cycles since previous lastclks (or zeroclks)
 //  zeroclks          resets the 'lastclks' counter
-void debugPrint(char *str)
+void debugPrint(const char *str)
 {
     *(volatile u32*)0x4FFFA18 = (u32)str;
+}
+
+void debugPrintf(const char *str, ...)
+{
+    char bufPrint[256];
+    va_list vArgv;
+    va_start(vArgv, str);
+    vsnprintf(bufPrint, sizeof(bufPrint), str, vArgv);
+    va_end(vArgv);
+    debugPrint(bufPrint);
 }
