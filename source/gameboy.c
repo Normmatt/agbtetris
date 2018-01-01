@@ -130,10 +130,10 @@ void VBlank_Interrupt_Handler()
         if(memory[0xFF98] == 0x3)
         {
             //hl = $986D
-            sub_249B();
+            sub_249B((u16*)(VRAM+0x9800 + (0x6D*2)));
             memory[0xFFE0] = 1;
             //hl = $9C6D
-            sub_249B();
+            sub_249B((u16*)(VRAM+0x9800 + (0x46D*2)));
             memory[0xC0CE] = 0;
         }
     }
@@ -329,6 +329,7 @@ Handler state_handlers[] = {
 
 void GotoSpecificStateHandler(u32 idx)
 {
+    debugPrintf("GotoSpecificStateHandler %d",idx);
     state_handlers[idx]();
 }
 
@@ -1183,9 +1184,7 @@ void sub_14F6(vu8 *dst)
     //Unimplemented
     u32 idx = ((memory[0xFFC1] - 0x1C) * 2); //GB code doesn't bounds check
     
-    //char str[40];
-    //sprintf(str, "idx = %02X", idx);
-    //debugPrint(str);
+    //debugPrintf("idx = %02X", idx);
     
     const u8 byte_150C[] =
     {
@@ -1221,7 +1220,9 @@ void sub_1589()
 {
     debugPrint("sub_1589 called");
     
+    debugPrintf("0xC210 = 0x%02X", memory[0xC210]);
     sub_17CA(&memory[0xC210]);
+    debugPrintf("0xC210 = 0x%02X", memory[0xC210]);
     
     if(gJoyHeld & GBKEY_START)
     {
@@ -1241,7 +1242,7 @@ void sub_1589()
         {
             memory[0xFFC0] = 0x77;
             memory[0xDFE0] = 1;
-            memory[0xC212] = 1;
+            memory[0xC212] = 0x77;
             sub_15C2(&memory[0xC213], 0x1D);
         }
     }
@@ -1255,9 +1256,14 @@ void sub_1589()
         {
             memory[0xFFC0] = 0x37;
             memory[0xDFE0] = 1;
-            memory[0xC212] = 1;
+            memory[0xC212] = 0x37;
             sub_15C2(&memory[0xC213], 0x1C);
         }
+    }
+    else
+    {
+        //Any other time just update existing sprite
+        sub_15C3();
     }
 }
 
@@ -1391,7 +1397,8 @@ void sub_17CA(vu8* state)
     if(gDelay)
         return;
     
-    gDelay = 0x10;
+    //have to delay this a bit less on gba
+    gDelay = 0x2;//0x10;
     
     *state ^= 0x80;
 }
@@ -1992,7 +1999,7 @@ void sub_23FE()
     sub_2506(&memory[0xC842], (u16*)(VRAM+0x9800 + (0x42*2)));
     
     //hl = $9C6D
-    sub_249B();
+    sub_249B((u16*)(VRAM+0x9800 + (0x46D*2)));
     
     memory[0xFFE0] = 1;
 }
@@ -2009,7 +2016,7 @@ void sub_2417()
     sub_2506(&memory[0xC822], (u16*)(VRAM+0x9800 + (0x22*2)));
     
     //hl = $986D
-    sub_249B();
+    sub_249B((u16*)(VRAM+0x9800 + (0x6D*2)));
 }
 
 
@@ -2019,10 +2026,8 @@ void sub_242C()
 }
 
 
-void sub_249B()
+void sub_249B(u16 *tilemap)
 {
-    //Unimplemented - Partial
-    
     if(gState)
         return;
     
@@ -2030,7 +2035,7 @@ void sub_249B()
         return;
     
     //hl = $C0A2
-    sub_2A7E();
+    sub_2A7E(&memory[0xC0A2], tilemap);
 }
 
 
@@ -2320,22 +2325,22 @@ void sub_2A58()
 }
 
 
-void sub_2A7E()
+void sub_2A7E(vu8 *score, u16 *tilemap)
 {
     if(!memory[0xFFE0])
         return;
     
-    DrawScore_C3();
+    DrawScore_C3(score, tilemap);
 }
 
 
-void DrawScore_C3()
+void DrawScore_C3(vu8 *score, u16 *tilemap)
 {
-    //Unimplemented
+    DrawScore(score, tilemap, 3);
 }
 
 
-void DrawScore()
+void DrawScore(vu8 *score, u16 *tilemap, u8 numBytes)
 {
     //Unimplemented
 }
@@ -2371,10 +2376,7 @@ void OAM_DMA_Transfer()
 
 void UpdateBlocks(vu8 *src)
 {
-    //Unimplemented - Partial
-    
-    char str[100];
-    
+    //Unimplemented - Partial    
     debugPrint("UpdateBlocks called.");
     
     vu8 *temp_src = src;
@@ -2388,11 +2390,19 @@ void UpdateBlocks(vu8 *src)
         else
         {
             temp_src += 0x10;
-            s8 temp_r = (s8)UpdateBlocks_Recursion_Level--;
-            if(temp_r)
+            UpdateBlocks_Recursion_Level--;
+            s8 temp_r = (s8)UpdateBlocks_Recursion_Level;
+            if(temp_r > 0)
+            {
+                debugPrintf("UpdateBlocks_Recursion_Level = %02X", UpdateBlocks_Recursion_Level);
                 UpdateBlocks(temp_src);
-            else
                 return;
+            }
+            else
+            {
+                debugPrint("UpdateBlocks finished.");
+                return;
+            }
         }
     }
 
@@ -2405,13 +2415,11 @@ void UpdateBlocks(vu8 *src)
     
     u8 tile = curPiece_Tile;
     
-    sprintf(str, "tile = %02X", tile);
-    debugPrint(str);
+    debugPrintf("tile = %02X", tile);
     
     if(tile > sizeof(BlockInfoList))
     {
-        sprintf(str, "tile is too high %02X", tile);
-        debugPrint(str);
+        debugPrintf("tile is too high %02X", tile);
         return;
     }
         
@@ -2421,11 +2429,9 @@ void UpdateBlocks(vu8 *src)
     u8 *tileData = (u8*)tileInfo->data - 1;
     u8 *rotation_info = (u8*)tileInfo->rotation_info;
     
-    sprintf(str, "tileData = %08X", tileData);
-    debugPrint(str);
+    debugPrintf("tileData = %08X", tileData + 1);
     
-    sprintf(str, "rotation_info = %08X", rotation_info);
-    debugPrint(str);
+    debugPrintf("rotation_info = %08X", rotation_info);
     
     memory[0xFF90] = blockInfo->flagsL;
     memory[0xFF91] = blockInfo->flagsH;
@@ -2436,20 +2442,20 @@ void UpdateBlocks(vu8 *src)
         tileData++;
         memory[0xFF94] = memory[0xFF8C];
         
-        sprintf(str, "*tileData = %02X", *tileData);
-        debugPrint(str);
+        debugPrintf("*tileData = %02X", *tileData);
         
         if(*tileData == 0xFF)
         {
             memory[0xFF95] = 0;
             
             temp_src += 0x10;
-            s8 temp_r = (s8)(UpdateBlocks_Recursion_Level--);
+            UpdateBlocks_Recursion_Level--;
+            s8 temp_r = (s8)UpdateBlocks_Recursion_Level;
             if(temp_r > 0)
             {
-                sprintf(str, "UpdateBlocks_Recursion_Level = %02X", UpdateBlocks_Recursion_Level);
-                debugPrint(str);
+                debugPrintf("UpdateBlocks_Recursion_Level = %02X", UpdateBlocks_Recursion_Level);
                 UpdateBlocks(temp_src);
+                return;
             }
             else
             {
@@ -2480,19 +2486,13 @@ void UpdateBlocks(vu8 *src)
         c = *rotation_info++;
         
         //Adjust Y position - TODO Fix
-        sprintf(str, "c = %02X", c);
-        debugPrint(str);
-        sprintf(str, "memory[0xFF87] = %02X", memory[0xFF87]);
-        debugPrint(str);
-        sprintf(str, "memory[0xFF88] = %02X", memory[0xFF88]);
-        debugPrint(str);
-        sprintf(str, "memory[0xFF8B] = %02X", memory[0xFF8B]);
-        debugPrint(str);
-        sprintf(str, "memory[0xFF90] = %02X", memory[0xFF90]);
-        debugPrint(str);
-        sprintf(str, "memory[0xFF91] = %02X", memory[0xFF91]);
-        debugPrint(str);
-        if(memory[0xFF8B] & (1<<6))
+        debugPrintf("c = %02X", c);
+        debugPrintf("memory[0xFF87] = %02X", memory[0xFF87]);
+        debugPrintf("memory[0xFF88] = %02X", memory[0xFF88]);
+        debugPrintf("memory[0xFF8B] = %02X", memory[0xFF8B]);
+        debugPrintf("memory[0xFF90] = %02X", memory[0xFF90]);
+        debugPrintf("memory[0xFF91] = %02X", memory[0xFF91]);
+        if((memory[0xFF8B] & (1<<6)))
         {
             //2B53
             curPiece_Y = b - memory[0xFF90] - 8;
@@ -2507,8 +2507,7 @@ void UpdateBlocks(vu8 *src)
             curPiece_Y = temp_y;
         }
         
-        sprintf(str, "curPiece_Y = %02X", curPiece_Y);
-        debugPrint(str);
+        debugPrintf("curPiece_Y = %02X", curPiece_Y);
         
         //rotation_info++;
         
@@ -2516,7 +2515,7 @@ void UpdateBlocks(vu8 *src)
         c = *rotation_info++;
         
         //Adjust X position - TODO Fix
-        if(memory[0xFF8B] & (1<<5))
+        if((memory[0xFF8B] & (1<<5)))
         {
             //2B72
             curPiece_X = b - memory[0xFF91] - 8;
@@ -2531,27 +2530,25 @@ void UpdateBlocks(vu8 *src)
             curPiece_X = temp_x;
         }
         
-        sprintf(str, "curPiece_X = %02X", curPiece_X);
-        debugPrint(str);
-        
-        sprintf(str, "curPiece_Tile = %02X", curPiece_Tile);
-        debugPrint(str);
+        debugPrintf("curPiece_X = %02X", curPiece_X);        
+        debugPrintf("curPiece_Tile = %02X", curPiece_Tile);
         
         //2B7E
         u16 adr = curBlock_Dest_High << 8 | curBlock_Dest_Low;
+        debugPrintf("adr = %04X", adr);
         vu8 *dst = &memory[adr];
         if(!memory[0xFF95])
         {
             //If not hidden
             *dst++ = curPiece_Y;
+            *dst++ = curPiece_X;
         }
         else
         {
             //If Hidden draw off screen
             *dst++ = 0xFF;
+            *dst++ = 0xFF;
         }
-        
-        *dst++ = curPiece_X;
         *dst++ = curPiece_Tile;
         *dst++ = memory[0xFF94] | memory[0xFF8B] | memory[0xFF8A];
         
