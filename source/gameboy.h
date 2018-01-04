@@ -2,6 +2,7 @@
 #define GAMEBOY_FUNCTIONS
 
 typedef void (*Handler)(void);    /* A pointer to a handler function */
+typedef void (*SoundHandler1)(vu8 *);
 
 #define BUS_CLOCK (16756991)
 #define TIMER_FREQ    (-BUS_CLOCK/1024) //16364Hz not quite the gameboys 16384Hz but should be close enough
@@ -274,6 +275,30 @@ void OAM_DMA_Transfer();
 void UpdateBlocks(vu8 *src);
 void sub_6552();
 void UpdateAudio();
+int sub_6603();
+int sub_6609();
+int sub_660F();
+void sub_6624(vu8 *de);
+void sub_662C();
+void sub_6641(vu8 *de);
+void sub_6649();
+void sub_664E();
+void sub_666C(vu8 *de);
+void sub_6672();
+void sub_66A3(vu8 *de);
+void sub_66BC(vu8 *de);
+void sub_66C4();
+void sub_66F4(vu8 *de);
+void sub_6704();
+void sub_673D(vu8 *de);
+void sub_6751();
+void sub_6771(vu8 *de);
+void sub_67DA();
+void sub_67E2();
+void sub_67EA();
+void sub_6811();
+void sub_6819();
+void sub_6821();
 void sub_683D();
 void sub_6854();
 void sub_6879();
@@ -285,13 +310,13 @@ void sub_68F3();
 void sub_691F();
 void sub_693E();
 void sub_6967();
-void sub_6987();
-void sub_698E();
-void sub_6995();
-void sub_699C();
-void sub_69A1();
-void sub_69A9();
-void sub_69AD();
+void SetupChannel1Registers();
+void SetupChannel2Registers();
+void SetupChannel3Registers();
+void SetupChannel4Registers();
+void CopySoundRegisters();
+SoundHandler1 sub_69A9(const SoundHandler1 handlers[], vu8 **de, u8 a);
+SoundHandler1 sub_69AD(const SoundHandler1 handlers[], vu8 **de, u8 a);
 void sub_69BC();
 void sub_69C9(u8 *src);
 void ResetSound();

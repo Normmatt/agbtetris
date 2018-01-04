@@ -1203,9 +1203,7 @@ void sub_1514()
     //Differs slightly from original code in that theres no looping to dpad checks on B button...
     debugPrint("sub_1514 called");
     
-    debugPrintf("0xC200 = 0x%02X", memory[0xC200]);
     sub_17CA(&memory[0xC200]);
-    debugPrintf("0xC200 = 0x%02X", memory[0xC200]);
     
     if(gJoyHeld & GBKEY_START)
     {
@@ -1317,9 +1315,7 @@ void sub_1589()
     //Select Game Type
     debugPrint("sub_1589 called");
     
-    debugPrintf("0xC210 = 0x%02X", memory[0xC210]);
     sub_17CA(&memory[0xC210]);
-    debugPrintf("0xC210 = 0x%02X", memory[0xC210]);
     
     if(gJoyHeld & GBKEY_START)
     {
@@ -1441,7 +1437,96 @@ void sub_15DF()
 
 void sub_1623()
 {
-    //Unimplemented
+    //Select A-Type Level
+    debugPrint("sub_1623 called");
+    
+    sub_17CA(&memory[0xC200]);
+    
+    if(gJoyHeld & GBKEY_START)
+    {
+        gState = 0x0A;
+    }
+    else if(gJoyHeld & GBKEY_A)
+    {
+        gState = 0x0A;
+    }
+    else if(gJoyHeld & GBKEY_RIGHT)
+    {
+        if(memory[0xFFC2] == 0x09)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else
+        {
+            memory[0xFFC2]++;
+            
+            //de = $c201
+            //hl = $1679
+            sub_17B2();
+            sub_17F9();
+            
+            DrawCurrentBlock_C000_R2();
+        }
+    }
+    else if(gJoyHeld & GBKEY_LEFT)
+    {
+        if(memory[0xFFC2] == 0x00)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else
+        {
+            memory[0xFFC2]--;
+            
+            //de = $c201
+            //hl = $1679
+            sub_17B2();
+            sub_17F9();
+            
+            DrawCurrentBlock_C000_R2();
+        }
+    }
+    else if(gJoyHeld & GBKEY_UP)
+    {
+        if(memory[0xFFC2] < 5)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else
+        {
+            memory[0xFFC2] -= 5;
+            
+            //de = $c201
+            //hl = $1679
+            sub_17B2();
+            sub_17F9();
+            
+            DrawCurrentBlock_C000_R2();
+        }
+    }
+    else if(gJoyHeld & GBKEY_DOWN)
+    {
+        if(memory[0xFFC2] > 5)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else
+        {
+            memory[0xFFC2] += 5;
+            
+            //de = $c201
+            //hl = $1679
+            sub_17B2();
+            sub_17F9();
+            
+            DrawCurrentBlock_C000_R2();
+        }
+    }
+    else
+    {
+        //Any other time just update existing sprite
+        sub_15C3();
+    }
 }
 
 
@@ -2669,6 +2754,177 @@ void UpdateAudio()
 }
 
 
+//TO Add to header
+int sub_6603()
+{
+    return memory[0xDFF1] == 1;
+}
+
+
+int sub_6609()
+{
+    return memory[0xDFF1] == 5;
+}
+
+
+int sub_660F()
+{
+    return memory[0xDFF1] == 7;
+}
+
+
+void sub_6624(vu8 *de)
+{
+    //Unimplemented
+}
+
+
+void sub_662C()
+{
+    //Unimplemented
+}
+
+
+void sub_6641(vu8 *de)
+{
+    //Unimplemented
+}
+
+
+void sub_6649()
+{
+    //Unimplemented
+}
+
+
+void sub_664E()
+{
+    memory[0xDFE1] = 0;
+    REG_NR10 = 0;
+    REG_NR12 = 0x08;
+    REG_NR14 = 0x80;
+    memory[0xDFE1] = memory[0xDFE1] & ~(1<<7);
+}
+
+
+void sub_666C(vu8 *de)
+{
+    //Unimplemented
+}
+
+
+void sub_6672()
+{
+    //Unimplemented
+}
+
+
+void sub_66A3(vu8 *de)
+{
+    //Unimplemented - Partial
+    
+    if(sub_6603())
+        return;
+    
+    if(sub_660F())
+        return;
+    
+    if(sub_6609())
+        return;
+    
+    //a = $2
+    //hl = $669E
+    sub_6967();
+}
+
+
+void sub_66BC(vu8 *de)
+{
+    //Unimplemented
+}
+
+
+void sub_66C4()
+{
+    //Unimplemented - Partial
+    
+    //de = something
+    sub_69BC();
+    
+    memory[0xDFE4]++;
+    if(memory[0xDFE4] == 3)
+    {
+        sub_664E();
+    }
+}
+
+
+void sub_66F4(vu8 *de)
+{
+    //Unimplemented
+}
+
+
+void sub_6704()
+{
+    //Unimplemented
+}
+
+
+void sub_673D(vu8 *de)
+{
+    //Unimplemented
+}
+
+
+void sub_6751()
+{
+    //Unimplemented
+}
+
+
+void sub_6771(vu8 *de)
+{
+    //Unimplemented
+}
+
+
+void sub_67DA()
+{
+    //Unimplemented
+}
+
+
+void sub_67E2()
+{
+    //Unimplemented
+}
+
+
+void sub_67EA()
+{
+    //Unimplemented
+}
+
+
+void sub_6811()
+{
+    //Unimplemented
+}
+
+
+void sub_6819()
+{
+    //Unimplemented
+}
+
+
+void sub_6821()
+{
+    //Unimplemented
+}
+//END
+
 void sub_683D()
 {
     //Unimplemented
@@ -2705,25 +2961,38 @@ void sub_6879()
 
 void sub_68A8()
 {
-    //Unimplemented
+    //Unimplemented - Partial
+    
+    //hl = $6EDA
+    sub_693E();
+    
+    memory[0xDFF6] = byte_6897[0];
+    memory[0xDFF5] = 1;
+    SetupChannel3Registers(byte_6894);
 }
 
 
 void sub_68C0()
 {
-    //Unimplemented
+    memory[0xDFF5] = 0;
+    memory[0xDFF6] = byte_689C[0];
+    SetupChannel3Registers(byte_6899);
 }
 
 
 void sub_68D1()
 {
-    //Unimplemented
+    memory[0xDFF5] = 1;
+    memory[0xDFF6] = byte_68A1[0];
+    SetupChannel3Registers(byte_689E);
 }
 
 
 void sub_68E2()
 {
-    //Unimplemented
+    memory[0xDFF5] = 2;
+    memory[0xDFF6] = byte_68A6[0];
+    SetupChannel3Registers(byte_68A3);
 }
 
 
@@ -2751,45 +3020,98 @@ void sub_6967()
 }
 
 
-void sub_6987()
+void SetupChannel1Registers(u8 *src)
 {
-    //Unimplemented
+    REG_NR10 = *src++;
+    REG_NR11 = *src++;
+    REG_NR12 = *src++;
+    REG_NR13 = *src++;
+    REG_NR14 = *src++;
 }
 
 
-void sub_698E()
+void SetupChannel2Registers(u8 *src)
 {
-    //Unimplemented
+    REG_NR21 = *src++;
+    REG_NR22 = *src++;
+    REG_NR23 = *src++;
+    REG_NR24 = *src++;
 }
 
 
-void sub_6995()
+void SetupChannel3Registers(u8 *src)
 {
-    //Unimplemented
+    REG_NR30 = *src++;
+    REG_NR31 = *src++;
+    REG_NR32 = *src++;
+    REG_NR33 = *src++;
+    REG_NR34 = *src++;
 }
 
 
-void sub_699C()
+void SetupChannel4Registers(u8 *src)
 {
-    //Unimplemented
+    REG_NR41 = *src++;
+    REG_NR42 = *src++;
+    REG_NR43 = *src++;
+    REG_NR44 = *src++;
 }
 
 
-void sub_69A1()
+void CopySoundRegisters()
 {
-    //Unimplemented
+    //Unused in this port..
 }
 
 
-void sub_69A9()
+//Sound struct
+const SoundHandler1 off_6500[] = 
 {
-    //Unimplemented
+    &sub_6624,
+    &sub_6641,
+    &sub_673D,
+    &sub_66A3,
+    &sub_6771,
+    &sub_66F4,
+    &sub_666C,
+    &sub_66BC
+};
+
+const SoundHandler1 off_6510[] = 
+{
+    &sub_662C,
+    &sub_6649,
+    &sub_6751,
+    &sub_6649,
+    &sub_6649,
+    &sub_6704,
+    &sub_6672,
+    &sub_66C4,
+};
+
+
+SoundHandler1 sub_69A9(const SoundHandler1 handlers[], vu8 **de, u8 a)
+{
+    de++;
+    memory[0xDF71] = a;
+    return sub_69AD(handlers, de,a);
 }
 
 
-void sub_69AD()
+SoundHandler1 sub_69AD(const SoundHandler1 handlers[], vu8 **de, u8 a) 
 {
-    //Unimplemented
+    de++;
+    a--;
+    //a * = 2;
+    return *handlers[a];
+}
+
+u8 *sub_69AD_2(u8 *pointers[], vu8 **de, u8 a)
+{
+    de++;
+    a--;
+    //a * = 2;
+    return pointers[a];
 }
 
 
@@ -2839,16 +3161,42 @@ void sub_69F8()
     REG_NR30 = 0;
 }
 
-
 void sub_6A0E()
 {
     //Unimplemented
+    
+    vu8 *de = &memory[0xDFE0];
+    
+    if(*de)
+    {
+        //6A15
+        memory[0xDF9F] |= (1 << 7);
+        
+        sub_69A9(off_6500, &de, *de)(de);
+    }
+    else
+    {
+        //6A21
+        de++;
+        if(*de)
+        {
+            sub_69AD(off_6510, &de, *de)(de);
+        }
+    }
 }
 
 
 void sub_6A2E()
 {
-    //Unimplemented
+    //Unimplemented - Partial
+    if(memory[0xDFF8] == 0)
+    {
+        //6A41
+    }
+    else
+    {
+        //6A35
+    }
 }
 
 
@@ -2860,6 +3208,7 @@ void sub_6A4E()
 
 void sub_6A52()
 {
+    //Unimplemented - Partial just call to sub_69AD to go
     if(memory[0xDFE8] == 0)
         return;
     
@@ -2875,7 +3224,7 @@ void sub_6A52()
     //ld      hl, off_6530
     //and     $1F
     //unused args?
-    sub_69AD();
+    //sub_69AD_2();
     
     sub_6B44();
     
@@ -2885,7 +3234,23 @@ void sub_6A52()
 
 void sub_6A6D()
 {
-    //Unimplemented
+    u8 temp = memory[0xDFE9];
+    if(!temp)
+        return;
+    
+    u8 *hl = (u8 *)byte_6AEF;
+    
+    while(temp--)
+    {
+        hl += 4;
+    }
+    
+    memory[0xDF78] = *hl++;
+    memory[0xDF76] = *hl++;
+    memory[0xDF79] = *hl++;
+    memory[0xDF7A] = *hl++;
+    memory[0xDF75] = 0;
+    memory[0xDF77] = 0;
 }
 
 
