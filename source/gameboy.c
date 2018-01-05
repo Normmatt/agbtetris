@@ -1492,7 +1492,7 @@ void sub_1623()
     }
     else if(gJoyHeld & GBKEY_DOWN)
     {
-        if(memory[0xFFC2] > 5)
+        if(memory[0xFFC2] >= 5)
         {
             DrawCurrentBlock_C000_R2();
         }
@@ -1545,15 +1545,97 @@ void sub_168D()
 }
 
 
-void sub_16D9()
+void sub_16D9(vu8 *de, u32 newState)
 {
-    //Unimplemented
+    gState = newState;
+    *de = 0;
 }
 
 
 void sub_16DE()
 {
-    //Unimplemented
+    //Select B-Type Level
+    debugPrint("sub_16DE called");
+    
+    sub_17CA(&memory[0xC200]);
+    
+    if(gJoyHeld & GBKEY_START)
+    {
+        sub_16D9(&memory[0xC200], 0x0A);
+    }
+    else if(gJoyHeld & GBKEY_A)
+    {
+        sub_16D9(&memory[0xC200], 0x14);
+    }
+    else if(gJoyHeld & GBKEY_B)
+    {
+        sub_16D9(&memory[0xC200], 0x08);
+    }
+    else if(gJoyHeld & GBKEY_RIGHT)
+    {
+        if(memory[0xFFC3] == 0x09)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else
+        {
+            memory[0xFFC3]++;
+            sub_17B2(word_1736, &memory[0xC201], memory[0xFFC3]);
+            sub_1813();
+            
+            DrawCurrentBlock_C000_R2();
+        }
+    }
+    else if(gJoyHeld & GBKEY_LEFT)
+    {
+        if(memory[0xFFC3] == 0x00)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else
+        {
+            memory[0xFFC3]--;
+            sub_17B2(word_1736, &memory[0xC201], memory[0xFFC3]);
+            sub_1813();
+            
+            DrawCurrentBlock_C000_R2();
+        }
+    }
+    else if(gJoyHeld & GBKEY_UP)
+    {
+        if(memory[0xFFC3] < 5)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else
+        {
+            memory[0xFFC3] -= 5;
+            sub_17B2(word_1736, &memory[0xC201], memory[0xFFC3]);
+            sub_1813();
+            
+            DrawCurrentBlock_C000_R2();
+        }
+    }
+    else if(gJoyHeld & GBKEY_DOWN)
+    {
+        if(memory[0xFFC3] >= 5)
+        {
+            DrawCurrentBlock_C000_R2();
+        }
+        else
+        {
+            memory[0xFFC3] += 5;
+            sub_17B2(word_1736, &memory[0xC201], memory[0xFFC3]);
+            sub_1813();
+            
+            DrawCurrentBlock_C000_R2();
+        }
+    }
+    else
+    {
+        //Any other time just update existing sprite
+        DrawCurrentBlock_C000_R2();
+    }
 }
 
 
@@ -1593,7 +1675,8 @@ void sub_17CA(vu8* state)
         return;
     
     //have to delay this a bit less on gba
-    gDelay = 0x2;//0x10;
+    //gDelay = 0x2;//0x10;
+    gDelay = 0x10;
     
     *state ^= 0x80;
 }
@@ -1632,7 +1715,23 @@ void sub_17F9()
 
 void sub_1813()
 {
-    //Unimplemented
+    //Unimplemented - Partial
+    
+    sub_1960();
+    
+    u32 mem = 0xD000;
+    
+    u32 idx = memory[0xFFC3];
+    mem += (idx*0xA2);
+    
+    u32 idx2 = memory[0xFFC4];
+    mem += (idx2*0x1B);
+    
+    mem++;
+    mem++;
+    
+    sub_1864(mem);
+    
 }
 
 
@@ -1654,9 +1753,44 @@ void sub_185D()
 }
 
 
-void sub_1864()
+void sub_1864(u32 de)
 {
-    //Unimplemented
+    //Unimplemented - Partial
+    
+    memory[0xFFFB] = (de >> 0) & 0xFF;
+    memory[0xFFFC] = (de >> 8) & 0xFF;
+    
+    int c = 3;
+    u32 temp_de = de;
+    do
+    {
+       u32 hl = 0xC0A2;
+       int b = 3;
+       do
+       {
+           s8 temp = (s8)memory[temp_de]; 
+           temp -= memory[hl];
+           if(temp < 0)
+           {
+               //loc_1886
+           }
+           else if(temp == 0)
+           {
+               hl--;
+               temp_de--;
+               b--;
+           }
+           else
+           {
+               break;
+           }
+           
+           temp_de = de;
+           temp_de += 3;
+           c--;
+       } while(b);
+       
+    } while(c);
 }
 
 
@@ -2610,7 +2744,7 @@ void UpdateBlocks(vu8 *src)
     
     u8 tile = curPiece_Tile;
     
-    debugPrintf("tile = %02X", tile);
+    //debugPrintf("tile = %02X", tile);
     
     if(tile > sizeof(BlockInfoList))
     {
@@ -2624,9 +2758,9 @@ void UpdateBlocks(vu8 *src)
     u8 *tileData = (u8*)tileInfo->data - 1;
     u8 *rotation_info = (u8*)tileInfo->rotation_info;
     
-    debugPrintf("tileData = %08X", tileData + 1);
+    //debugPrintf("tileData = %08X", tileData + 1);
     
-    debugPrintf("rotation_info = %08X", rotation_info);
+    //debugPrintf("rotation_info = %08X", rotation_info);
     
     memory[0xFF90] = blockInfo->flagsL;
     memory[0xFF91] = blockInfo->flagsH;
@@ -2637,7 +2771,7 @@ void UpdateBlocks(vu8 *src)
         tileData++;
         memory[0xFF94] = memory[0xFF8C];
         
-        debugPrintf("*tileData = %02X", *tileData);
+        //debugPrintf("*tileData = %02X", *tileData);
         
         if(*tileData == 0xFF)
         {
@@ -2681,12 +2815,12 @@ void UpdateBlocks(vu8 *src)
         c = *rotation_info++;
         
         //Adjust Y position - TODO Fix
-        debugPrintf("c = %02X", c);
-        debugPrintf("memory[0xFF87] = %02X", memory[0xFF87]);
-        debugPrintf("memory[0xFF88] = %02X", memory[0xFF88]);
-        debugPrintf("memory[0xFF8B] = %02X", memory[0xFF8B]);
-        debugPrintf("memory[0xFF90] = %02X", memory[0xFF90]);
-        debugPrintf("memory[0xFF91] = %02X", memory[0xFF91]);
+        //debugPrintf("c = %02X", c);
+        //debugPrintf("memory[0xFF87] = %02X", memory[0xFF87]);
+        //debugPrintf("memory[0xFF88] = %02X", memory[0xFF88]);
+        //debugPrintf("memory[0xFF8B] = %02X", memory[0xFF8B]);
+        //debugPrintf("memory[0xFF90] = %02X", memory[0xFF90]);
+        //debugPrintf("memory[0xFF91] = %02X", memory[0xFF91]);
         if((memory[0xFF8B] & (1<<6)))
         {
             //2B53
@@ -2702,7 +2836,7 @@ void UpdateBlocks(vu8 *src)
             curPiece_Y = temp_y;
         }
         
-        debugPrintf("curPiece_Y = %02X", curPiece_Y);
+        //debugPrintf("curPiece_Y = %02X", curPiece_Y);
         
         //rotation_info++;
         
@@ -2725,12 +2859,12 @@ void UpdateBlocks(vu8 *src)
             curPiece_X = temp_x;
         }
         
-        debugPrintf("curPiece_X = %02X", curPiece_X);        
-        debugPrintf("curPiece_Tile = %02X", curPiece_Tile);
+        //debugPrintf("curPiece_X = %02X", curPiece_X);        
+        //debugPrintf("curPiece_Tile = %02X", curPiece_Tile);
         
         //2B7E
         u16 adr = curBlock_Dest_High << 8 | curBlock_Dest_Low;
-        debugPrintf("adr = %04X", adr);
+        //debugPrintf("adr = %04X", adr);
         vu8 *dst = &memory[adr];
         if(!memory[0xFF95])
         {

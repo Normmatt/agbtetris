@@ -175,7 +175,7 @@ void sub_1813();
 void sub_1839();
 void sub_185B();
 void sub_185D();
-void sub_1864();
+void sub_1864(u32 de);
 void sub_192E();
 void sub_1960();
 void sub_1977();
