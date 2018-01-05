@@ -1407,15 +1407,10 @@ void sub_15DF()
     DisableLCD();
     CopyTilemapSection_Height_12_Dest_9800(TypeA_Level_Select_Tilemap);
     sub_1960();
+    
     ClearA0BytesFromC000();
     CopyTilemapSection_Width_6(byte_272F, &memory[0xC200], 1);
-    
-    //Unused code?
-    //ld      de, byte_C201
-    //ld      a, [byte_FFC2]
-    //ld      hl, byte_1679
-    sub_17B2();
-    
+    sub_17B2(word_1679, &memory[0xC201], memory[0xFFC2]);
     DrawCurrentBlock_C000_R2();
     
     sub_17F9();
@@ -1459,10 +1454,7 @@ void sub_1623()
         else
         {
             memory[0xFFC2]++;
-            
-            //de = $c201
-            //hl = $1679
-            sub_17B2();
+            sub_17B2(word_1679, &memory[0xC201], memory[0xFFC2]);
             sub_17F9();
             
             DrawCurrentBlock_C000_R2();
@@ -1477,10 +1469,7 @@ void sub_1623()
         else
         {
             memory[0xFFC2]--;
-            
-            //de = $c201
-            //hl = $1679
-            sub_17B2();
+            sub_17B2(word_1679, &memory[0xC201], memory[0xFFC2]);
             sub_17F9();
             
             DrawCurrentBlock_C000_R2();
@@ -1495,10 +1484,7 @@ void sub_1623()
         else
         {
             memory[0xFFC2] -= 5;
-            
-            //de = $c201
-            //hl = $1679
-            sub_17B2();
+            sub_17B2(word_1679, &memory[0xC201], memory[0xFFC2]);
             sub_17F9();
             
             DrawCurrentBlock_C000_R2();
@@ -1513,10 +1499,7 @@ void sub_1623()
         else
         {
             memory[0xFFC2] += 5;
-            
-            //de = $c201
-            //hl = $1679
-            sub_17B2();
+            sub_17B2(word_1679, &memory[0xC201], memory[0xFFC2]);
             sub_17F9();
             
             DrawCurrentBlock_C000_R2();
@@ -1533,6 +1516,32 @@ void sub_1623()
 void sub_168D()
 {
     //Unimplemented
+    //B-Type level select init
+    debugPrint("sub_168D called");
+    
+    DisableLCD();
+    CopyTilemapSection_Height_12_Dest_9800(TypeB_Level_Select_Tilemap);
+    
+    ClearA0BytesFromC000();
+    CopyTilemapSection_Width_6(byte_2735, &memory[0xC200], 1);
+    sub_17B2(word_1736, &memory[0xC201], memory[0xFFC3]);
+    sub_17B2(word_17A5, &memory[0xC211], memory[0xFFC4]);
+    DrawCurrentBlock_C000_R2();
+    
+    sub_1813();
+    sub_192E();
+    
+    //LCDC = $D3
+    gState = 0x13;
+    
+    if(memory[0xFFC7])
+    {
+       gState = 0x15; 
+    }
+    else
+    {
+        sub_157B();
+    }
 }
 
 
@@ -1560,15 +1569,19 @@ void sub_174F()
 }
 
 
-void sub_17B2()
+void sub_17B2(const u16 *src, vu8 *dst, u8 idx)
 {
     memory[0xDFE0] = 1;
+    sub_17B9(src, dst, idx);
 }
 
-
-void sub_17B9()
+//src is really an X/Y pair 
+void sub_17B9(const u16 *src, vu8 *dst, u8 idx)
 {
-    //Unimplemented
+    u16 val = src[idx];
+    *dst++ = (val >> 0) & 0xFF;
+    *dst++ = (val >> 8) & 0xFF;
+    *dst++ = idx + 0x20;
 }
 
 
