@@ -67,6 +67,7 @@ void sub_1DD();
 void sub_1F3();
 void VBlank_Interrupt_Handler();
 void GB_Init();
+__attribute__ ((noreturn)) void GB_Main();
 void GotoSpecificStateHandler(u32 idx);
 void GotoStateHandler();
 void InitCopyrightScreen();

@@ -152,124 +152,132 @@ void GB_Init()
     for(int i=0; i<16; i++)
         memory[0xDFFF-i] = 0;
     
-loop:
-    // Disable Interrupts
-    REG_IME = 0;
-    
-    irqEnable(IRQ_VBLANK);
-    
-    REG_BG0HOFS = 0;
-    REG_BG0VOFS = 0;
-    
-    memory[0xFFA4] = 0;
-    
-    REG_DISPCNT = MODE_0 | BG0_ENABLE | OBJ_ON;// | WIN0_ON;
-    REG_BG0CNT = BG_SIZE_0 | BG_MAP_BASE(0x9800/0x800); //BG MAP is at 0x06006000
-    
-    //Do this for convenience
-    REG_BG1CNT = BG_SIZE_0 | BG_MAP_BASE(0xA000/0x800); //BG MAP is at 0x06006000
-    
-    //Wait for GB Vblank 148
-    //Probably should be set to GBA 160
-    //while (REG_VCOUNT >= SCREEN_HEIGHT);
-    //while (REG_VCOUNT < SCREEN_HEIGHT);
-    VBlankIntrWait();
-    
-    REG_DISPCNT = MODE_0 | BG0_ENABLE | OBJ_ON;// | WIN0_ON;
-    
-    BG_PALETTE[0] = RGB8(224, 248, 208); //Lightest Green
-    BG_PALETTE[1] = RGB8(136, 192, 112); //Light Green
-    BG_PALETTE[2] = RGB8( 52, 104,  86); //Dark Green
-    BG_PALETTE[3] = RGB8(  8,  24,  32); //Darkest Green
-    
-    SPRITE_PALETTE[0] = RGB8(224, 248, 208); //Lightest Green
-    SPRITE_PALETTE[1] = RGB8(136, 192, 112); //Light Green
-    SPRITE_PALETTE[2] = RGB8( 52, 104,  86); //Dark Green
-    SPRITE_PALETTE[3] = RGB8(  8,  24,  32); //Darkest Green
-    
-    SPRITE_PALETTE[16] = RGB8(224, 248, 208); //Lightest Green
-    SPRITE_PALETTE[17] = RGB8(136, 192, 112); //Light Green
-    SPRITE_PALETTE[18] = RGB8( 52, 104,  86); //Dark Green
-    SPRITE_PALETTE[19] = RGB8(  8,  24,  32); //Darkest Green
+    GB_Main();
+}
 
-    REG_NR52 = 0x80;
-    REG_NR51 = 0xFF;
-    REG_NR50 = 0x77;
-    
-    //On gameboy if X/Y are 0 its hidden it doesn't work that way on GBA
-    //So prime all sprites to be out of bounds
-    for(int i=0; i<128; i++)
-    {
-        OAM[i].attr0 = OBJ_Y(240); 
-        OAM[i].attr1 = OBJ_X(160); 
-        OAM[i].attr2 = 0; 
-    }
-    
-    //Why do this again with zero length wtf
-    for(int i=0; i<1; i++)
-        memory[0xDFFF-i] = 0;
-    
-    for(int i=0; i<16; i++)
-        memory[0xCFFF-i] = 0;
-    
-    //Clear some BG Tilemap entries?
-    for(int i=0; i<32; i++)
-        memory[0x9FFF-i] = 0;
-    
-    for(int i=0; i<1; i++)
-        memory[0xFEFF-i] = 0;
-    
-    for(int i=0; i<0x80; i++)
-        memory[(0xFFFE)-i] = 0;
-    
-    sub_27E9();
-    ResetSound();
-    
-    irqEnable(IRQ_VBLANK);
-    irqEnable(IRQ_SERIAL);
-    
-    memory[0xFFC0] = 0x37;
-    memory[0xFFC1] = 0x1C;
-    gState = 0x24;
-    
-    //Turn display on
-    REG_DISPCNT = MODE_0 | BG0_ENABLE | OBJ_ON | WIN0_ON;
-    
-    // Enable Interrupts
-    REG_IME = 1;
-    
-    REG_WININ = 0x11; //BG0 + OBJ
-    //Bit   Expl.
-    //0-7   X2, Rightmost coordinate of window, plus 1
-    //8-15  X1, Leftmost coordinate of window
-    REG_WIN0V = (144+1) | (0<<8);
-    //Bit   Expl.
-    //0-7   Y2, Bottom-most coordinate of window, plus 1
-    //8-15  Y1, Top-most coordinate of window
-    REG_WIN0H = (160+1) | (0<<8);
-    REG_TM0CNT_L = 0;
-    
+
+__attribute__ ((noreturn)) void GB_Main()
+{
     while(1)
     {
-        ReadJoypad();
-        GotoStateHandler();
-        j_UpdateAudio();
-        if(keysDown() == (KEY_A|KEY_B|KEY_SELECT|KEY_START))
-            goto loop;
+        // Disable Interrupts
+        REG_IME = 0;
         
-        if (gDelay != 0) {
-            gDelay -= 1;
-        }
-        if (memory[0xFFA7] != 0) {
-            memory[0xFFA7] -= 1;
+        irqEnable(IRQ_VBLANK);
+        
+        REG_BG0HOFS = 0;
+        REG_BG0VOFS = 0;
+        
+        memory[0xFFA4] = 0;
+        
+        REG_DISPCNT = MODE_0 | BG0_ENABLE | OBJ_ON;// | WIN0_ON;
+        REG_BG0CNT = BG_SIZE_0 | BG_MAP_BASE(0x9800/0x800); //BG MAP is at 0x06006000
+        
+        //Do this for convenience
+        REG_BG1CNT = BG_SIZE_0 | BG_MAP_BASE(0xA000/0x800); //BG MAP is at 0x06006000
+        
+        //Wait for GB Vblank 148
+        //Probably should be set to GBA 160
+        //while (REG_VCOUNT >= SCREEN_HEIGHT);
+        //while (REG_VCOUNT < SCREEN_HEIGHT);
+        VBlankIntrWait();
+        
+        REG_DISPCNT = MODE_0 | BG0_ENABLE | OBJ_ON;// | WIN0_ON;
+        
+        BG_PALETTE[0] = RGB8(224, 248, 208); //Lightest Green
+        BG_PALETTE[1] = RGB8(136, 192, 112); //Light Green
+        BG_PALETTE[2] = RGB8( 52, 104,  86); //Dark Green
+        BG_PALETTE[3] = RGB8(  8,  24,  32); //Darkest Green
+        
+        SPRITE_PALETTE[0] = RGB8(224, 248, 208); //Lightest Green
+        SPRITE_PALETTE[1] = RGB8(136, 192, 112); //Light Green
+        SPRITE_PALETTE[2] = RGB8( 52, 104,  86); //Dark Green
+        SPRITE_PALETTE[3] = RGB8(  8,  24,  32); //Darkest Green
+        
+        SPRITE_PALETTE[16] = RGB8(224, 248, 208); //Lightest Green
+        SPRITE_PALETTE[17] = RGB8(136, 192, 112); //Light Green
+        SPRITE_PALETTE[18] = RGB8( 52, 104,  86); //Dark Green
+        SPRITE_PALETTE[19] = RGB8(  8,  24,  32); //Darkest Green
+
+        REG_NR52 = 0x80;
+        REG_NR51 = 0xFF;
+        REG_NR50 = 0x77;
+        
+        //On gameboy if X/Y are 0 its hidden it doesn't work that way on GBA
+        //So prime all sprites to be out of bounds
+        for(int i=0; i<128; i++)
+        {
+            OAM[i].attr0 = OBJ_Y(240); 
+            OAM[i].attr1 = OBJ_X(160); 
+            OAM[i].attr2 = 0; 
         }
         
-        if (memory[0xFFC5] != 0) {
-            irqEnable(IRQ_VBLANK);
-            irqEnable(IRQ_SERIAL);
+        //Why do this again with zero length wtf
+        for(int i=0; i<1; i++)
+            memory[0xDFFF-i] = 0;
+        
+        for(int i=0; i<16; i++)
+            memory[0xCFFF-i] = 0;
+        
+        //Clear some BG Tilemap entries?
+        for(int i=0; i<32; i++)
+            memory[0x9FFF-i] = 0;
+        
+        for(int i=0; i<1; i++)
+            memory[0xFEFF-i] = 0;
+        
+        for(int i=0; i<0x80; i++)
+            memory[(0xFFFE)-i] = 0;
+        
+        sub_27E9();
+        ResetSound();
+        
+        irqEnable(IRQ_VBLANK);
+        irqEnable(IRQ_SERIAL);
+        
+        memory[0xFFC0] = 0x37;
+        memory[0xFFC1] = 0x1C;
+        gState = 0x24;
+        
+        //Turn display on
+        REG_DISPCNT = MODE_0 | BG0_ENABLE | OBJ_ON | WIN0_ON;
+        
+        // Enable Interrupts
+        REG_IME = 1;
+        
+        REG_WININ = 0x13; //BG0 + BG1 + OBJ
+        //Bit   Expl.
+        //0-7   X2, Rightmost coordinate of window, plus 1
+        //8-15  X1, Leftmost coordinate of window
+        REG_WIN0V = (144+1) | (0<<8);
+        //Bit   Expl.
+        //0-7   Y2, Bottom-most coordinate of window, plus 1
+        //8-15  Y1, Top-most coordinate of window
+        REG_WIN0H = (160+1) | (0<<8);
+        REG_TM0CNT_L = 0;
+        
+        while(1)
+        {
+            ReadJoypad();
+            GotoStateHandler();
+            j_UpdateAudio();
+            if(keysDown() == (KEY_A|KEY_B|KEY_SELECT|KEY_START))
+                break;
+            
+            if (gDelay != 0) {
+                gDelay -= 1;
+            }
+            if (memory[0xFFA7] != 0) {
+                memory[0xFFA7] -= 1;
+            }
+            
+            if (memory[0xFFC5] != 0) {
+                irqEnable(IRQ_VBLANK);
+                irqEnable(IRQ_SERIAL);
+            }
+            while (VBlank_Occured == 0);
+            VBlank_Occured = 0;
         }
-        while (VBlank_Occured == 0);
-        VBlank_Occured = 0;
     }
 }
 
@@ -2074,13 +2082,130 @@ void sub_1C29()
 
 void sub_1C4F()
 {
-    //Unimplemented
+    //Toggle preview block on/off
+    if(gJoyHeld & GBKEY_SELECT)
+    {
+        memory[0xC0DE] ^= 1;
+        
+        if(memory[0xC0DE])
+        {
+            //1C5C
+            memory[0xC210] = 0x80;
+        }
+        else
+        {
+            //1C65
+            memory[0xC210] = 0x00;
+        }
+        
+        DrawPreviewBlock_C020();
+    }
 }
 
 
 void sub_1C68()
 {
-    //Unimplemented
+    if((gJoyPressed & (GBKEY_A|GBKEY_B|GBKEY_SELECT|GBKEY_START)) == (GBKEY_A|GBKEY_B|GBKEY_SELECT|GBKEY_START))
+    {
+        GB_Main();
+    }
+    
+    if(memory[0xFFE4])
+    {
+        return;
+    }
+    
+    if(!(gJoyHeld & GBKEY_START))
+    {
+        sub_1C4F();
+        return;
+    }
+    
+    if(memory[0xFFC5] == 0)
+    {
+        //1C80
+        memory[0xFFAB] ^= 1;
+        
+        if(memory[0xFFAB])
+        {
+            //1C8B
+            //LCDC |= 1<<3; This changes the tilemap address...
+            REG_DISPCNT ^= BG0_ON | BG1_ON; //On GBA I'm just going to toggle BG0 and BG1 to simulate this
+            
+            memory[0xDF7F] = 1;
+            
+            u16 *src = GB_VRAM_TO_GBA_VRAM(0x994E);
+            u16 *dst = GB_VRAM_TO_GBA_VRAM(0x9D4E);
+            for(int i=0; i<4; i++)
+            {
+                while(REG_DISPSTAT & 3);
+                
+                *dst++ = *src++;
+                
+            }
+            
+            memory[0xC210] = 0x80;
+            memory[0xC200] = 0x80;
+            
+            DrawCurrentBlock_C010();
+            DrawPreviewBlock_C020();
+        }
+        else
+        {
+            //1CB5
+            //LCDC |= 1<<3; This changes the tilemap address...
+            REG_DISPCNT ^= BG0_ON | BG1_ON; //On GBA I'm just going to toggle BG0 and BG1 to simulate this
+            
+            memory[0xDF7F] = 2;
+            
+            if(!memory[0xC0DE])
+            {
+                //1CA8
+                memory[0xC210] = memory[0xC0DE];
+                memory[0xC200] = memory[0xC0DE];
+            }
+            else
+            {
+                //1CC2
+                memory[0xC200] = 0;
+            }
+            
+            DrawCurrentBlock_C010();
+            DrawPreviewBlock_C020();
+        }        
+    }
+    else
+    {
+        //1CC5
+        if(memory[0xFFCB] == 0x29)
+        {
+            //1CCA
+            memory[0xFFAB] ^= 1;
+            
+            if(memory[0xFFAB])
+            {
+                //1CD2
+                memory[0xDF7F] = 1;
+                memory[0xFFF2] = memory[0xFFD0];
+                memory[0xFFF1] = memory[0xFFCF];
+                
+                sub_1D26();
+            }
+            else
+            {
+                //1D05
+                memory[0xFFD0] = memory[0xFFF2];
+                memory[0xFFCF] = memory[0xFFF1];
+                memory[0xDF7F] = 2;
+                memory[0xDFAB] = 0;
+                
+                for(int i=0; i<5; i++)
+                {
+                    sub_1A63(GB_VRAM_TO_GBA_VRAM((0x98EE)+i), 0x8E);
+                }
+            }
+        }
+    }
 }
 
 
