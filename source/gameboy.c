@@ -2025,7 +2025,18 @@ void sub_1A6B()
 
 void sub_1B43()
 {
-    //Unimplemented
+    u32 idx = memory[0xFFA9];
+    if(memory[0xFFF4])
+    {
+        idx += 0x0A;
+        if(idx >= 0x15) //TODO Check this is correct
+        {
+            idx = 0x14;
+        }
+    }
+    
+    memory[0xFF99] = LevelFramesPerRow[idx];
+    memory[0xFF9A] = LevelFramesPerRow[idx];
 }
 
 
