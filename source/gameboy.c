@@ -2120,7 +2120,6 @@ void FillPlayArea(u8 val)
 
 void sub_2038(u8 val)
 {
-    //Unimplemented
     for(int h=0; h<0x12; h++)
     {
         for(int i=0; i<10; i++)
@@ -2134,7 +2133,15 @@ void sub_2038(u8 val)
 
 void sub_204D()
 {
-    //Unimplemented
+    //TODO check that 0x16 is valid for GBA
+    for(int h=0; h<2; h++)
+    {
+        for(int w=0; w<10; w++)
+        {
+            memory[0xCBC2+w+(h*0x16)] = 0x2F;
+        }
+        
+    }
 }
 
 
