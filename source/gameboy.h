@@ -42,6 +42,8 @@ typedef void (*SoundHandler1)(vu8 *);
 #define gDelay                                          memory[0xFFA6]
 #define gState                                          memory[0xFFE1]
 
+#define GB_VRAM_TO_GBA_VRAM(adr)  (((u16*)(VRAM+0x9800)) + (adr-0x9800))
+
 enum {
    GBKEY_RIGHT=1,
    GBKEY_LEFT=2,
@@ -179,8 +181,8 @@ void sub_1864(u32 de);
 void sub_192E();
 void sub_1960();
 void sub_1977();
-void sub_1A62();
-void sub_1A63();
+void sub_1A62(u16 *dst, u8 val);
+void sub_1A63(u16 *dst, u8 val);
 void sub_1A6B();
 void sub_1B43();
 void sub_1B76();

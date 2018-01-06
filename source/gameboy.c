@@ -130,10 +130,10 @@ void VBlank_Interrupt_Handler()
         if(memory[0xFF98] == 0x3)
         {
             //hl = $986D
-            sub_249B((u16*)(VRAM+0x9800 + (0x6D*2)));
+            sub_249B(GB_VRAM_TO_GBA_VRAM(0x986D));
             memory[0xFFE0] = 1;
             //hl = $9C6D
-            sub_249B((u16*)(VRAM+0x9800 + (0x46D*2)));
+            sub_249B(GB_VRAM_TO_GBA_VRAM(0x9C6D));
             memory[0xC0CE] = 0;
         }
     }
@@ -1009,13 +1009,35 @@ void HandleRocketScreen()
 
 void sub_1260()
 {
-    //Unimplemented
+    if(gDelay)
+    {
+        sub_145E();
+        return;
+    }
+    
+    gState = 0x29;
+    memory[0xC213] = 0x35;
+    memory[0xC223] = 0x35;
+    gDelay = 0xFF;
+    
+    FillPlayArea(0x2F);
 }
 
 
 void sub_1280()
 {
-    //Unimplemented
+    if(gDelay)
+    {
+        sub_145E();
+        return;
+    }
+    
+    gState = 0x02;
+    
+    sub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D08), 0x2F);
+    sub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D09), 0x2F);
+    sub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D28), 0x2F);
+    sub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D29), 0x2F);
 }
 
 
@@ -1063,7 +1085,21 @@ void sub_137F()
 
 void sub_1388()
 {
-    //Unimplemented
+    //Unimplemented - PArtial
+    
+    sub_1216();
+    CopyTilemapSection_Width_6(byte_27D7, &memory[0xC200], 3);
+    memory[0xC203] = memory[0xFFF3];
+    
+    DrawCurrentBlock_C000(3);
+    
+    memory[0xFFF3] = 0;
+    
+    //LCDC = $DB
+    
+    gDelay = 0xBB;
+    gState = 0x2F;
+    memory[0xDFE8] = 0x10;
 }
 
 
@@ -1096,7 +1132,31 @@ void sub_13CB()
 
 void sub_13E2()
 {
-    //Unimplemented
+    if(gDelay)
+    {
+        sub_145E();
+        return;
+    }
+    
+    gDelay = 0x0A;
+    
+    memory[0xC201]--;
+    if(memory[0xC201] != 0x6A)
+    {
+        sub_145E();
+        return;
+    }
+    
+    memory[0xC210] = 0;
+    memory[0xC211] = memory[0xC201] + 0x10;
+    memory[0xC212] = 0x54;
+    memory[0xC212] = 0x5C;
+    memory[0xC220] = 0x80;
+    
+    DrawCurrentBlock_C000(3);
+    
+    gState = 0x32;
+    memory[0xDFF8] = 4;
 }
 
 
@@ -1120,7 +1180,17 @@ void sub_1449()
 
 void sub_145E()
 {
-    //Unimplemented
+    if(memory[0xFFA7])
+        return;
+    
+    memory[0xFFA7] = 0x0A;
+    memory[0xDFF8] = 0x03;
+    
+    //gameboy has a loop here for some reason?
+    memory[0xC210] ^= 0x80;
+    memory[0xC220] ^= 0x80;
+    
+    DrawCurrentBlock_C000(3);
 }
 
 
@@ -1180,7 +1250,6 @@ void sub_14F1(vu8 *dst)
 
 void sub_14F6(vu8 *dst)
 {
-    //Unimplemented
     u32 idx = ((memory[0xFFC1] - 0x1C) * 2); //GB code doesn't bounds check
     
     //debugPrintf("idx = %02X", idx);
@@ -1378,7 +1447,6 @@ void sub_15C7(vu8 *recursion_level)
 {
     memory[0xDFE0] = 2;
     
-    //TODO: Confirm these states are correct
     if(memory[0xFFC0] == 0x37)
     {
         gState = 0x10;
@@ -1514,7 +1582,6 @@ void sub_1623()
 
 void sub_168D()
 {
-    //Unimplemented
     //B-Type level select init
     debugPrint("sub_168D called");
     
@@ -1799,7 +1866,14 @@ void sub_192E()
 
 void sub_1960()
 {
-    //Unimplemented
+    for(int h=0; h<3; h++)
+    {
+        for(int w=0; w<14; w++)
+        {
+            memory[0xC9A4+w+(h*0x20)] = 0x60;
+        }
+        
+    }
 }
 
 
@@ -1809,15 +1883,16 @@ void sub_1977()
 }
 
 
-void sub_1A62()
+void sub_1A62(u16 *dst, u8 val)
 {
-    //Unimplemented
+    sub_1A63(dst, val);
 }
 
 
-void sub_1A63()
+void sub_1A63(u16 *dst, u8 val)
 {
-    //Unimplemented
+    while(REG_DISPSTAT & 3);
+    *dst = val;
 }
 
 
@@ -1849,7 +1924,7 @@ void sub_1A6B()
         memory[0xFFE6] = 0x50;
         memory[0xFFA9] = memory[0xFFC3];
         CopyTilemapSection_Height_12_Dest_9800(MainGame_TypeB_Tilemap);
-        CopyTilemapSection_Height_12(MainGame_TypeB_Tilemap, (u16*)(VRAM+0x9800)+0x400);
+        CopyTilemapSection_Height_12(MainGame_TypeB_Tilemap, GB_VRAM_TO_GBA_VRAM(0x9C00));
     }
     else
     {
@@ -1857,12 +1932,12 @@ void sub_1A6B()
         memory[0xFFE6] = 0xF1;
         memory[0xFFA9] = memory[0xFFC2];
         CopyTilemapSection_Height_12_Dest_9800(MainGame_TypeA_Tilemap);
-        CopyTilemapSection_Height_12(MainGame_TypeA_Tilemap, (u16*)(VRAM+0x9800)+0x400);
+        CopyTilemapSection_Height_12(MainGame_TypeA_Tilemap, GB_VRAM_TO_GBA_VRAM(0x9C00));
     }
     
-    CopyTilemapSectionWidth8(PauseMenu_Tilemap, (u16*)(VRAM+0x9800)+0x463, 10);
+    CopyTilemapSectionWidth8(PauseMenu_Tilemap, GB_VRAM_TO_GBA_VRAM(0x9C63), 10);
     
-    u16 *vram = (u16*)(VRAM+0x9800);
+    u16 *vram = GB_VRAM_TO_GBA_VRAM(0x9800);
     vram += memory[0xFFE6];
     
     *vram = memory[0xFFA9];
@@ -2210,7 +2285,7 @@ void sub_22FE()
     
     //hl = $9A22
     //de = $CA22
-    sub_2506(&memory[0xCA22], (u16*)(VRAM+0x9800 + (0x222*2)));
+    sub_2506(&memory[0xCA22], GB_VRAM_TO_GBA_VRAM(0x9A22));
 }
 
 
@@ -2221,7 +2296,7 @@ void sub_230D()
     
     //hl = $9A02
     //de = $CA02
-    sub_2506(&memory[0xCA02], (u16*)(VRAM+0x9800 + (0x202*2)));
+    sub_2506(&memory[0xCA02], GB_VRAM_TO_GBA_VRAM(0x9A02));
 }
 
 
@@ -2232,7 +2307,7 @@ void sub_231C()
     
     //hl = $99E2
     //de = $C9E2
-    sub_2506(&memory[0xCA02], (u16*)(VRAM+0x9800 + (0x1E2*2)));
+    sub_2506(&memory[0xCA02], GB_VRAM_TO_GBA_VRAM(0x99E2));
 }
 
 
@@ -2243,7 +2318,7 @@ void sub_232B()
     
     //hl = $99C2
     //de = $C9C2
-    sub_2506(&memory[0xC9C2], (u16*)(VRAM+0x9800 + (0x1C2*2)));
+    sub_2506(&memory[0xC9C2], GB_VRAM_TO_GBA_VRAM(0x99C2));
 }
 
 
@@ -2254,7 +2329,7 @@ void sub_233A()
     
     //hl = $99A2
     //de = $C9A2
-    sub_2506(&memory[0xC9A2], (u16*)(VRAM+0x9800 + (0x1A2*2)));
+    sub_2506(&memory[0xC9A2], GB_VRAM_TO_GBA_VRAM(0x99A2));
 }
 
 
@@ -2265,7 +2340,7 @@ void sub_2349()
     
     //hl = $9982
     //de = $C982
-    sub_2506(&memory[0xC982], (u16*)(VRAM+0x9800 + (0x182*2)));
+    sub_2506(&memory[0xC982], GB_VRAM_TO_GBA_VRAM(0x9982));
 }
 
 
@@ -2276,7 +2351,7 @@ void sub_2358()
     
     //hl = $9962
     //de = $C962
-    sub_2506(&memory[0xC962], (u16*)(VRAM+0x9800 + (0x162*2)));
+    sub_2506(&memory[0xC962], GB_VRAM_TO_GBA_VRAM(0x9962));
     
     if(memory[0xFFC5])
     {
@@ -2307,7 +2382,7 @@ void sub_2383()
     
     //hl = $9942
     //de = $C942
-    sub_2506(&memory[0xC942], (u16*)(VRAM+0x9800 + (0x142*2)));
+    sub_2506(&memory[0xC942], GB_VRAM_TO_GBA_VRAM(0x9942));
 }
 
 
@@ -2318,7 +2393,7 @@ void sub_2392()
     
     //hl = $9922
     //de = $C922
-    sub_2506(&memory[0xC922], (u16*)(VRAM+0x9800 + (0x122*2)));
+    sub_2506(&memory[0xC922], GB_VRAM_TO_GBA_VRAM(0x9922));
 }
 
 
@@ -2329,7 +2404,7 @@ void sub_23A1()
     
     //hl = $9902
     //de = $C902
-    sub_2506(&memory[0xC902], (u16*)(VRAM+0x9800 + (0x102*2)));
+    sub_2506(&memory[0xC902], GB_VRAM_TO_GBA_VRAM(0x9902));
 }
 
 
@@ -2340,7 +2415,7 @@ void sub_23B0()
     
     //hl = $98E2
     //de = $C8E2
-    sub_2506(&memory[0xC8E2], (u16*)(VRAM+0x9800 + (0xE2*2)));
+    sub_2506(&memory[0xC8E2], GB_VRAM_TO_GBA_VRAM(0x98E2));
 }
 
 
@@ -2351,7 +2426,7 @@ void sub_23BF()
     
     //hl = $98C2
     //de = $C8C2
-    sub_2506(&memory[0xC8C2], (u16*)(VRAM+0x9800 + (0xC2*2)));
+    sub_2506(&memory[0xC8C2], GB_VRAM_TO_GBA_VRAM(0x98C2));
 }
 
 
@@ -2362,7 +2437,7 @@ void sub_23CE()
     
     //hl = $98A2
     //de = $C8A2
-    sub_2506(&memory[0xC8A2], (u16*)(VRAM+0x9800 + (0xA2*2)));
+    sub_2506(&memory[0xC8A2], GB_VRAM_TO_GBA_VRAM(0x98A2));
 }
 
 
@@ -2373,7 +2448,7 @@ void sub_23DD()
     
     //hl = $9882
     //de = $C882
-    sub_2506(&memory[0xC882], (u16*)(VRAM+0x9800 + (0x82*2)));
+    sub_2506(&memory[0xC882], GB_VRAM_TO_GBA_VRAM(0x9882));
 }
 
 
@@ -2384,7 +2459,7 @@ void sub_23EC()
     
     //hl = $9862
     //de = $C862
-    sub_2506(&memory[0xC862], (u16*)(VRAM+0x9800 + (0x62*2)));
+    sub_2506(&memory[0xC862], GB_VRAM_TO_GBA_VRAM(0x9862));
     
     sub_24AB();
 }
@@ -2397,10 +2472,10 @@ void sub_23FE()
     
     //hl = $9842
     //de = $C842
-    sub_2506(&memory[0xC842], (u16*)(VRAM+0x9800 + (0x42*2)));
+    sub_2506(&memory[0xC842], GB_VRAM_TO_GBA_VRAM(0x9842));
     
     //hl = $9C6D
-    sub_249B((u16*)(VRAM+0x9800 + (0x46D*2)));
+    sub_249B(GB_VRAM_TO_GBA_VRAM(0x9C6D));
     
     memory[0xFFE0] = 1;
 }
@@ -2414,10 +2489,10 @@ void sub_2417()
     
     //hl = $9822
     //de = $C822
-    sub_2506(&memory[0xC822], (u16*)(VRAM+0x9800 + (0x22*2)));
+    sub_2506(&memory[0xC822], GB_VRAM_TO_GBA_VRAM(0x9822));
     
     //hl = $986D
-    sub_249B((u16*)(VRAM+0x9800 + (0x6D*2)));
+    sub_249B(GB_VRAM_TO_GBA_VRAM(0x986D));
 }
 
 
@@ -2666,7 +2741,7 @@ void stub_283E()
 
 void CopyTilemapSection_Height_12_Dest_9800(u8 *src)
 {
-    CopyTilemapSection_Height_12(src, (u16*)(VRAM+0x9800));
+    CopyTilemapSection_Height_12(src, GB_VRAM_TO_GBA_VRAM(0x9800));
 }
 
 
