@@ -166,6 +166,9 @@ loop:
     REG_DISPCNT = MODE_0 | BG0_ENABLE | OBJ_ON;// | WIN0_ON;
     REG_BG0CNT = BG_SIZE_0 | BG_MAP_BASE(0x9800/0x800); //BG MAP is at 0x06006000
     
+    //Do this for convenience
+    REG_BG1CNT = BG_SIZE_0 | BG_MAP_BASE(0xA000/0x800); //BG MAP is at 0x06006000
+    
     //Wait for GB Vblank 148
     //Probably should be set to GBA 160
     //while (REG_VCOUNT >= SCREEN_HEIGHT);
@@ -1898,7 +1901,6 @@ void sub_1A63(u16 *dst, u8 val)
 
 void sub_1A6B()
 {
-    //Unimplemented - Partial
     //Main Game State Init
     DisableLCD();
     
@@ -1947,11 +1949,77 @@ void sub_1A6B()
     if(memory[0xFFF4])
     {
         //1AD0
+        vram++;
+        *(vram + 0x400) = 0x27;
+        *vram = 0x27;
+    }
+    
+    //1AD7
+    
+    //hl = $C200
+    //de = byte_2713
+    sub_270A();
+    
+    //hl = $C210
+    //de = byte_271B
+    sub_270A();
+    
+    if(memory[0xFFC0] == 0x77)
+    {
+        memory[0xFF9E] = 0x25;
     }
     else
     {
-        //1AD7
+        memory[0xFF9E] = 0x00;
     }
+    
+    u32 val = memory[0xFF9E] & 0x0F;
+    *GB_VRAM_TO_GBA_VRAM(0x9951) = val;
+    
+    if(val)
+    {
+        *GB_VRAM_TO_GBA_VRAM(0x9950) = 0x02;
+    }
+    
+    sub_1B43();
+    sub_2062();
+    sub_2062();
+    sub_2062();
+    DrawCurrentBlock_C010();
+    
+    memory[0xFFA0] = 0;
+    
+    if(memory[0xFFC0] == 0x77)
+    {
+        //1B16
+        memory[0xFF99] = 0x34;
+        
+        *GB_VRAM_TO_GBA_VRAM(0x98B0) = memory[0xFFC4];
+        *GB_VRAM_TO_GBA_VRAM(0x9CB0) = memory[0xFFC4];
+        
+        if(memory[0xFFC4])
+        {
+            //1B26
+            if(memory[0xFFE4])
+            {
+                //1B2C
+                //b = memory[0xFFC4]
+                sub_1B76();
+            }
+            else
+            {
+                //1B31
+                //a = memory[0xFFC4]
+                //de = $FFC0
+                //hl = $9A02
+                sub_1BC3();
+            }
+        }
+    }
+    
+    //1B3B
+    //LCDC = $D3
+    gState = 0;
 }
 
 
