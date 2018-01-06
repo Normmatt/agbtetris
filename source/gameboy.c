@@ -1085,8 +1085,7 @@ void sub_13CB()
     {
         gState = 0x31;
         gDelay = 0x80;
-        //a = 0x2F
-        FillPlayArea();
+        FillPlayArea(0x2F);
     }
     else
     {
@@ -1674,8 +1673,6 @@ void sub_17CA(vu8* state)
     if(gDelay)
         return;
     
-    //have to delay this a bit less on gba
-    //gDelay = 0x2;//0x10;
     gDelay = 0x10;
     
     *state ^= 0x80;
@@ -1772,7 +1769,7 @@ void sub_1864(u32 de)
            temp -= memory[hl];
            if(temp < 0)
            {
-               //loc_1886
+               //loc_1886 - TODO
            }
            else if(temp == 0)
            {
@@ -1826,7 +1823,60 @@ void sub_1A63()
 
 void sub_1A6B()
 {
-    //Unimplemented
+    //Unimplemented - Partial
+    //Main Game State Init
+    DisableLCD();
+    
+    memory[0xC210] = 0;
+    memory[0xFF98] = 0;
+    memory[0xFF9C] = 0;
+    memory[0xFF9B] = 0;
+    memory[0xFFFB] = 0;
+    memory[0xFF9F] = 0;
+    
+    FillPlayArea(0x2F);
+    sub_204D();
+    sub_26A5();
+    
+    memory[0xFFE3] = 0;
+    memory[0xFFE7] = 0;
+    
+    ClearA0BytesFromC000();
+    
+    if(memory[0xFFC0] == 0x77)
+    {
+        //B-Type
+        memory[0xFFE6] = 0x50;
+        memory[0xFFA9] = memory[0xFFC3];
+        CopyTilemapSection_Height_12_Dest_9800(MainGame_TypeB_Tilemap);
+        CopyTilemapSection_Height_12(MainGame_TypeB_Tilemap, (u16*)(VRAM+0x9800)+0x400);
+    }
+    else
+    {
+        //A-Type
+        memory[0xFFE6] = 0xF1;
+        memory[0xFFA9] = memory[0xFFC2];
+        CopyTilemapSection_Height_12_Dest_9800(MainGame_TypeA_Tilemap);
+        CopyTilemapSection_Height_12(MainGame_TypeA_Tilemap, (u16*)(VRAM+0x9800)+0x400);
+    }
+    
+    CopyTilemapSectionWidth8(PauseMenu_Tilemap, (u16*)(VRAM+0x9800)+0x463, 10);
+    
+    u16 *vram = (u16*)(VRAM+0x9800);
+    vram += memory[0xFFE6];
+    
+    *vram = memory[0xFFA9];
+    *(vram + 0x400) = memory[0xFFA9];
+    
+    //TODO
+    if(memory[0xFFF4])
+    {
+        //1AD0
+    }
+    else
+    {
+        //1AD7
+    }
 }
 
 
@@ -1909,8 +1959,7 @@ void LoseHandler()
     memory[0xFF9C] = 0x00;
     sub_22F3();
     
-    //a = $87
-    FillPlayArea();
+    FillPlayArea(0x87);
     
     gDelay = 0x46;
     gState = 0x0D;
@@ -1997,9 +2046,17 @@ void GameOverTryAgainHandler()
 }
 
 
-void CopyTilemapSectionWidth8()
+void CopyTilemapSectionWidth8(const u8 *src, u16 *dst, u32 height)
 {
-    //Unimplemented
+    for(int y=0; y<height; y++)
+    {
+        for(int x=0; x<0x08; x++)
+        {
+            *dst++ = *src++;
+        }
+        
+        dst += 0x20-8; //-8 is for GBA
+    }
 }
 
 
@@ -2052,18 +2109,26 @@ void AddScoreForTetris()
 }
 
 
-void FillPlayArea()
+void FillPlayArea(u8 val)
 {
     //Unimplemented - Partial
     memory[0xFFE3] = 2;
     
-    sub_2038();
+    sub_2038(val);
 }
 
 
-void sub_2038()
+void sub_2038(u8 val)
 {
     //Unimplemented
+    for(int h=0; h<0x12; h++)
+    {
+        for(int i=0; i<10; i++)
+        {
+            memory[0xC802+i+(h*0x20-8)] = val;
+        }
+        
+    }
 }
 
 
