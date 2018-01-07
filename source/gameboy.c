@@ -996,13 +996,59 @@ void sub_11A3(u8 b, u8 c)
 
 void InitRocketScreen()
 {
-    //Unimplemented
+    //Unimplemented - Partial
+    
+    sub_1216();
+    
+    //hl = $9CE6
+    //de = byte_147F
+    //b  = 7
+    sub_149B(GB_VRAM_TO_GBA_VRAM(0x9CE6), byte_147F, 7);
+    
+    //hl = $9CE7
+    //de = byte_1486
+    //b  = 7
+    sub_149B(GB_VRAM_TO_GBA_VRAM(0x9CE7), byte_1486, 7);
+    
+    *GB_VRAM_TO_GBA_VRAM(0x9D08) = 0x72;
+    *GB_VRAM_TO_GBA_VRAM(0x9D09) = 0xC4;
+    
+    *GB_VRAM_TO_GBA_VRAM(0x9D28) = 0xB7;
+    *GB_VRAM_TO_GBA_VRAM(0x9D29) = 0xB8;
+    
+    CopyTilemapSection_Width_6(byte_27C5, &memory[0xC200], 3);
+    
+    DrawCurrentBlock_C000(3);
+    
+    //LCDC = $DB
+    REG_DISPCNT &= ~(BG0_ON | BG1_ON);
+    REG_DISPCNT |= BG1_ON; //On GBA I'm just going to toggle BG0 and BG1 to simulate this
+    gDelay = 0xBB;
+    gState = 0x27;
+    memory[0xDFE8] = 0x10;
 }
 
 
 void sub_1216()
 {
-    //Unimplemented
+    DisableLCD();
+    
+    CopyDataTo8000(byte_55F4, 0x1000);
+    
+    //hl = $9FFF
+    sub_27EC(GB_VRAM_TO_GBA_VRAM(0x9FFF));
+    
+    CopyTilemapSection(byte_520C, GB_VRAM_TO_GBA_VRAM(0x9DC0), 4);
+    
+    //hl = $9CEC
+    //de = byte_148D
+    //b  = 7
+    sub_149B(GB_VRAM_TO_GBA_VRAM(0x9CEC), byte_148D, 7);
+    
+    //hl = $9CED
+    //de = byte_1494
+    //b  = 7
+    sub_149B(GB_VRAM_TO_GBA_VRAM(0x9CED), byte_1494, 7);
 }
 
 
@@ -1054,19 +1100,81 @@ void sub_1280()
 
 void sub_12A8()
 {
-    //Unimplemented
+    if(gDelay)
+    {
+        sub_145E();
+        return;
+    }
+    
+    gDelay = 0x0A;
+    
+    memory[0xC201]--;
+    
+    if(memory[0xC201] != 0x58)
+    {
+        sub_145E();
+        return;
+    }
+    
+    memory[0xC210] = 0;
+    memory[0xC211] = memory[0xC201] + 0x20;
+    memory[0xC212] = 0x4C;
+    memory[0xC213] = 0x40;
+    memory[0xC220] = 0x80;
+    
+    DrawCurrentBlock_C000(3);
+    
+    gState = 3;
+    memory[0xDFF8] = 4;
 }
 
 
 void sub_12DF()
 {
-    //Unimplemented
+    if(!gDelay)
+    {
+        //12E4
+        
+        gDelay = 0x0A;
+    
+        memory[0xC211]--;
+        memory[0xC201]--;
+        
+        if(memory[0xC201] == 0xD0)
+        {
+            //12F4
+            memory[0xFFC9] = 0x9C;
+            memory[0xFFCA] = 0x82;
+            gState = 0x2C;
+            return;
+        }
+    }
+    
+    //1301
+    if(!memory[0xFFA7])
+    {
+        //1306
+        memory[0xFFA7] = 6;
+        memory[0xC213] ^= 1;
+    }
+    
+    //1311
+    DrawCurrentBlock_C000(3);
 }
 
 
 void sub_1317()
 {
-    //Unimplemented
+    //Unimplemented - Partial
+    //Prints CONGRATULATIONS! after rocket scene
+    
+    if(gDelay)
+        return;
+    
+    gDelay = 0x06;
+    
+    //131F
+    //TODO: FINISH
 }
 
 
@@ -1205,9 +1313,13 @@ void sub_145E()
 }
 
 
-void sub_149B()
+void sub_149B(u16 *dst, const u8 *src, u32 len)
 {
-    //Unimplemented
+    for(int i=0; i<len; i++)
+    {
+        *dst = *src++;
+        dst += 0x20; //TODO Confirm this is correct
+    }
 }
 
 
@@ -2850,9 +2962,12 @@ void sub_27E9()
 }
 
 
-void sub_27EC()
+void sub_27EC(u16 *dst)
 {
-    //Unimplemented
+    for(int i=0; i<0x400; i++)
+    {
+        *dst-- = 0x2F;
+    }
 }
 
 
@@ -2926,15 +3041,19 @@ void LoadTitleScreenTiles()
 }
 
 
-void sub_2835()
+void CopyDataTo8000_Length1000(const u8 *src)
 {
     //This function does nothing
+    CopyDataTo8000(src, 0x1000);
 }
 
 
-void CopyDataTo8000()
+void CopyDataTo8000(const u8 *src, u32 len)
 {
-    //Unimplemented
+    CopyDataFrom2Bpp((u32 *)(CHAR_BASE_ADR(0)), src, len);
+    
+    //Duplicate for OAM as GBA can't use bg tiles as sprites :(
+    CopyDataFrom2Bpp((u32 *)(CHAR_BASE_ADR(4)), src, len); 
 }
 
 
@@ -3028,7 +3147,7 @@ void DrawScore(vu8 *score, u16 *tilemap, u8 numBytes)
 void OAM_DMA_Transfer()
 {
     //debugPrint("OAM_DMA_Transfer called.");
-    for(int i=0; i<0x80; i+=4)
+    for(int i=0; i<0xA0; i+=4)
     {
         u8 Y = memory[0xC000+i] - 16;
         u8 X = memory[0xC001+i] - 8;
@@ -3198,7 +3317,7 @@ void UpdateBlocks(vu8 *src)
         if((memory[0xFF8B] & (1<<5)))
         {
             //2B72
-            curPiece_X = b - memory[0xFF91] - 8;
+            curPiece_X = b - memory[0xFF91] - c - 8;
         }
         else
         {
@@ -3221,14 +3340,13 @@ void UpdateBlocks(vu8 *src)
         {
             //If not hidden
             *dst++ = curPiece_Y;
-            *dst++ = curPiece_X;
         }
         else
         {
             //If Hidden draw off screen
             *dst++ = 0xFF;
-            *dst++ = 0xFF;
         }
+        *dst++ = curPiece_X;
         *dst++ = curPiece_Tile;
         *dst++ = memory[0xFF94] | memory[0xFF8B] | memory[0xFF8A];
         
