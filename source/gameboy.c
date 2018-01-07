@@ -364,7 +364,6 @@ void InitCopyrightScreen()
     
     gDelay = 0x7D;
     gState = 0x25;    
-    
     //while(1);
 }
 
@@ -423,7 +422,7 @@ void sub_419()
     memory[0xDFE8] = 3;
     
     //LCDC = $D3
-    //TODO:
+    SET_LCDC(0xD3);
     
     gState = 7;
     gDelay = 0x7D;
@@ -478,6 +477,7 @@ void sub_48C()
     ClearA0BytesFromC000();
     
     //LCDC = $D3
+    SET_LCDC(0xD3);
 }
 
 
@@ -995,9 +995,7 @@ void sub_11A3(u8 b, u8 c)
 
 
 void InitRocketScreen()
-{
-    //Unimplemented - Partial
-    
+{    
     sub_1216();
     
     //hl = $9CE6
@@ -1021,8 +1019,7 @@ void InitRocketScreen()
     DrawCurrentBlock_C000(3);
     
     //LCDC = $DB
-    REG_DISPCNT &= ~(BG0_ON | BG1_ON);
-    REG_DISPCNT |= BG1_ON; //On GBA I'm just going to toggle BG0 and BG1 to simulate this
+    SET_LCDC(0xDB);
     gDelay = 0xBB;
     gState = 0x27;
     memory[0xDFE8] = 0x10;
@@ -1165,16 +1162,31 @@ void sub_12DF()
 
 void sub_1317()
 {
-    //Unimplemented - Partial
     //Prints CONGRATULATIONS! after rocket scene
     
     if(gDelay)
         return;
     
-    gDelay = 0x06;
+    gDelay = 0x06; //Maybe this should be extended on GBA?
     
     //131F
-    //TODO: FINISH
+    u16 adr = memory[0xFFC9] << 8 | memory[0xFFCA];
+    u8 val = byte_1359[memory[0xFFCA]-0x82];
+    
+    sub_1A62(GB_VRAM_TO_GBA_VRAM(adr), val);
+    sub_1A63(GB_VRAM_TO_GBA_VRAM(adr+0x20), 0xB6);
+    
+    adr++;
+    
+    memory[0xDFE0] = 2;
+    memory[0xFFC9] = (adr >> 8) & 0xFF;
+    memory[0xFFCA] = (adr >> 0) & 0xFF;
+    
+    if(memory[0xFFCA] != 0x92)
+        return;
+    
+    gDelay = 0xFF;
+    gState = 0x2D;
 }
 
 
@@ -1188,7 +1200,7 @@ void sub_1369()
     sub_22F3();
     
     //LCDC = $93
-    
+    SET_LCDC(0x93);
     gState = 5;
 }
 
@@ -1204,8 +1216,6 @@ void sub_137F()
 
 void sub_1388()
 {
-    //Unimplemented - PArtial
-    
     sub_1216();
     CopyTilemapSection_Width_6(byte_27D7, &memory[0xC200], 3);
     memory[0xC203] = memory[0xFFF3];
@@ -1215,7 +1225,7 @@ void sub_1388()
     memory[0xFFF3] = 0;
     
     //LCDC = $DB
-    
+    SET_LCDC(0xDB);
     gDelay = 0xBB;
     gState = 0x2F;
     memory[0xDFE8] = 0x10;
@@ -1292,7 +1302,7 @@ void sub_1449()
     j_ResetSound();
     sub_22F3();
     //LCDC = $93
-    
+    SET_LCDC(0x93);
     gState = 0x10;
 }
 
@@ -1335,7 +1345,6 @@ void HandleGameTypeMusicScreen()
 
 void sub_14B3()
 {
-    //Unimplemented - Partial
     DisableLCD();
     LoadFontData();
     CopyTilemapSection_Height_12_Dest_9800(GameType_1P_Tilemap);
@@ -1356,6 +1365,7 @@ void sub_14B3()
     sub_157B();
     
     //LCDC = $D3
+    SET_LCDC(0xD3);
     gState = 0x0E;
 }
 
@@ -1607,6 +1617,7 @@ void sub_15DF()
     sub_192E();
     
     //LCDC = $D3
+    SET_LCDC(0xD3);
     gState = 0x11;
     
     if(memory[0xFFC7])
@@ -1721,6 +1732,7 @@ void sub_168D()
     sub_192E();
     
     //LCDC = $D3
+    SET_LCDC(0xD3);
     gState = 0x13;
     
     if(memory[0xFFC7])
@@ -2139,6 +2151,7 @@ void sub_1A6B()
     
     //1B3B
     //LCDC = $D3
+    SET_LCDC(0xD3);
     gState = 0;
 }
 

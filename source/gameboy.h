@@ -43,6 +43,18 @@ typedef void (*SoundHandler1)(vu8 *);
 #define gState                                          memory[0xFFE1]
 
 #define GB_VRAM_TO_GBA_VRAM(adr)  (((u16*)(VRAM+0x9800)) + (adr-0x9800))
+#define SET_LCDC(val) \
+        do{ \
+            REG_DISPCNT &= ~(BG0_ON | BG1_ON); \
+            if(val & (1<<3)) \
+            { \
+                REG_DISPCNT |= BG1_ON; /*On GBA I'm just going to toggle BG0 and BG1 to simulate this*/ \
+            } \
+            else \
+            { \
+                REG_DISPCNT |= BG0_ON; /*On GBA I'm just going to toggle BG0 and BG1 to simulate this*/ \
+            } \
+        }while(0)
 
 enum {
    GBKEY_RIGHT=1,
