@@ -1291,7 +1291,28 @@ void sub_13E2()
 
 void sub_1419()
 {
-    //Unimplemented
+    if(!gDelay)
+    {
+        //141E
+        gDelay = 0x0A;
+        memory[0xC211]--;
+        memory[0xC201]--;
+        
+        if(memory[0xC201] == 0xE0)
+        {
+            gState = 0x33;
+            return;
+        }
+    }
+    
+    //1433
+    if(!memory[0xFFA7])
+    {
+        memory[0xFFA7] = 6;
+        memory[0xC213] ^= 1;
+    }
+    
+    DrawCurrentBlock_C000(3);
 }
 
 
