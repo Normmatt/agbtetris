@@ -278,7 +278,7 @@ void stub_283E();
 void CopyTilemapSection_Height_12_Dest_9800();
 void CopyTilemapSection_Height_12();
 void CopyTilemapSection();
-void sub_2858();
+void sub_2858(u8 *src, vu8 *dst);
 void DisableLCD();
 void ReadJoypad();
 void sub_2A2B();

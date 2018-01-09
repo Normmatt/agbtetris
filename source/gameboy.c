@@ -604,7 +604,7 @@ void sub_4E6()
 
 void sub_579()
 {
-    //Unimplemented
+    //Unimplemented - Multiplayer related?
 }
 
 
@@ -634,7 +634,23 @@ void sub_5EF()
 
 void sub_5F0()
 {
-    //Unimplemented
+    //Unimplemented - Partial
+    
+    if(!memory[0xFFE4])
+        return;
+    
+    if(memory[0xFFE9] != 0xFF)
+        return;
+    
+    if(gJoyPressed == memory[0xFFED])
+    {
+        memory[0xFFEA]++;
+        return;
+    }
+    
+    //0601
+    
+    
 }
 
 
@@ -743,13 +759,16 @@ void sub_953()
 
 void sub_AFB()
 {
-    //Unimplemented
+    for(int i=0; i<10; i++)
+    {
+        memory[0xCA42+i] = 0x80;
+    }
 }
 
 
 void sub_B07()
 {
-    //Unimplemented
+    //Unimplemented - Delay routine?
 }
 
 
@@ -909,7 +928,10 @@ void sub_F7B()
 
 void sub_FC4()
 {
-    //Unimplemented
+    for(int i=0; i<9; i++)
+    {
+        memory[0xC060+(i*4)] = 0;
+    }
 }
 
 
@@ -1935,8 +1957,6 @@ void sub_17F9()
 
 void sub_1813()
 {
-    //Unimplemented - Partial
-    
     sub_1960();
     
     u32 mem = 0xD000;
@@ -3122,9 +3142,27 @@ void CopyTilemapSection(u8 *src, u16 *dst, u32 height)
 }
 
 
-void sub_2858()
+void sub_2858(u8 *src, vu8 *dst)
 {
-    //Unimplemented
+    int src_idx = 0, dst_idx = 0;
+    while(1)
+    {
+        for(int i=0; i<10; i++)
+        {
+            u8 val = src[src_idx];
+            if(val == 0xFF)
+            {
+                memory[0xFFE3] = 2;
+                return;
+            }
+            
+            dst[dst_idx++] = val;
+            src_idx++;
+        }
+        
+        dst_idx += 0x20;
+        
+    }
 }
 
 
