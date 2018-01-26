@@ -2953,7 +2953,32 @@ void sub_25C7()
 
 void sub_25F5()
 {
-    //Unimplemented
+    //This seems to be related to checking if a block has landed?
+    if(memory[0xFF98] != 1)
+        return;
+    
+    u16 adr = 0xC010;
+    memory[0xFFB2] = memory[adr++];
+    
+    for(int i=0; i<4; i++)
+    {
+        if(memory[adr] == 0)
+        {
+            break;
+        }
+        
+        memory[0xFFB3] = memory[adr++];
+        
+        u16 ptr = sub_2A2B();
+        
+        while(REG_DISPSTAT & 3);
+        
+        *GB_VRAM_TO_GBA_VRAM(ptr) = memory[adr];
+        memory[ptr+0x3000] = memory[adr++];
+    }
+    
+    memory[0xFF98] = 2;
+    memory[0xC200] = 0x80;
 }
 
 
@@ -3217,9 +3242,26 @@ void ReadJoypad()
 }
 
 
-void sub_2A2B()
+u16 sub_2A2B()
 {
     //Unimplemented
+    //Returns a value in HL
+    
+    u16 val = (memory[0xFFB2] - 16) / 8;
+    u16 adr = 0x9800;
+    
+    //basically val * 0x20
+    for(int i=0; i<0x20; i++)
+        adr += val;
+    
+    u16 val2 = (memory[0xFFB3] - 8) / 8;
+    
+    adr += val2;
+    
+    memory[0xFFB5] = (adr >> 8) & 0xFF;
+    memory[0xFFB4] = (adr >> 0) & 0xFF;
+    
+    return adr;
 }
 
 

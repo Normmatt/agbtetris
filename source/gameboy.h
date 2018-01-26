@@ -281,7 +281,7 @@ void CopyTilemapSection();
 void sub_2858(u8 *src, vu8 *dst);
 void DisableLCD();
 void ReadJoypad();
-void sub_2A2B();
+u16 sub_2A2B();
 void sub_2A58();
 void sub_2A7E(vu8 *score, u16 *tilemap);
 void DrawScore_C3(vu8 *score, u16 *tilemap);
