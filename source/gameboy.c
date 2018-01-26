@@ -649,8 +649,16 @@ void sub_5F0()
     }
     
     //0601
+    u16 adr = memory[0xFFEB] << 8 | memory[0xFFEC]; //TODO: Verify this isn't in vram
     
+    memory[adr++] = memory[0xFFED];
+    memory[adr++] = memory[0xFFEA];
     
+    memory[0xFFEB] = (adr >> 8) & 0xFF;
+    memory[0xFFEC] = (adr >> 0) & 0xFF;
+    
+    memory[0xFFED] = gJoyPressed;
+    memory[0xFFEA] = 0;
 }
 
 
@@ -668,19 +676,44 @@ void sub_620()
 
 void sub_62D()
 {
-    //Unimplemented
+    //Unimplemented - Partial
+    //set 7 in [SC]
+    sub_63E();
 }
 
 
 void sub_634()
 {
-    //Unimplemented
+    memory[0xFFCD] = 3;
+    
+    if(memory[0xFFCB] != 0x29)
+    {
+        sub_62D();
+        return;
+    }
+    
+    sub_63E();
 }
 
 
 void sub_63E()
 {
-    //Unimplemented
+    sub_14B3();
+    memory[0xC210] = 0x80;
+    DrawCurrentBlock_C000_R2();
+    memory[0xFFCE] = 0; //TODO: Verify this is correct
+    //[SB] = 0;
+    memory[0xFFCF] = 0;
+    memory[0xFFDC] = 0;
+    memory[0xFFD2] = 0;
+    memory[0xFFD3] = 0;
+    memory[0xFFD4] = 0;
+    memory[0xFFD5] = 0;
+    memory[0xFFE3] = 0;
+    
+    j_ResetSound();
+    
+    gState = 0x2B;
 }
 
 
