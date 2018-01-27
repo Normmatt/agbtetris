@@ -2625,7 +2625,83 @@ void sub_204D()
 
 void sub_2062()
 {
-    //Unimplemented
+    memory[0xC200] = 0x00;
+    memory[0xC201] = 0x18;
+    memory[0xC202] = 0x3F;
+    memory[0xC203] = memory[0xC213];
+    
+    u8 masked_c = memory[0xC213] & 0xFC;
+    u8 val = 0;
+    
+    if(memory[0xFFE4])
+    {
+        //207F
+        u16 adr = 0xC300 | memory[0xFFB0];
+        val = memory[adr++];
+        
+        if(adr >= 0xC400)
+        {
+            adr = 0xC300;
+        }
+        
+        memory[0xFFB0] = (adr >> 0) & 0xFF;
+        
+        if(memory[0xFFD3] != 0)
+        {
+            //2096
+            memory[0xFFD3] = 0x80;
+        }
+    }
+    else
+    {
+        //207A
+        if(memory[0xFFC5] == 0)
+        {
+            //209C
+            u8 h = 3;
+            u8 d = 0;
+            while(1)
+            {
+                u8 div = REG_DIV;
+                u8 tmp = 0;
+                
+                while(1)
+                {
+                    div--;
+                    if(div == 0)
+                        break;
+                    
+                    tmp++;
+                    tmp++;
+                    tmp++;
+                    tmp++;
+                    
+                    if(tmp == 0x1C)
+                        tmp = 0;
+                }
+                
+                //20AF
+                d = tmp;
+                val = memory[0xFFAE];
+                
+                h--;
+                if(h == 0)
+                    break;
+                
+                u8 masked_a = (val | d | masked_c) & 0xFC;
+                if(masked_a != masked_c)
+                    break;
+            }
+            
+            //20BD
+            memory[0xFFAE] = d;
+        }
+    }
+    
+    //20C0
+    memory[0xC213] = val;
+    DrawPreviewBlock_C020();
+    memory[0xFF99] = memory[0xFF9A];
 }
 
 
@@ -2662,7 +2738,84 @@ void sub_2199()
 
 void sub_2240()
 {
-    //Unimplemented
+    if(memory[0xFF98] != 3)
+        return;
+    
+    if(gDelay)
+        return;
+    
+    u16 de = 0xC0A3;
+    if(memory[0xFF9C] & 1)
+    {
+        //Happens when a line is cleared?
+        //Moves things down one line?
+        
+        //228E
+        do
+        {
+            u16 adr = (memory[de] << 8) | memory[de+1];
+            de++;
+
+            for(u32 i=0; i<10; i++)
+            {
+                //2298
+                *GB_VRAM_TO_GBA_VRAM(adr+i-0x3000) = memory[adr+i];
+            }
+        } while (memory[++de]);
+    }
+    else
+    {
+        //2252
+        if(memory[de] == 0)
+        {
+            sub_2062();
+            
+            //228A
+            memory[0xFF98] = 0;
+            return;
+        }
+        
+        //2256
+        do
+        {
+            u16 adr = ((memory[de]-0x30) << 8) | memory[de+1];
+            u8 val = 0;
+            de++;
+            
+            if(memory[0xFF9C] == 6)
+            {
+                val = 0x2F;
+            }
+            else
+            {
+                val = 0x8C;
+            }
+            
+            for(u32 i=0; i<10; i++)
+            {
+                //2298
+                *GB_VRAM_TO_GBA_VRAM(adr++) = val;
+            }
+        } while (memory[++de]);
+    }
+    
+    memory[0xFF9C]++;
+    
+    if(memory[0xFF9C] == 7)
+    {
+        //2280
+        memory[0xFF9C] = 0;
+        gDelay = 13;
+        memory[0xFFE3] = 1;
+        
+        //228A
+        memory[0xFF98] = 0;
+    }
+    else
+    {
+        //227A
+        gDelay = 10;
+    }
 }
 
 

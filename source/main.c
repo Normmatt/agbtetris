@@ -4,6 +4,7 @@
 #include <gba_interrupt.h>
 #include <gba_systemcalls.h>
 #include <gba_input.h>
+#include <gba_timers.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,6 +29,10 @@ int main(void) {
 	irqEnable(IRQ_VBLANK);
     
     irqSet( IRQ_VBLANK, VblankInterrupt);
+    
+    //Init timers
+    REG_TM2CNT_L = 0;
+    REG_TM2CNT_H = TIMER_START | TIMER_DIV_1024;   // we're using the 1024 cycle timer
 
 	//consoleDemoInit();
 

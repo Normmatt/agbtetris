@@ -7,6 +7,9 @@ typedef void (*SoundHandler1)(vu8 *);
 #define BUS_CLOCK (16756991)
 #define TIMER_FREQ    (-BUS_CLOCK/1024) //16364Hz not quite the gameboys 16384Hz but should be close enough
 
+//	Causes the timer to count at (16756991 / 1024) MHz.
+#define TIMER_DIV_1024  (3)
+
 #define REG_NR10        (*(vu8  *) (REG_BASE + 0x60))
 #define REG_NR11        (*(vu8  *) (REG_BASE + 0x62))
 #define REG_NR12        (*(vu8  *) (REG_BASE + 0x63))
@@ -29,6 +32,7 @@ typedef void (*SoundHandler1)(vu8 *);
 #define REG_NR51        (*(vu8  *) (REG_BASE + 0x81))
 #define REG_NR52        (*(vu8  *) (REG_BASE + 0x84))
 #define REG_WAVERAM     ( (vu8  *) (REG_BASE + 0x90))
+#define REG_DIV         (*(vu8  *) (REG_BASE + 0x108))
 
 #define gJoyPressed                                     memory[0xFF80]
 #define gJoyHeld                                        memory[0xFF81]
