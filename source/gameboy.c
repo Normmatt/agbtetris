@@ -3256,7 +3256,30 @@ void sub_2515()
 
 u8 sub_25C7()
 {
-    //Unimplemented
+    u16 adr = 0xC010;
+    for(u32 i=0; i<4; i++)
+    {
+        memory[0xFFB2] = memory[adr++];
+        
+        if(memory[adr] == 0)
+        {
+            memory[0xFF9B] = 0;
+            return 0;
+        }
+        memory[0xFFB3] = memory[adr++];
+        
+        u16 ptr = sub_2A2B();
+        if(memory[ptr+0x3000] != 0x2F)
+        {
+            memory[0xFF9B] = 1;
+            return 1;
+        }
+        
+        adr++;
+        adr++;
+    }
+    
+    memory[0xFF9B] = 0;
     return 0;
 }
 
