@@ -71,8 +71,6 @@ enum {
    GBKEY_START=128,
 };
 
-
-
 void sub_153();
 void AddToScore();
 void Serial_Interrupt_Handler();
@@ -258,7 +256,7 @@ void sub_249B();
 void sub_24AB();
 void sub_2506(vu8 *src, u16 *dst);
 void sub_2515();
-void sub_25C7();
+u8 sub_25C7();
 void sub_25F5();
 void sub_262D();
 void sub_26A5();

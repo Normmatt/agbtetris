@@ -3094,13 +3094,170 @@ void sub_2506(vu8 *src, u16 *dst)
 
 void sub_2515()
 {
-    //Unimplemented
+    //Unimplemented - Partial   
+    memory[0xFFA0] = memory[0xC203];
+    
+    if(gJoyHeld & GBKEY_B)
+    {
+        //2534
+        if((memory[0xC203] & 3) == 3)
+        {
+            //253E
+            memory[0xC203] &= 0xFC;
+        }
+        else
+        {
+            //253B
+            memory[0xC203]++;
+        }
+        
+        //2542
+        memory[0xDFE0] = 3;
+        DrawCurrentBlock_C010();
+        
+        u8 tmp = sub_25C7();
+        if(tmp)
+        {
+            //2550
+            memory[0xDFE0] = 0;
+            memory[0xC203] = memory[0xFFA0];
+            DrawCurrentBlock_C010();
+        }
+    }
+    else if(gJoyHeld & GBKEY_A)
+    {
+        //2526
+        if((memory[0xC203] & 3) == 0)
+        {
+            //252B
+            memory[0xC203] |= 3;
+        }
+        else
+        {
+            //252B
+            memory[0xC203]--;
+        }
+        
+        //2542
+        memory[0xDFE0] = 3;
+        DrawCurrentBlock_C010();
+        
+        u8 tmp = sub_25C7();
+        if(tmp)
+        {
+            //2550
+            memory[0xDFE0] = 0;
+            memory[0xC203] = memory[0xFFA0];
+            DrawCurrentBlock_C010();
+        }
+    }
+    
+    //255D
+    memory[0xFFA0] = memory[0xC202];
+    
+    u8 a = 0;
+    
+    if(gJoyHeld & GBKEY_RIGHT)
+    {
+        a = 0x17; 
+        
+        //257B 
+        memory[0xFFAA] = a;
+        memory[0xC202] += 8;
+        DrawCurrentBlock_C010();
+        memory[0xDFE0] = 4;
+        
+        u8 tmp = sub_25C7();
+        if(tmp)
+        {
+            //258E
+            memory[0xDFE0] = 0;
+            memory[0xC202] = memory[0xFFA0];
+            DrawCurrentBlock_C010();
+            memory[0xFFAA] = 1;
+        }
+    }
+    else if(gJoyPressed & GBKEY_RIGHT)
+    {
+        //2573
+        memory[0xFFAA]--;
+        if(memory[0xFFAA])
+            return;
+        
+        a = 0x09;
+        
+        //257B 
+        memory[0xFFAA] = a;
+        memory[0xC202] += 8;
+        DrawCurrentBlock_C010();
+        memory[0xDFE0] = 4;
+        
+        u8 tmp = sub_25C7();
+        if(tmp)
+        {
+            //258E
+            memory[0xDFE0] = 0;
+            memory[0xC202] = memory[0xFFA0];
+            DrawCurrentBlock_C010();
+            memory[0xFFAA] = 1;
+        }
+    }
+    else if(gJoyHeld & GBKEY_LEFT)
+    {
+        a = 0x17; 
+        
+        //25B2 
+        memory[0xFFAA] = a;
+        memory[0xC202] -= 8;
+        DrawCurrentBlock_C010();
+        memory[0xDFE0] = 4;
+        
+        u8 tmp = sub_25C7();
+        if(tmp)
+        {
+            //258E
+            memory[0xDFE0] = 0;
+            memory[0xC202] = memory[0xFFA0];
+            DrawCurrentBlock_C010();
+            memory[0xFFAA] = 1;
+        }
+    }
+    else if(gJoyPressed & GBKEY_LEFT)
+    {
+        //2573
+        memory[0xFFAA]--;
+        if(memory[0xFFAA])
+            return;
+        
+        a = 0x09;
+        
+        //257B 
+        memory[0xFFAA] = a;
+        memory[0xC202] -= 8;
+        DrawCurrentBlock_C010();
+        memory[0xDFE0] = 4;
+        
+        u8 tmp = sub_25C7();
+        if(tmp)
+        {
+            //258E
+            memory[0xDFE0] = 0;
+            memory[0xC202] = memory[0xFFA0];
+            DrawCurrentBlock_C010();
+            memory[0xFFAA] = 1;
+        }
+    }
+    else
+    {
+        memory[0xFFAA] = 0x17;
+    }
 }
 
 
-void sub_25C7()
+u8 sub_25C7()
 {
     //Unimplemented
+    return 0;
 }
 
 
