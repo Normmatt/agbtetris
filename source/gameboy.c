@@ -20,10 +20,10 @@
 
 vu8 memory[0x10000] EWRAM_DATA;
 
-void sub_153()
+void stub_153()
 {
     //Unimplemented - Unused?
-    sub_2A2B();
+    stub_2A2B();
 }
 
 
@@ -47,13 +47,13 @@ void AddToScore(int *curScore, int val)
 
 void Serial_Interrupt_Handler()
 {
-    sub_18E();
+    stub_18E();
     
     memory[0xFFCC] = 1;
 }
 
 
-void sub_18E()
+void stub_18E()
 {
     //Unimplemented - Partial
     u32 idx = memory[0xFFCD];
@@ -69,19 +69,19 @@ void ReadByteFromSerial()
 }
 
 
-void sub_1C7()
+void stub_1C7()
 {
     //Unimplemented
 }
 
 
-void sub_1DD()
+void stub_1DD()
 {
     //Unimplemented
 }
 
 
-void sub_1F3()
+void stub_1F3()
 {
     //Unimplemented
 }
@@ -102,38 +102,38 @@ void VBlank_Interrupt_Handler()
         }
     }
     
-    sub_2240();
-    sub_242C();
-    sub_2417();
-    sub_23FE();
-    sub_23EC();
-    sub_23DD();
-    sub_23CE();
-    sub_23BF();
-    sub_23B0();
-    sub_23A1();
-    sub_2392();
-    sub_2383();
-    sub_2358();
-    sub_2349();
-    sub_233A();
-    sub_232B();
-    sub_231C();
-    sub_230D();
-    sub_22FE();
-    sub_1F32();
+    stub_2240();
+    stub_242C();
+    stub_2417();
+    stub_23FE();
+    stub_23EC();
+    stub_23DD();
+    stub_23CE();
+    stub_23BF();
+    stub_23B0();
+    stub_23A1();
+    stub_2392();
+    stub_2383();
+    stub_2358();
+    stub_2349();
+    stub_233A();
+    stub_232B();
+    stub_231C();
+    stub_230D();
+    stub_22FE();
+    stub_1F32();
     OAM_DMA_Transfer();
-    sub_192E();
+    stub_192E();
     
     if (memory[0xC0CE] != 0)
     {
-        if(memory[0xFF98] == 0x3)
+        if(hCurPieceState == 0x3)
         {
             //hl = $986D
-            sub_249B(GB_VRAM_TO_GBA_VRAM(0x986D));
+            stub_249B(GB_VRAM_TO_GBA_VRAM(0x986D));
             memory[0xFFE0] = 1;
             //hl = $9C6D
-            sub_249B(GB_VRAM_TO_GBA_VRAM(0x9C6D));
+            stub_249B(GB_VRAM_TO_GBA_VRAM(0x9C6D));
             memory[0xC0CE] = 0;
         }
     }
@@ -141,7 +141,7 @@ void VBlank_Interrupt_Handler()
     memory[0xC0CE]++;
     REG_BG0HOFS = 0;
     REG_BG0VOFS = 0;
-    VBlank_Occured = 1;    
+    hVBlankSignal = 1;    
 }
 
 
@@ -229,7 +229,7 @@ __attribute__ ((noreturn)) void GB_Main()
         for(int i=0; i<0x80; i++)
             memory[(0xFFFE)-i] = 0;
         
-        sub_27E9();
+        stub_27E9();
         ResetSound();
         
         irqEnable(IRQ_VBLANK);
@@ -275,66 +275,66 @@ __attribute__ ((noreturn)) void GB_Main()
                 irqEnable(IRQ_VBLANK);
                 irqEnable(IRQ_SERIAL);
             }
-            while (VBlank_Occured == 0);
-            VBlank_Occured = 0;
+            while (hVBlankSignal == 0);
+            hVBlankSignal = 0;
         }
     }
 }
 
 Handler state_handlers[] = {
-    &sub_1C29,
+    &stub_1C29,
     &LoseHandler,
-    &sub_12A8,
-    &sub_12DF,
-    &sub_1D61,
-    &sub_1D81,
-    &sub_419,
-    &sub_4E6,
+    &stub_12A8,
+    &stub_12DF,
+    &stub_1D61,
+    &stub_1D81,
+    &stub_419,
+    &stub_4E6,
     &HandleGameTypeMusicScreen,
     &stub_14F0,
-    &sub_1A6B,
-    &sub_1E1B,
-    &sub_1F71,
+    &stub_1A6B,
+    &stub_1E1B,
+    &stub_1F71,
     &GameOverTryAgainHandler,
-    &sub_1589,
-    &sub_1514,
-    &sub_15DF,
-    &sub_1623,
-    &sub_168D,
-    &sub_16DE,
-    &sub_174F,
-    &sub_1977,
-    &sub_6E4,
-    &sub_799,
-    &sub_892,
-    &sub_953,
-    &sub_B95,
-    &sub_D4F,
-    &sub_B41,
-    &sub_D96,
-    &sub_E87,
-    &sub_1176,
-    &sub_DFD,
-    &sub_EEE,
-    &sub_1E29,
-    &sub_1E9C,
+    &stub_1589,
+    &stub_1514,
+    &stub_15DF,
+    &stub_1623,
+    &stub_168D,
+    &stub_16DE,
+    &stub_174F,
+    &stub_1977,
+    &stub_6E4,
+    &stub_799,
+    &stub_892,
+    &stub_953,
+    &stub_B95,
+    &stub_D4F,
+    &stub_B41,
+    &stub_D96,
+    &stub_E87,
+    &stub_1176,
+    &stub_DFD,
+    &stub_EEE,
+    &stub_1E29,
+    &stub_1E9C,
     &InitCopyrightScreen,
     &DelayStateHandler,
     &InitRocketScreen,
     &HandleRocketScreen,
-    &sub_1260,
-    &sub_1280,
-    &sub_634,
-    &sub_664,
-    &sub_1317,
-    &sub_1369,
-    &sub_1388,
-    &sub_13B5,
-    &sub_13CB,
-    &sub_13E2,
-    &sub_1419,
-    &sub_1449,
-    &sub_137F,
+    &stub_1260,
+    &stub_1280,
+    &stub_634,
+    &stub_664,
+    &stub_1317,
+    &stub_1369,
+    &stub_1388,
+    &stub_13B5,
+    &stub_13CB,
+    &stub_13E2,
+    &stub_1419,
+    &stub_1449,
+    &stub_137F,
     &stub_283E,
 };
 
@@ -379,12 +379,12 @@ void DelayStateHandler()
 }
 
 
-void sub_419()
+void stub_419()
 {
-    //debugPrint("sub_419 called");
+    //debugPrint("stub_419 called");
     
     memory[0xFFE9] = 0;
-    memory[0xFF98] = 0;
+    hCurPieceState = 0;
     memory[0xFF9C] = 0;
     memory[0xFF9B] = 0;
     memory[0xFFFB] = 0;
@@ -393,8 +393,8 @@ void sub_419()
     memory[0xFFE7] = 0;
     memory[0xFFC7] = 0;
     
-    sub_22F3();
-    sub_26A5();
+    stub_22F3();
+    stub_26A5();
     LoadTitleScreenTiles();
     
     for(int i=0; i<0x400; i++)
@@ -403,9 +403,9 @@ void sub_419()
     }
     
     //hl = $C801 
-    sub_26FD();
+    stub_26FD();
     //hl = $C80C
-    sub_26FD();
+    stub_26FD();
     
     for(int i=0; i<12; i++)
     {
@@ -436,7 +436,7 @@ void sub_419()
 }
 
 
-void sub_48C()
+void stub_48C()
 {
     //Unimplemented
     
@@ -481,13 +481,13 @@ void sub_48C()
 }
 
 
-void sub_4E1()
+void stub_4E1()
 {
     memory[0xFFE9] = 0xFF;
 }
 
 
-void sub_4E6()
+void stub_4E6()
 {
     //Seems to handle the input on the title screen
     
@@ -496,13 +496,13 @@ void sub_4E6()
         memory[0xFFC6]--;
         if(memory[0xFFC6] == 0)
         {
-            sub_48C();
+            stub_48C();
             return;
         }
         gDelay = 0x7D;
     }
     
-    sub_B07();
+    stub_B07();
     
     //REG_SB = 0x55;
     //REG_SC = 0x80;
@@ -514,30 +514,30 @@ void sub_4E6()
             memory[0xFFC5] = 0;
         }
     }
-    else if(gJoyHeld & GBKEY_SELECT)
+    else if(hJoyPressed & GBKEY_SELECT)
     {
         memory[0xFFC5] ^= 1;
     }
-    else if(gJoyHeld & GBKEY_LEFT)
+    else if(hJoyPressed & GBKEY_LEFT)
     {
         if(!memory[0xFFC5])
             return;
         memory[0xFFC5] = 0; //1Player
     }
-    else if(gJoyHeld & GBKEY_RIGHT)
+    else if(hJoyPressed & GBKEY_RIGHT)
     {
         if(memory[0xFFC5])
             return;
         memory[0xFFC5] = 2; //2Player
     }
-    else if(gJoyHeld & GBKEY_START)
+    else if(hJoyPressed & GBKEY_START)
     {
         if(memory[0xFFC5] == 0)
         {
             //1Player stuff?
-            if(gJoyPressed & GBKEY_DOWN)
+            if(hJoyDown & GBKEY_DOWN)
             {
-               memory[0xFFF4] = gJoyPressed;
+               memory[0xFFF4] = hJoyDown;
             }
             else
             {
@@ -553,7 +553,7 @@ void sub_4E6()
         else
         {
             //2Player stuff?
-            if(gJoyHeld != GBKEY_START) //Check if only START is pressed
+            if(hJoyPressed != GBKEY_START) //Check if only START is pressed
             {
                 //If any other key is pressed return.
                 return;
@@ -602,37 +602,37 @@ void sub_4E6()
 }
 
 
-void sub_579()
+void stub_579()
 {
     //Unimplemented - Multiplayer related?
 }
 
 
-void sub_5AF()
+void stub_5AF()
 {
     //Unimplemented
 }
 
 
-void sub_5EA()
+void stub_5EA()
 {
     //Unused?
     
     memory[0xFFED] = 0;
     
-    gJoyHeld = 0;
-    memory[0xFFEE] = gJoyPressed;
-    gJoyPressed = memory[0xFFED];
+    hJoyPressed = 0;
+    memory[0xFFEE] = hJoyDown;
+    hJoyDown = memory[0xFFED];
 }
 
 
-void sub_5EF()
+void stub_5EF()
 {
     //This does nothing
 }
 
 
-void sub_5F0()
+void stub_5F0()
 {
     //Unimplemented - Partial
     
@@ -642,7 +642,7 @@ void sub_5F0()
     if(memory[0xFFE9] != 0xFF)
         return;
     
-    if(gJoyPressed == memory[0xFFED])
+    if(hJoyDown == memory[0xFFED])
     {
         memory[0xFFEA]++;
         return;
@@ -657,12 +657,12 @@ void sub_5F0()
     memory[0xFFEB] = (adr >> 8) & 0xFF;
     memory[0xFFEC] = (adr >> 0) & 0xFF;
     
-    memory[0xFFED] = gJoyPressed;
+    memory[0xFFED] = hJoyDown;
     memory[0xFFEA] = 0;
 }
 
 
-void sub_620()
+void stub_620()
 {
     if(!memory[0xFFE4])
         return;
@@ -670,35 +670,35 @@ void sub_620()
     if(memory[0xFFE9])
         return;
     
-    gJoyPressed = memory[0xFFEE];
+    hJoyDown = memory[0xFFEE];
 }
 
 
-void sub_62D()
+void stub_62D()
 {
     //Unimplemented - Partial
     //set 7 in [SC]
-    sub_63E();
+    stub_63E();
 }
 
 
-void sub_634()
+void stub_634()
 {
     memory[0xFFCD] = 3;
     
     if(memory[0xFFCB] != 0x29)
     {
-        sub_62D();
+        stub_62D();
         return;
     }
     
-    sub_63E();
+    stub_63E();
 }
 
 
-void sub_63E()
+void stub_63E()
 {
-    sub_14B3();
+    stub_14B3();
     memory[0xC210] = 0x80;
     DrawCurrentBlock_C000_R2();
     memory[0xFFCE] = 0; //TODO: Verify this is correct
@@ -717,80 +717,80 @@ void sub_63E()
 }
 
 
-void sub_664()
+void stub_664()
 {
     //Unimplemented
 }
 
 
-void sub_6DD()
+void stub_6DD()
 {
     //Unimplemented
 }
 
 
-void sub_6E4()
+void stub_6E4()
 {
     //Unimplemented
 }
 
 
-void sub_703()
+void stub_703()
 {
     //Unimplemented
 }
 
 
-void sub_792()
+void stub_792()
 {
     //Unimplemented
 }
 
 
-void sub_799()
+void stub_799()
 {
     //Unimplemented
 }
 
 
-void sub_7DA()
+void stub_7DA()
 {
     //Unimplemented
 }
 
 
-void sub_80F()
+void stub_80F()
 {
     //Unimplemented
 }
 
 
-void sub_87B()
+void stub_87B()
 {
     //Unimplemented
 }
 
 
-void sub_892()
+void stub_892()
 {
     DisableLCD();
-    sub_895();
+    stub_895();
 }
 
 
-void sub_895()
+void stub_895()
 {
     //Unimplemented
 }
 
 
-void sub_953()
+void stub_953()
 {
     //Unimplemented
 }
 
 
-void sub_AFB()
+void stub_AFB()
 {
     for(int i=0; i<10; i++)
     {
@@ -799,167 +799,167 @@ void sub_AFB()
 }
 
 
-void sub_B07()
+void stub_B07()
 {
     //Unimplemented - Delay routine?
 }
 
 
-void sub_B10()
+void stub_B10()
 {
     //Unimplemented
 }
 
 
-void sub_B41()
+void stub_B41()
 {
     //Unimplemented
 }
 
 
-void sub_B95()
+void stub_B95()
 {
     //Unimplemented
 }
 
 
-void sub_BFF()
+void stub_BFF()
 {
     //Unimplemented
 }
 
 
-void sub_C3A()
+void stub_C3A()
 {
     //Unimplemented
 }
 
 
-void sub_C54()
+void stub_C54()
 {
     //Unimplemented
 }
 
 
-void sub_C80()
+void stub_C80()
 {
     //Unimplemented
 }
 
 
-void sub_C92()
+void stub_C92()
 {
     //Unimplemented
 }
 
 
-void sub_CB4()
+void stub_CB4()
 {
     //Unimplemented
 }
 
 
-void sub_CE6()
+void stub_CE6()
 {
     //Unimplemented
 }
 
 
-void sub_CF0()
+void stub_CF0()
 {
     //Unimplemented
 }
 
 
-void sub_D4F()
+void stub_D4F()
 {
     //Unimplemented
 }
 
 
-void sub_D96()
+void stub_D96()
 {
     //Unimplemented
 }
 
 
-void sub_DE2()
+void stub_DE2()
 {
     //Unimplemented
 }
 
 
-void sub_DFD()
+void stub_DFD()
 {
     //Unimplemented
 }
 
 
-void sub_E11()
+void stub_E11()
 {
-    sub_E21();
+    stub_E21();
     DrawCurrentBlock_C000(3);
 }
 
 
-void sub_E1A()
+void stub_E1A()
 {
     gState = 0x1F;
     memory[0xFFCC] = 0x1F;
 }
 
 
-void sub_E21()
+void stub_E21()
 {
     //Unimplemented
 }
 
 
-void sub_E87()
+void stub_E87()
 {
     //Unimplemented
 }
 
 
-void sub_ED3()
+void stub_ED3()
 {
     //Unimplemented
 }
 
 
-void sub_EEE()
+void stub_EEE()
 {
     //Unimplemented
 }
 
 
-void sub_F02()
+void stub_F02()
 {
-    sub_F12();
+    stub_F12();
     DrawCurrentBlock_C000(2);
 }
 
 
-void sub_F0B()
+void stub_F0B()
 {
     gState = 0x1F;
     memory[0xFFCC] = 0x1F;
 }
 
 
-void sub_F12()
+void stub_F12()
 {
     //Unimplemented
 }
 
 
-void sub_F7B()
+void stub_F7B()
 {
     //Unimplemented
 }
 
 
-void sub_FC4()
+void stub_FC4()
 {
     for(int i=0; i<9; i++)
     {
@@ -968,31 +968,31 @@ void sub_FC4()
 }
 
 
-void sub_FD3()
+void stub_FD3()
 {
     //Unimplemented
 }
 
 
-void sub_10CE()
+void stub_10CE()
 {
     //Unimplemented
 }
 
 
-void sub_10E9()
+void stub_10E9()
 {
     //Unimplemented
 }
 
 
-void sub_113C()
+void stub_113C()
 {
     //Unimplemented
 }
 
 
-void sub_1176()
+void stub_1176()
 {
     //IE = 1;
     if(gDelay)
@@ -1004,7 +1004,7 @@ void sub_1176()
     
     //b = $27
     //c = $79
-    sub_11A3(0x27,0x79);
+    stub_11A3(0x27,0x79);
     j_ResetSound();
     
     if(memory[0xFFD7] != 5)
@@ -1019,7 +1019,7 @@ void sub_1176()
 }
 
 
-void sub_11A3(u8 b, u8 c)
+void stub_11A3(u8 b, u8 c)
 {
     if(!memory[0xFFCC])
     {
@@ -1051,17 +1051,17 @@ void sub_11A3(u8 b, u8 c)
 
 void InitRocketScreen()
 {    
-    sub_1216();
+    stub_1216();
     
     //hl = $9CE6
     //de = byte_147F
     //b  = 7
-    sub_149B(GB_VRAM_TO_GBA_VRAM(0x9CE6), byte_147F, 7);
+    stub_149B(GB_VRAM_TO_GBA_VRAM(0x9CE6), byte_147F, 7);
     
     //hl = $9CE7
     //de = byte_1486
     //b  = 7
-    sub_149B(GB_VRAM_TO_GBA_VRAM(0x9CE7), byte_1486, 7);
+    stub_149B(GB_VRAM_TO_GBA_VRAM(0x9CE7), byte_1486, 7);
     
     *GB_VRAM_TO_GBA_VRAM(0x9D08) = 0x72;
     *GB_VRAM_TO_GBA_VRAM(0x9D09) = 0xC4;
@@ -1081,26 +1081,26 @@ void InitRocketScreen()
 }
 
 
-void sub_1216()
+void stub_1216()
 {
     DisableLCD();
     
     CopyDataTo8000(byte_55F4, 0x1000);
     
     //hl = $9FFF
-    sub_27EC(GB_VRAM_TO_GBA_VRAM(0x9FFF));
+    stub_27EC(GB_VRAM_TO_GBA_VRAM(0x9FFF));
     
     CopyTilemapSection(byte_520C, GB_VRAM_TO_GBA_VRAM(0x9DC0), 4);
     
     //hl = $9CEC
     //de = byte_148D
     //b  = 7
-    sub_149B(GB_VRAM_TO_GBA_VRAM(0x9CEC), byte_148D, 7);
+    stub_149B(GB_VRAM_TO_GBA_VRAM(0x9CEC), byte_148D, 7);
     
     //hl = $9CED
     //de = byte_1494
     //b  = 7
-    sub_149B(GB_VRAM_TO_GBA_VRAM(0x9CED), byte_1494, 7);
+    stub_149B(GB_VRAM_TO_GBA_VRAM(0x9CED), byte_1494, 7);
 }
 
 
@@ -1116,16 +1116,16 @@ void HandleRocketScreen()
 }
 
 
-void sub_1260()
+void stub_1260()
 {
     if(gDelay)
     {
-        sub_145E();
+        stub_145E();
         return;
     }
     
     gState = 0x29;
-    memory[0xC213] = 0x35;
+    wPreviewPiece = 0x35;
     memory[0xC223] = 0x35;
     gDelay = 0xFF;
     
@@ -1133,45 +1133,45 @@ void sub_1260()
 }
 
 
-void sub_1280()
+void stub_1280()
 {
     if(gDelay)
     {
-        sub_145E();
+        stub_145E();
         return;
     }
     
     gState = 0x02;
     
-    sub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D08), 0x2F);
-    sub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D09), 0x2F);
-    sub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D28), 0x2F);
-    sub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D29), 0x2F);
+    stub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D08), 0x2F);
+    stub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D09), 0x2F);
+    stub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D28), 0x2F);
+    stub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D29), 0x2F);
 }
 
 
-void sub_12A8()
+void stub_12A8()
 {
     if(gDelay)
     {
-        sub_145E();
+        stub_145E();
         return;
     }
     
     gDelay = 0x0A;
     
-    memory[0xC201]--;
+    wCurPieceY--;
     
-    if(memory[0xC201] != 0x58)
+    if(wCurPieceY != 0x58)
     {
-        sub_145E();
+        stub_145E();
         return;
     }
     
     memory[0xC210] = 0;
-    memory[0xC211] = memory[0xC201] + 0x20;
-    memory[0xC212] = 0x4C;
-    memory[0xC213] = 0x40;
+    wPreviewPieceY = wCurPieceY + 0x20;
+    wPreviewPieceX = 0x4C;
+    wPreviewPiece = 0x40;
     memory[0xC220] = 0x80;
     
     DrawCurrentBlock_C000(3);
@@ -1181,7 +1181,7 @@ void sub_12A8()
 }
 
 
-void sub_12DF()
+void stub_12DF()
 {
     if(!gDelay)
     {
@@ -1189,10 +1189,10 @@ void sub_12DF()
         
         gDelay = 0x0A;
     
-        memory[0xC211]--;
-        memory[0xC201]--;
+        wPreviewPieceY--;
+        wCurPieceY--;
         
-        if(memory[0xC201] == 0xD0)
+        if(wCurPieceY == 0xD0)
         {
             //12F4
             memory[0xFFC9] = 0x9C;
@@ -1207,7 +1207,7 @@ void sub_12DF()
     {
         //1306
         memory[0xFFA7] = 6;
-        memory[0xC213] ^= 1;
+        wPreviewPiece ^= 1;
     }
     
     //1311
@@ -1215,7 +1215,7 @@ void sub_12DF()
 }
 
 
-void sub_1317()
+void stub_1317()
 {
     //Prints CONGRATULATIONS! after rocket scene
     
@@ -1228,8 +1228,8 @@ void sub_1317()
     u16 adr = memory[0xFFC9] << 8 | memory[0xFFCA];
     u8 val = byte_1359[memory[0xFFCA]-0x82];
     
-    sub_1A62(GB_VRAM_TO_GBA_VRAM(adr), val);
-    sub_1A63(GB_VRAM_TO_GBA_VRAM(adr+0x20), 0xB6);
+    stub_1A62(GB_VRAM_TO_GBA_VRAM(adr), val);
+    stub_1A63(GB_VRAM_TO_GBA_VRAM(adr+0x20), 0xB6);
     
     adr++;
     
@@ -1245,14 +1245,14 @@ void sub_1317()
 }
 
 
-void sub_1369()
+void stub_1369()
 {
     if(gDelay)
         return;
     
     DisableLCD();
     LoadFontData();
-    sub_22F3();
+    stub_22F3();
     
     //LCDC = $93
     SET_LCDC(0x93);
@@ -1260,7 +1260,7 @@ void sub_1369()
 }
 
 
-void sub_137F()
+void stub_137F()
 {
     if(gDelay)
         return;
@@ -1269,11 +1269,11 @@ void sub_137F()
 }
 
 
-void sub_1388()
+void stub_1388()
 {
-    sub_1216();
+    stub_1216();
     CopyTilemapSection_Width_6(byte_27D7, &memory[0xC200], 3);
-    memory[0xC203] = memory[0xFFF3];
+    wCurPiece = memory[0xFFF3];
     
     DrawCurrentBlock_C000(3);
     
@@ -1287,7 +1287,7 @@ void sub_1388()
 }
 
 
-void sub_13B5()
+void stub_13B5()
 {
     if(gDelay)
         return;
@@ -1299,7 +1299,7 @@ void sub_13B5()
 }
 
 
-void sub_13CB()
+void stub_13CB()
 {
     if(gDelay)
     {
@@ -1309,32 +1309,32 @@ void sub_13CB()
     }
     else
     {
-        sub_145E();
+        stub_145E();
     }
 }
 
 
-void sub_13E2()
+void stub_13E2()
 {
     if(gDelay)
     {
-        sub_145E();
+        stub_145E();
         return;
     }
     
     gDelay = 0x0A;
     
-    memory[0xC201]--;
-    if(memory[0xC201] != 0x6A)
+    wCurPieceY--;
+    if(wCurPieceY != 0x6A)
     {
-        sub_145E();
+        stub_145E();
         return;
     }
     
     memory[0xC210] = 0;
-    memory[0xC211] = memory[0xC201] + 0x10;
-    memory[0xC212] = 0x54;
-    memory[0xC212] = 0x5C;
+    wPreviewPieceY = wCurPieceY + 0x10;
+    wPreviewPieceX = 0x54;
+    wPreviewPieceX = 0x5C;
     memory[0xC220] = 0x80;
     
     DrawCurrentBlock_C000(3);
@@ -1344,16 +1344,16 @@ void sub_13E2()
 }
 
 
-void sub_1419()
+void stub_1419()
 {
     if(!gDelay)
     {
         //141E
         gDelay = 0x0A;
-        memory[0xC211]--;
-        memory[0xC201]--;
+        wPreviewPieceY--;
+        wCurPieceY--;
         
-        if(memory[0xC201] == 0xE0)
+        if(wCurPieceY == 0xE0)
         {
             gState = 0x33;
             return;
@@ -1364,26 +1364,26 @@ void sub_1419()
     if(!memory[0xFFA7])
     {
         memory[0xFFA7] = 6;
-        memory[0xC213] ^= 1;
+        wPreviewPiece ^= 1;
     }
     
     DrawCurrentBlock_C000(3);
 }
 
 
-void sub_1449()
+void stub_1449()
 {
     DisableLCD();
     LoadFontData();
     j_ResetSound();
-    sub_22F3();
+    stub_22F3();
     //LCDC = $93
     SET_LCDC(0x93);
     gState = 0x10;
 }
 
 
-void sub_145E()
+void stub_145E()
 {
     if(memory[0xFFA7])
         return;
@@ -1399,7 +1399,7 @@ void sub_145E()
 }
 
 
-void sub_149B(u16 *dst, const u8 *src, u32 len)
+void stub_149B(u16 *dst, const u8 *src, u32 len)
 {
     for(int i=0; i<len; i++)
     {
@@ -1415,11 +1415,11 @@ void HandleGameTypeMusicScreen()
     //REG_SB = 0;
     //REG_SC = 0;
     //IF = 1;
-    sub_14B3();
+    stub_14B3();
 }
 
 
-void sub_14B3()
+void stub_14B3()
 {
     DisableLCD();
     LoadFontData();
@@ -1428,17 +1428,17 @@ void sub_14B3()
     
     CopyTilemapSection_Width_6(byte_2723, &memory[0xC200], 2);
     
-    sub_14F1(&memory[0xC201]);
+    stub_14F1(&wCurPieceY);
     
-    memory[0xC212] = memory[0xFFC0];
+    wPreviewPieceX = memory[0xFFC0];
     
     if(memory[0xFFC0] == 0x37)
-        memory[0xC213] = 0x1C;
+        wPreviewPiece = 0x1C;
     else
-        memory[0xC213] = 0x1D;
+        wPreviewPiece = 0x1D;
     
     DrawCurrentBlock_C000_R2();
-    sub_157B();
+    stub_157B();
     
     //LCDC = $D3
     SET_LCDC(0xD3);
@@ -1450,14 +1450,14 @@ void stub_14F0()
     //This function does nothing
 }
 
-void sub_14F1(vu8 *dst)
+void stub_14F1(vu8 *dst)
 {
     memory[0xDFE0] = 1;
-    sub_14F6(dst);
+    stub_14F6(dst);
 }
 
 
-void sub_14F6(vu8 *dst)
+void stub_14F6(vu8 *dst)
 {
     u32 idx = ((memory[0xFFC1] - 0x1C) * 2); //GB code doesn't bounds check
     
@@ -1474,31 +1474,31 @@ void sub_14F6(vu8 *dst)
 }
 
 
-void sub_1514()
+void stub_1514()
 {
     //Select Music Type
     //Differs slightly from original code in that theres no looping to dpad checks on B button...
-    debugPrint("sub_1514 called");
+    debugPrint("stub_1514 called");
     
-    sub_17CA(&memory[0xC200]);
+    stub_17CA(&memory[0xC200]);
     
-    if(gJoyHeld & GBKEY_START)
+    if(hJoyPressed & GBKEY_START)
     {
-        sub_15C7(&memory[0xC210]);
+        stub_15C7(&memory[0xC210]);
     }
-    else if(gJoyHeld & GBKEY_A)
+    else if(hJoyPressed & GBKEY_A)
     {
-        sub_15C7(&memory[0xC210]);
+        stub_15C7(&memory[0xC210]);
     }
-    else if(gJoyHeld & GBKEY_B)
+    else if(hJoyPressed & GBKEY_B)
     {
         if(!memory[0xFFC5])
         {
             gState = 0x0E;
-            sub_15C2(&memory[0xC201], 0);
+            stub_15C2(&wCurPieceY, 0);
         }
     }
-    else if(gJoyHeld & GBKEY_UP)
+    else if(hJoyPressed & GBKEY_UP)
     {
         if(memory[0xFFC1] == 0x1C)
         {
@@ -1511,11 +1511,11 @@ void sub_1514()
         else
         {
             memory[0xFFC1] -= 2;
-            sub_14F1(&memory[0xC201]);
-            sub_157B();
+            stub_14F1(&wCurPieceY);
+            stub_157B();
         }
     }
-    else if(gJoyHeld & GBKEY_DOWN)
+    else if(hJoyPressed & GBKEY_DOWN)
     {
         if(memory[0xFFC1] == 0x1E)
         {
@@ -1528,11 +1528,11 @@ void sub_1514()
         else
         {
             memory[0xFFC1] += 2;
-            sub_14F1(&memory[0xC201]);
-            sub_157B();
+            stub_14F1(&wCurPieceY);
+            stub_157B();
         }
     }
-    else if(gJoyHeld & GBKEY_RIGHT)
+    else if(hJoyPressed & GBKEY_RIGHT)
     {
         if(memory[0xFFC1] == 0x1D)
         {
@@ -1545,11 +1545,11 @@ void sub_1514()
         else
         {
             memory[0xFFC1]++;
-            sub_14F1(&memory[0xC201]);
-            sub_157B();
+            stub_14F1(&wCurPieceY);
+            stub_157B();
         }
     }
-    else if(gJoyHeld & GBKEY_LEFT)
+    else if(hJoyPressed & GBKEY_LEFT)
     {
         if(memory[0xFFC1] == 0x1C)
         {
@@ -1562,19 +1562,19 @@ void sub_1514()
         else
         {
             memory[0xFFC1]--;
-            sub_14F1(&memory[0xC201]);
-            sub_157B();
+            stub_14F1(&wCurPieceY);
+            stub_157B();
         }
     }
     else
     {
         //Any other time just update existing sprite
-        sub_15C3();
+        stub_15C3();
     }
 }
 
 
-void sub_157B()
+void stub_157B()
 {
     if((memory[0xFFC1] - 0x17) == 8)
     {
@@ -1587,72 +1587,72 @@ void sub_157B()
 }
 
 
-void sub_1589()
+void stub_1589()
 {
     //Select Game Type
-    debugPrint("sub_1589 called");
+    debugPrint("stub_1589 called");
     
-    sub_17CA(&memory[0xC210]);
+    stub_17CA(&memory[0xC210]);
     
-    if(gJoyHeld & GBKEY_START)
+    if(hJoyPressed & GBKEY_START)
     {
-        sub_15C7(&memory[0xC210]);
+        stub_15C7(&memory[0xC210]);
     }
-    else if(gJoyHeld & GBKEY_A)
+    else if(hJoyPressed & GBKEY_A)
     {
-        sub_15DB(&memory[0xC210]);
+        stub_15DB(&memory[0xC210]);
     }
-    else if(gJoyHeld & GBKEY_RIGHT)
+    else if(hJoyPressed & GBKEY_RIGHT)
     {
         if(memory[0xFFC0] == 0x77)
         {
-            sub_15C3();
+            stub_15C3();
         }
         else
         {
             memory[0xFFC0] = 0x77;
             memory[0xDFE0] = 1;
-            memory[0xC212] = 0x77;
-            sub_15C2(&memory[0xC213], 0x1D);
+            wPreviewPieceX = 0x77;
+            stub_15C2(&wPreviewPiece, 0x1D);
         }
     }
-    else if(gJoyHeld & GBKEY_LEFT)
+    else if(hJoyPressed & GBKEY_LEFT)
     {
         if(memory[0xFFC0] == 0x37)
         {
-            sub_15C3();
+            stub_15C3();
         }
         else
         {
             memory[0xFFC0] = 0x37;
             memory[0xDFE0] = 1;
-            memory[0xC212] = 0x37;
-            sub_15C2(&memory[0xC213], 0x1C);
+            wPreviewPieceX = 0x37;
+            stub_15C2(&wPreviewPiece, 0x1C);
         }
     }
     else
     {
         //Any other time just update existing sprite
-        sub_15C3();
+        stub_15C3();
     }
 }
 
 
-void sub_15C2(vu8 *something, u8 val)
+void stub_15C2(vu8 *something, u8 val)
 {
     //[de] = a
     *something = val;
-    sub_15C3();
+    stub_15C3();
 }
 
 
-void sub_15C3()
+void stub_15C3()
 {
     DrawCurrentBlock_C000_R2();
 }
 
 
-void sub_15C7(vu8 *recursion_level)
+void stub_15C7(vu8 *recursion_level)
 {
     memory[0xDFE0] = 2;
     
@@ -1665,32 +1665,32 @@ void sub_15C7(vu8 *recursion_level)
         gState = 0x12;
     }
     
-    sub_15C2(recursion_level, 0);
+    stub_15C2(recursion_level, 0);
 }
 
 
-void sub_15DB(vu8 *recursion_level)
+void stub_15DB(vu8 *recursion_level)
 {
     gState = 0xF;
-    sub_15C2(recursion_level, 0);
+    stub_15C2(recursion_level, 0);
 }
 
 
-void sub_15DF()
+void stub_15DF()
 {
-    debugPrint("sub_15DF called");
+    debugPrint("stub_15DF called");
     
     DisableLCD();
     CopyTilemapSection_Height_12_Dest_9800(TypeA_Level_Select_Tilemap);
-    sub_1960();
+    stub_1960();
     
     ClearA0BytesFromC000();
     CopyTilemapSection_Width_6(byte_272F, &memory[0xC200], 1);
-    sub_17B2(word_1679, &memory[0xC201], memory[0xFFC2]);
+    stub_17B2(word_1679, &wCurPieceY, memory[0xFFC2]);
     DrawCurrentBlock_C000_R2();
     
-    sub_17F9();
-    sub_192E();
+    stub_17F9();
+    stub_192E();
     
     //LCDC = $D3
     SET_LCDC(0xD3);
@@ -1702,27 +1702,27 @@ void sub_15DF()
     }
     else
     {
-        sub_157B();
+        stub_157B();
     }
 }
 
 
-void sub_1623()
+void stub_1623()
 {
     //Select A-Type Level
-    debugPrint("sub_1623 called");
+    debugPrint("stub_1623 called");
     
-    sub_17CA(&memory[0xC200]);
+    stub_17CA(&memory[0xC200]);
     
-    if(gJoyHeld & GBKEY_START)
+    if(hJoyPressed & GBKEY_START)
     {
         gState = 0x0A;
     }
-    else if(gJoyHeld & GBKEY_A)
+    else if(hJoyPressed & GBKEY_A)
     {
         gState = 0x0A;
     }
-    else if(gJoyHeld & GBKEY_RIGHT)
+    else if(hJoyPressed & GBKEY_RIGHT)
     {
         if(memory[0xFFC2] == 0x09)
         {
@@ -1731,13 +1731,13 @@ void sub_1623()
         else
         {
             memory[0xFFC2]++;
-            sub_17B2(word_1679, &memory[0xC201], memory[0xFFC2]);
-            sub_17F9();
+            stub_17B2(word_1679, &wCurPieceY, memory[0xFFC2]);
+            stub_17F9();
             
             DrawCurrentBlock_C000_R2();
         }
     }
-    else if(gJoyHeld & GBKEY_LEFT)
+    else if(hJoyPressed & GBKEY_LEFT)
     {
         if(memory[0xFFC2] == 0x00)
         {
@@ -1746,13 +1746,13 @@ void sub_1623()
         else
         {
             memory[0xFFC2]--;
-            sub_17B2(word_1679, &memory[0xC201], memory[0xFFC2]);
-            sub_17F9();
+            stub_17B2(word_1679, &wCurPieceY, memory[0xFFC2]);
+            stub_17F9();
             
             DrawCurrentBlock_C000_R2();
         }
     }
-    else if(gJoyHeld & GBKEY_UP)
+    else if(hJoyPressed & GBKEY_UP)
     {
         if(memory[0xFFC2] < 5)
         {
@@ -1761,13 +1761,13 @@ void sub_1623()
         else
         {
             memory[0xFFC2] -= 5;
-            sub_17B2(word_1679, &memory[0xC201], memory[0xFFC2]);
-            sub_17F9();
+            stub_17B2(word_1679, &wCurPieceY, memory[0xFFC2]);
+            stub_17F9();
             
             DrawCurrentBlock_C000_R2();
         }
     }
-    else if(gJoyHeld & GBKEY_DOWN)
+    else if(hJoyPressed & GBKEY_DOWN)
     {
         if(memory[0xFFC2] >= 5)
         {
@@ -1776,8 +1776,8 @@ void sub_1623()
         else
         {
             memory[0xFFC2] += 5;
-            sub_17B2(word_1679, &memory[0xC201], memory[0xFFC2]);
-            sub_17F9();
+            stub_17B2(word_1679, &wCurPieceY, memory[0xFFC2]);
+            stub_17F9();
             
             DrawCurrentBlock_C000_R2();
         }
@@ -1785,27 +1785,27 @@ void sub_1623()
     else
     {
         //Any other time just update existing sprite
-        sub_15C3();
+        stub_15C3();
     }
 }
 
 
-void sub_168D()
+void stub_168D()
 {
     //B-Type level select init
-    debugPrint("sub_168D called");
+    debugPrint("stub_168D called");
     
     DisableLCD();
     CopyTilemapSection_Height_12_Dest_9800(TypeB_Level_Select_Tilemap);
     
     ClearA0BytesFromC000();
     CopyTilemapSection_Width_6(byte_2735, &memory[0xC200], 1);
-    sub_17B2(word_1736, &memory[0xC201], memory[0xFFC3]);
-    sub_17B2(word_17A5, &memory[0xC211], memory[0xFFC4]);
+    stub_17B2(word_1736, &wCurPieceY, memory[0xFFC3]);
+    stub_17B2(word_17A5, &wPreviewPieceY, memory[0xFFC4]);
     DrawCurrentBlock_C000_R2();
     
-    sub_1813();
-    sub_192E();
+    stub_1813();
+    stub_192E();
     
     //LCDC = $D3
     SET_LCDC(0xD3);
@@ -1817,38 +1817,38 @@ void sub_168D()
     }
     else
     {
-        sub_157B();
+        stub_157B();
     }
 }
 
 
-void sub_16D9(vu8 *de, u32 newState)
+void stub_16D9(vu8 *de, u32 newState)
 {
     gState = newState;
     *de = 0;
 }
 
 
-void sub_16DE()
+void stub_16DE()
 {
     //Select B-Type Level
-    debugPrint("sub_16DE called");
+    debugPrint("stub_16DE called");
     
-    sub_17CA(&memory[0xC200]);
+    stub_17CA(&memory[0xC200]);
     
-    if(gJoyHeld & GBKEY_START)
+    if(hJoyPressed & GBKEY_START)
     {
-        sub_16D9(&memory[0xC200], 0x0A);
+        stub_16D9(&memory[0xC200], 0x0A);
     }
-    else if(gJoyHeld & GBKEY_A)
+    else if(hJoyPressed & GBKEY_A)
     {
-        sub_16D9(&memory[0xC200], 0x14);
+        stub_16D9(&memory[0xC200], 0x14);
     }
-    else if(gJoyHeld & GBKEY_B)
+    else if(hJoyPressed & GBKEY_B)
     {
-        sub_16D9(&memory[0xC200], 0x08);
+        stub_16D9(&memory[0xC200], 0x08);
     }
-    else if(gJoyHeld & GBKEY_RIGHT)
+    else if(hJoyPressed & GBKEY_RIGHT)
     {
         if(memory[0xFFC3] == 0x09)
         {
@@ -1857,13 +1857,13 @@ void sub_16DE()
         else
         {
             memory[0xFFC3]++;
-            sub_17B2(word_1736, &memory[0xC201], memory[0xFFC3]);
-            sub_1813();
+            stub_17B2(word_1736, &wCurPieceY, memory[0xFFC3]);
+            stub_1813();
             
             DrawCurrentBlock_C000_R2();
         }
     }
-    else if(gJoyHeld & GBKEY_LEFT)
+    else if(hJoyPressed & GBKEY_LEFT)
     {
         if(memory[0xFFC3] == 0x00)
         {
@@ -1872,13 +1872,13 @@ void sub_16DE()
         else
         {
             memory[0xFFC3]--;
-            sub_17B2(word_1736, &memory[0xC201], memory[0xFFC3]);
-            sub_1813();
+            stub_17B2(word_1736, &wCurPieceY, memory[0xFFC3]);
+            stub_1813();
             
             DrawCurrentBlock_C000_R2();
         }
     }
-    else if(gJoyHeld & GBKEY_UP)
+    else if(hJoyPressed & GBKEY_UP)
     {
         if(memory[0xFFC3] < 5)
         {
@@ -1887,13 +1887,13 @@ void sub_16DE()
         else
         {
             memory[0xFFC3] -= 5;
-            sub_17B2(word_1736, &memory[0xC201], memory[0xFFC3]);
-            sub_1813();
+            stub_17B2(word_1736, &wCurPieceY, memory[0xFFC3]);
+            stub_1813();
             
             DrawCurrentBlock_C000_R2();
         }
     }
-    else if(gJoyHeld & GBKEY_DOWN)
+    else if(hJoyPressed & GBKEY_DOWN)
     {
         if(memory[0xFFC3] >= 5)
         {
@@ -1902,8 +1902,8 @@ void sub_16DE()
         else
         {
             memory[0xFFC3] += 5;
-            sub_17B2(word_1736, &memory[0xC201], memory[0xFFC3]);
-            sub_1813();
+            stub_17B2(word_1736, &wCurPieceY, memory[0xFFC3]);
+            stub_1813();
             
             DrawCurrentBlock_C000_R2();
         }
@@ -1916,26 +1916,26 @@ void sub_16DE()
 }
 
 
-void sub_174A()
+void stub_174A()
 {
     //Unimplemented
 }
 
 
-void sub_174F()
+void stub_174F()
 {
     //Unimplemented
 }
 
 
-void sub_17B2(const u16 *src, vu8 *dst, u8 idx)
+void stub_17B2(const u16 *src, vu8 *dst, u8 idx)
 {
     memory[0xDFE0] = 1;
-    sub_17B9(src, dst, idx);
+    stub_17B9(src, dst, idx);
 }
 
 //src is really an X/Y pair 
-void sub_17B9(const u16 *src, vu8 *dst, u8 idx)
+void stub_17B9(const u16 *src, vu8 *dst, u8 idx)
 {
     u16 val = src[idx];
     *dst++ = (val >> 0) & 0xFF;
@@ -1944,8 +1944,8 @@ void sub_17B9(const u16 *src, vu8 *dst, u8 idx)
 }
 
 
-//Returns gJoyHeld in B
-void sub_17CA(vu8* state)
+//Returns hJoyPressed in B
+void stub_17CA(vu8* state)
 {
     //Unimplemented
     if(gDelay)
@@ -1982,15 +1982,15 @@ void ClearA0BytesFromC000()
 }
 
 
-void sub_17F9()
+void stub_17F9()
 {
     //Unimplemented
 }
 
 
-void sub_1813()
+void stub_1813()
 {
-    sub_1960();
+    stub_1960();
     
     u32 mem = 0xD000;
     
@@ -2003,30 +2003,30 @@ void sub_1813()
     mem++;
     mem++;
     
-    sub_1864(mem);
+    stub_1864(mem);
     
 }
 
 
-void sub_1839()
+void stub_1839()
 {
     //Unimplemented
 }
 
 
-void sub_185B()
+void stub_185B()
 {
     //Unimplemented
 }
 
 
-void sub_185D()
+void stub_185D()
 {
     //Unimplemented
 }
 
 
-void sub_1864(u32 de)
+void stub_1864(u32 de)
 {
     //Unimplemented - Partial
     
@@ -2067,13 +2067,13 @@ void sub_1864(u32 de)
 }
 
 
-void sub_192E()
+void stub_192E()
 {
     //Unimplemented
 }
 
 
-void sub_1960()
+void stub_1960()
 {
     for(int h=0; h<3; h++)
     {
@@ -2086,40 +2086,40 @@ void sub_1960()
 }
 
 
-void sub_1977()
+void stub_1977()
 {
     //Unimplemented
 }
 
 
-void sub_1A62(u16 *dst, u8 val)
+void stub_1A62(u16 *dst, u8 val)
 {
-    sub_1A63(dst, val);
+    stub_1A63(dst, val);
 }
 
 
-void sub_1A63(u16 *dst, u8 val)
+void stub_1A63(u16 *dst, u8 val)
 {
     while(REG_DISPSTAT & 3);
     *dst = val;
 }
 
 
-void sub_1A6B()
+void stub_1A6B()
 {
     //Main Game State Init
     DisableLCD();
     
     memory[0xC210] = 0;
-    memory[0xFF98] = 0;
+    hCurPieceState = 0;
     memory[0xFF9C] = 0;
     memory[0xFF9B] = 0;
     memory[0xFFFB] = 0;
     memory[0xFF9F] = 0;
     
     FillPlayArea(0x2F);
-    sub_204D();
-    sub_26A5();
+    stub_204D();
+    stub_26A5();
     
     memory[0xFFE3] = 0;
     memory[0xFFE7] = 0;
@@ -2130,7 +2130,7 @@ void sub_1A6B()
     {
         //B-Type
         memory[0xFFE6] = 0x50;
-        memory[0xFFA9] = memory[0xFFC3];
+        hLevel = memory[0xFFC3];
         CopyTilemapSection_Height_12_Dest_9800(MainGame_TypeB_Tilemap);
         CopyTilemapSection_Height_12(MainGame_TypeB_Tilemap, GB_VRAM_TO_GBA_VRAM(0x9C00));
     }
@@ -2138,7 +2138,7 @@ void sub_1A6B()
     {
         //A-Type
         memory[0xFFE6] = 0xF1;
-        memory[0xFFA9] = memory[0xFFC2];
+        hLevel = memory[0xFFC2];
         CopyTilemapSection_Height_12_Dest_9800(MainGame_TypeA_Tilemap);
         CopyTilemapSection_Height_12(MainGame_TypeA_Tilemap, GB_VRAM_TO_GBA_VRAM(0x9C00));
     }
@@ -2148,8 +2148,8 @@ void sub_1A6B()
     u16 *vram = GB_VRAM_TO_GBA_VRAM(0x9800);
     vram += memory[0xFFE6];
     
-    *vram = memory[0xFFA9];
-    *(vram + 0x400) = memory[0xFFA9];
+    *vram = hLevel;
+    *(vram + 0x400) = hLevel;
     
     //TODO
     if(memory[0xFFF4])
@@ -2164,22 +2164,22 @@ void sub_1A6B()
     
     //hl = $C200
     //de = byte_2713
-    sub_270A();
+    stub_270A(&memory[0xC200],byte_2713);
     
     //hl = $C210
     //de = byte_271B
-    sub_270A();
+    stub_270A(&memory[0xC210],byte_271B);
     
     if(memory[0xFFC0] == 0x77)
     {
-        memory[0xFF9E] = 0x25;
+        hNumFinishedLines = 0x25;
     }
     else
     {
-        memory[0xFF9E] = 0x00;
+        hNumFinishedLines = 0x00;
     }
     
-    u32 val = memory[0xFF9E] & 0x0F;
+    u32 val = hNumFinishedLines & 0x0F;
     *GB_VRAM_TO_GBA_VRAM(0x9951) = val;
     
     if(val)
@@ -2187,10 +2187,10 @@ void sub_1A6B()
         *GB_VRAM_TO_GBA_VRAM(0x9950) = 0x02;
     }
     
-    sub_1B43();
-    sub_2062();
-    sub_2062();
-    sub_2062();
+    stub_1B43();
+    GetNextPiece();
+    GetNextPiece();
+    GetNextPiece();
     DrawCurrentBlock_C010();
     
     memory[0xFFA0] = 0;
@@ -2198,7 +2198,7 @@ void sub_1A6B()
     if(memory[0xFFC0] == 0x77)
     {
         //1B16
-        memory[0xFF99] = 0x34;
+        hRemainingFrameDelay = 0x34;
         
         *GB_VRAM_TO_GBA_VRAM(0x98B0) = memory[0xFFC4];
         *GB_VRAM_TO_GBA_VRAM(0x9CB0) = memory[0xFFC4];
@@ -2210,7 +2210,7 @@ void sub_1A6B()
             {
                 //1B2C
                 //b = memory[0xFFC4]
-                sub_1B76();
+                InitDemoFillHighLines();
             }
             else
             {
@@ -2218,7 +2218,7 @@ void sub_1A6B()
                 //a = memory[0xFFC4]
                 //de = $FFC0
                 //hl = $9A02
-                sub_1BC3();
+                FillGarbageRows();
             }
         }
     }
@@ -2230,9 +2230,9 @@ void sub_1A6B()
 }
 
 
-void sub_1B43()
+void stub_1B43()
 {
-    u32 idx = memory[0xFFA9];
+    u32 idx = hLevel;
     if(memory[0xFFF4])
     {
         idx += 0x0A;
@@ -2242,47 +2242,47 @@ void sub_1B43()
         }
     }
     
-    memory[0xFF99] = LevelFramesPerRow[idx];
-    memory[0xFF9A] = LevelFramesPerRow[idx];
+    hRemainingFrameDelay = LevelFramesPerRow[idx];
+    hLvlFrameDelay = LevelFramesPerRow[idx];
 }
 
 
-void sub_1B76()
+void InitDemoFillHighLines()
 {
     //Unimplemented
 }
 
 
-void sub_1BC3()
+void FillGarbageRows()
 {
     //Unimplemented
 }
 
 
-void sub_1C29()
+void stub_1C29()
 {
-    sub_1C68();
+    stub_1C68();
     
-    if(memory[0xFFAB])
+    if(hGamePaused)
         return;
     
-    sub_579();
-    sub_5AF();
-    sub_5F0();
-    sub_2515();
-    sub_20F7();
-    sub_2199();
-    sub_25F5();
-    sub_22AD();
+    stub_579();
+    stub_5AF();
+    stub_5F0();
+    HandleRotationAndShift();
+    HandleDrop();
+    HandleFinishedRows();
+    LockCurPiece();
+    MoveUpFinishedRows();
     AddScoreForTetris();
-    sub_620();
+    stub_620();
 }
 
 
-void sub_1C4F()
+void stub_1C4F()
 {
     //Toggle preview block on/off
-    if(gJoyHeld & GBKEY_SELECT)
+    if(hJoyPressed & GBKEY_SELECT)
     {
         memory[0xC0DE] ^= 1;
         
@@ -2302,9 +2302,9 @@ void sub_1C4F()
 }
 
 
-void sub_1C68()
+void stub_1C68()
 {
-    if((gJoyPressed & (GBKEY_A|GBKEY_B|GBKEY_SELECT|GBKEY_START)) == (GBKEY_A|GBKEY_B|GBKEY_SELECT|GBKEY_START))
+    if((hJoyDown & (GBKEY_A|GBKEY_B|GBKEY_SELECT|GBKEY_START)) == (GBKEY_A|GBKEY_B|GBKEY_SELECT|GBKEY_START))
     {
         GB_Main();
     }
@@ -2314,18 +2314,18 @@ void sub_1C68()
         return;
     }
     
-    if(!(gJoyHeld & GBKEY_START))
+    if(!(hJoyPressed & GBKEY_START))
     {
-        sub_1C4F();
+        stub_1C4F();
         return;
     }
     
     if(memory[0xFFC5] == 0)
     {
         //1C80
-        memory[0xFFAB] ^= 1;
+        hGamePaused ^= 1;
         
-        if(memory[0xFFAB])
+        if(hGamePaused)
         {
             //1C8B
             //LCDC |= 1<<3; This changes the tilemap address...
@@ -2379,16 +2379,16 @@ void sub_1C68()
         if(memory[0xFFCB] == 0x29)
         {
             //1CCA
-            memory[0xFFAB] ^= 1;
+            hGamePaused ^= 1;
             
-            if(memory[0xFFAB])
+            if(hGamePaused)
             {
                 //1CD2
                 memory[0xDF7F] = 1;
                 memory[0xFFF2] = memory[0xFFD0];
                 memory[0xFFF1] = memory[0xFFCF];
                 
-                sub_1D26();
+                stub_1D26();
             }
             else
             {
@@ -2400,7 +2400,7 @@ void sub_1C68()
                 
                 for(int i=0; i<5; i++)
                 {
-                    sub_1A63(GB_VRAM_TO_GBA_VRAM((0x98EE)+i), 0x8E);
+                    stub_1A63(GB_VRAM_TO_GBA_VRAM((0x98EE)+i), 0x8E);
                 }
             }
         }
@@ -2408,19 +2408,19 @@ void sub_1C68()
 }
 
 
-void sub_1CE3()
+void stub_1CE3()
 {
     //Unimplemented
 }
 
 
-void sub_1D26()
+void stub_1D26()
 {
     //Unimplemented
 }
 
 
-void sub_1D38()
+void stub_1D38()
 {
     //Unimplemented
 }
@@ -2433,9 +2433,9 @@ void LoseHandler()
     DrawCurrentBlock_C010();
     DrawPreviewBlock_C020();
     
-    memory[0xFF98] = 0x00;
+    hCurPieceState = 0x00;
     memory[0xFF9C] = 0x00;
-    sub_22F3();
+    stub_22F3();
     
     FillPlayArea(0x87);
     
@@ -2444,25 +2444,25 @@ void LoseHandler()
 }
 
 
-void sub_1D61()
+void stub_1D61()
 {
     //Unimplemented
 }
 
 
-void sub_1D81()
+void stub_1D81()
 {
     //Unimplemented
 }
 
 
-void sub_1DDF()
+void stub_1DDF()
 {
     //Unimplemented
 }
 
 
-void sub_1E1B()
+void stub_1E1B()
 {
     if(gDelay)
         return;
@@ -2473,45 +2473,45 @@ void sub_1E1B()
 }
 
 
-void sub_1E29()
+void stub_1E29()
 {
     //Unimplemented
 }
 
 
-void sub_1E8C()
+void stub_1E8C()
 {
     //Unimplemented
 }
 
 
-void sub_1E96()
+void stub_1E96()
 {
     DrawCurrentBlock_C000(0x0A);
 }
 
 
-void sub_1E9C()
+void stub_1E9C()
 {
     //Unimplemented
 }
 
 
-void sub_1EF0()
+void stub_1EF0()
 {
     //Unimplemented
 }
 
 
-void sub_1F32()
+void stub_1F32()
 {
     //Unimplemented
 }
 
 
-void sub_1F71()
+void stub_1F71()
 {
-    if(!gJoyHeld)
+    if(!hJoyPressed)
         return;
     
     gState = 2;
@@ -2576,7 +2576,7 @@ void AddScoreForTetris()
     int score = memory[0xC0A0] | memory[0xC0A1] << 8 | memory[0xC0A2] << 16;
     
     //This might need to be done once more?
-    for(int i=0; i<memory[0xFFA9]; i++)
+    for(int i=0; i<hLevel; i++)
     {
         AddToScore(&score, points);
     }
@@ -2592,11 +2592,11 @@ void FillPlayArea(u8 val)
     //Unimplemented - Partial
     memory[0xFFE3] = 2;
     
-    sub_2038(val);
+    stub_2038(val);
 }
 
 
-void sub_2038(u8 val)
+void stub_2038(u8 val)
 {
     for(int h=0; h<0x12; h++)
     {
@@ -2609,7 +2609,7 @@ void sub_2038(u8 val)
 }
 
 
-void sub_204D()
+void stub_204D()
 {
     //TODO check that 0x16 is valid for GBA
     for(int h=0; h<2; h++)
@@ -2623,14 +2623,14 @@ void sub_204D()
 }
 
 
-void sub_2062()
+void GetNextPiece()
 {
     memory[0xC200] = 0x00;
-    memory[0xC201] = 0x18;
-    memory[0xC202] = 0x3F;
-    memory[0xC203] = memory[0xC213];
+    wCurPieceY = 0x18;
+    wCurPieceX = 0x3F;
+    wCurPiece = wPreviewPiece;
     
-    u8 masked_c = memory[0xC213] & 0xFC;
+    u8 masked_c = wPreviewPiece & 0xFC;
     u8 val = 0;
     
     if(memory[0xFFE4])
@@ -2649,7 +2649,7 @@ void sub_2062()
         if(memory[0xFFD3] != 0)
         {
             //2096
-            memory[0xFFD3] = 0x80;
+            memory[0xFFD3] |= 0x80;
         }
     }
     else
@@ -2695,50 +2695,51 @@ void sub_2062()
             
             //20BD
             memory[0xFFAE] = d;
+            debugPrintf("hNextPreviewPiece = %02X (%d)",d,d);
         }
     }
     
     //20C0
-    memory[0xC213] = val;
+    wPreviewPiece = val;
     DrawPreviewBlock_C020();
-    memory[0xFF99] = memory[0xFF9A];
+    hRemainingFrameDelay = hLvlFrameDelay;
 }
 
 
-void sub_20CC()
+void stub_20CC()
 {
     //Unimplemented
 }
 
 
-void sub_20F7()
+void HandleDrop()
 {
-    if((gJoyPressed & (GBKEY_RIGHT|GBKEY_LEFT|GBKEY_DOWN)) == GBKEY_DOWN)
+    if((hJoyDown & (GBKEY_RIGHT|GBKEY_LEFT|GBKEY_DOWN)) == GBKEY_DOWN)
     {
-        sub_20CC();
+        stub_20CC();
     }
     else
     {
-        sub_20FF();
+        stub_20FF();
     }
 }
 
 
-void sub_20FF()
+void stub_20FF()
 {
     //Unimplemented
 }
 
 
-void sub_2199()
+void HandleFinishedRows()
 {
     //Unimplemented
 }
 
 
-void sub_2240()
+void stub_2240()
 {
-    if(memory[0xFF98] != 3)
+    if(hCurPieceState != 3)
         return;
     
     if(gDelay)
@@ -2768,10 +2769,10 @@ void sub_2240()
         //2252
         if(memory[de] == 0)
         {
-            sub_2062();
+            GetNextPiece();
             
             //228A
-            memory[0xFF98] = 0;
+            hCurPieceState = 0;
             return;
         }
         
@@ -2809,7 +2810,7 @@ void sub_2240()
         memory[0xFFE3] = 1;
         
         //228A
-        memory[0xFF98] = 0;
+        hCurPieceState = 0;
     }
     else
     {
@@ -2819,13 +2820,13 @@ void sub_2240()
 }
 
 
-void sub_22AD()
+void MoveUpFinishedRows()
 {
     //Unimplemented
 }
 
 
-void sub_22F3()
+void stub_22F3()
 {
     for(int i=0; i<9; i++)
     {
@@ -2834,80 +2835,80 @@ void sub_22F3()
 }
 
 
-void sub_22FE()
+void stub_22FE()
 {
     if(memory[0xFFE3] != 0x02)
         return;
     
     //hl = $9A22
     //de = $CA22
-    sub_2506(&memory[0xCA22], GB_VRAM_TO_GBA_VRAM(0x9A22));
+    stub_2506(&memory[0xCA22], GB_VRAM_TO_GBA_VRAM(0x9A22));
 }
 
 
-void sub_230D()
+void stub_230D()
 {
     if(memory[0xFFE3] != 0x03)
         return;
     
     //hl = $9A02
     //de = $CA02
-    sub_2506(&memory[0xCA02], GB_VRAM_TO_GBA_VRAM(0x9A02));
+    stub_2506(&memory[0xCA02], GB_VRAM_TO_GBA_VRAM(0x9A02));
 }
 
 
-void sub_231C()
+void stub_231C()
 {
     if(memory[0xFFE3] != 0x04)
         return;
     
     //hl = $99E2
     //de = $C9E2
-    sub_2506(&memory[0xCA02], GB_VRAM_TO_GBA_VRAM(0x99E2));
+    stub_2506(&memory[0xCA02], GB_VRAM_TO_GBA_VRAM(0x99E2));
 }
 
 
-void sub_232B()
+void stub_232B()
 {
     if(memory[0xFFE3] != 0x05)
         return;
     
     //hl = $99C2
     //de = $C9C2
-    sub_2506(&memory[0xC9C2], GB_VRAM_TO_GBA_VRAM(0x99C2));
+    stub_2506(&memory[0xC9C2], GB_VRAM_TO_GBA_VRAM(0x99C2));
 }
 
 
-void sub_233A()
+void stub_233A()
 {
     if(memory[0xFFE3] != 0x06)
         return;
     
     //hl = $99A2
     //de = $C9A2
-    sub_2506(&memory[0xC9A2], GB_VRAM_TO_GBA_VRAM(0x99A2));
+    stub_2506(&memory[0xC9A2], GB_VRAM_TO_GBA_VRAM(0x99A2));
 }
 
 
-void sub_2349()
+void stub_2349()
 {
     if(memory[0xFFE3] != 0x07)
         return;
     
     //hl = $9982
     //de = $C982
-    sub_2506(&memory[0xC982], GB_VRAM_TO_GBA_VRAM(0x9982));
+    stub_2506(&memory[0xC982], GB_VRAM_TO_GBA_VRAM(0x9982));
 }
 
 
-void sub_2358()
+void stub_2358()
 {
     if(memory[0xFFE3] != 0x08)
         return;
     
     //hl = $9962
     //de = $C962
-    sub_2506(&memory[0xC962], GB_VRAM_TO_GBA_VRAM(0x9962));
+    stub_2506(&memory[0xC962], GB_VRAM_TO_GBA_VRAM(0x9962));
     
     if(memory[0xFFC5])
     {
@@ -2931,113 +2932,113 @@ void sub_2358()
 }
 
 
-void sub_2383()
+void stub_2383()
 {
     if(memory[0xFFE3] != 0x09)
         return;
     
     //hl = $9942
     //de = $C942
-    sub_2506(&memory[0xC942], GB_VRAM_TO_GBA_VRAM(0x9942));
+    stub_2506(&memory[0xC942], GB_VRAM_TO_GBA_VRAM(0x9942));
 }
 
 
-void sub_2392()
+void stub_2392()
 {
     if(memory[0xFFE3] != 0x0A)
         return;
     
     //hl = $9922
     //de = $C922
-    sub_2506(&memory[0xC922], GB_VRAM_TO_GBA_VRAM(0x9922));
+    stub_2506(&memory[0xC922], GB_VRAM_TO_GBA_VRAM(0x9922));
 }
 
 
-void sub_23A1()
+void stub_23A1()
 {
     if(memory[0xFFE3] != 0x0B)
         return;
     
     //hl = $9902
     //de = $C902
-    sub_2506(&memory[0xC902], GB_VRAM_TO_GBA_VRAM(0x9902));
+    stub_2506(&memory[0xC902], GB_VRAM_TO_GBA_VRAM(0x9902));
 }
 
 
-void sub_23B0()
+void stub_23B0()
 {
     if(memory[0xFFE3] != 0x0C)
         return;
     
     //hl = $98E2
     //de = $C8E2
-    sub_2506(&memory[0xC8E2], GB_VRAM_TO_GBA_VRAM(0x98E2));
+    stub_2506(&memory[0xC8E2], GB_VRAM_TO_GBA_VRAM(0x98E2));
 }
 
 
-void sub_23BF()
+void stub_23BF()
 {
     if(memory[0xFFE3] != 0x0D)
         return;
     
     //hl = $98C2
     //de = $C8C2
-    sub_2506(&memory[0xC8C2], GB_VRAM_TO_GBA_VRAM(0x98C2));
+    stub_2506(&memory[0xC8C2], GB_VRAM_TO_GBA_VRAM(0x98C2));
 }
 
 
-void sub_23CE()
+void stub_23CE()
 {
     if(memory[0xFFE3] != 0x0E)
         return;
     
     //hl = $98A2
     //de = $C8A2
-    sub_2506(&memory[0xC8A2], GB_VRAM_TO_GBA_VRAM(0x98A2));
+    stub_2506(&memory[0xC8A2], GB_VRAM_TO_GBA_VRAM(0x98A2));
 }
 
 
-void sub_23DD()
+void stub_23DD()
 {
     if(memory[0xFFE3] != 0x0F)
         return;
     
     //hl = $9882
     //de = $C882
-    sub_2506(&memory[0xC882], GB_VRAM_TO_GBA_VRAM(0x9882));
+    stub_2506(&memory[0xC882], GB_VRAM_TO_GBA_VRAM(0x9882));
 }
 
 
-void sub_23EC()
+void stub_23EC()
 {
     if(memory[0xFFE3] != 0x10)
         return;
     
     //hl = $9862
     //de = $C862
-    sub_2506(&memory[0xC862], GB_VRAM_TO_GBA_VRAM(0x9862));
+    stub_2506(&memory[0xC862], GB_VRAM_TO_GBA_VRAM(0x9862));
     
-    sub_24AB();
+    stub_24AB();
 }
 
 
-void sub_23FE()
+void stub_23FE()
 {
     if(memory[0xFFE3] != 0x11)
         return;
     
     //hl = $9842
     //de = $C842
-    sub_2506(&memory[0xC842], GB_VRAM_TO_GBA_VRAM(0x9842));
+    stub_2506(&memory[0xC842], GB_VRAM_TO_GBA_VRAM(0x9842));
     
     //hl = $9C6D
-    sub_249B(GB_VRAM_TO_GBA_VRAM(0x9C6D));
+    stub_249B(GB_VRAM_TO_GBA_VRAM(0x9C6D));
     
     memory[0xFFE0] = 1;
 }
 
 
-void sub_2417()
+void stub_2417()
 {
     //Unimplemented - Partial
     if(memory[0xFFE3] != 0x12)
@@ -3045,20 +3046,20 @@ void sub_2417()
     
     //hl = $9822
     //de = $C822
-    sub_2506(&memory[0xC822], GB_VRAM_TO_GBA_VRAM(0x9822));
+    stub_2506(&memory[0xC822], GB_VRAM_TO_GBA_VRAM(0x9822));
     
     //hl = $986D
-    sub_249B(GB_VRAM_TO_GBA_VRAM(0x986D));
+    stub_249B(GB_VRAM_TO_GBA_VRAM(0x986D));
 }
 
 
-void sub_242C()
+void stub_242C()
 {
     //Unimplemented
 }
 
 
-void sub_249B(u16 *tilemap)
+void stub_249B(u16 *tilemap)
 {
     if(gState)
         return;
@@ -3067,17 +3068,17 @@ void sub_249B(u16 *tilemap)
         return;
     
     //hl = $C0A2
-    sub_2A7E(&memory[0xC0A2], tilemap);
+    stub_2A7E(&memory[0xC0A2], tilemap);
 }
 
 
-void sub_24AB()
+void stub_24AB()
 {
     //Unimplemented
 }
 
 
-void sub_2506(vu8 *src, u16 *dst)
+void stub_2506(vu8 *src, u16 *dst)
 {
     //Unimplemented
     //DE = src
@@ -3092,169 +3093,169 @@ void sub_2506(vu8 *src, u16 *dst)
 }
 
 
-void sub_2515()
+void HandleRotationAndShift()
 {
     //Unimplemented - Partial   
-    memory[0xFFA0] = memory[0xC203];
+    memory[0xFFA0] = wCurPiece;
     
-    if(gJoyHeld & GBKEY_B)
+    if(hJoyPressed & GBKEY_B)
     {
         //2534
-        if((memory[0xC203] & 3) == 3)
+        if((wCurPiece & 3) == 3)
         {
             //253E
-            memory[0xC203] &= 0xFC;
+            wCurPiece &= 0xFC;
         }
         else
         {
             //253B
-            memory[0xC203]++;
+            wCurPiece++;
         }
         
         //2542
         memory[0xDFE0] = 3;
         DrawCurrentBlock_C010();
         
-        u8 tmp = sub_25C7();
+        u8 tmp = CheckSpriteCollision();
         if(tmp)
         {
             //2550
             memory[0xDFE0] = 0;
-            memory[0xC203] = memory[0xFFA0];
+            wCurPiece = memory[0xFFA0];
             DrawCurrentBlock_C010();
         }
     }
-    else if(gJoyHeld & GBKEY_A)
+    else if(hJoyPressed & GBKEY_A)
     {
         //2526
-        if((memory[0xC203] & 3) == 0)
+        if((wCurPiece & 3) == 0)
         {
             //252B
-            memory[0xC203] |= 3;
+            wCurPiece |= 3;
         }
         else
         {
             //252B
-            memory[0xC203]--;
+            wCurPiece--;
         }
         
         //2542
         memory[0xDFE0] = 3;
         DrawCurrentBlock_C010();
         
-        u8 tmp = sub_25C7();
+        u8 tmp = CheckSpriteCollision();
         if(tmp)
         {
             //2550
             memory[0xDFE0] = 0;
-            memory[0xC203] = memory[0xFFA0];
+            wCurPiece = memory[0xFFA0];
             DrawCurrentBlock_C010();
         }
     }
     
     //255D
-    memory[0xFFA0] = memory[0xC202];
+    memory[0xFFA0] = wCurPieceX;
     
     u8 a = 0;
     
-    if(gJoyHeld & GBKEY_RIGHT)
+    if(hJoyPressed & GBKEY_RIGHT)
     {
         a = 0x17; 
         
         //257B 
-        memory[0xFFAA] = a;
-        memory[0xC202] += 8;
+        hButtonHoldCounter = a;
+        wCurPieceX += 8;
         DrawCurrentBlock_C010();
         memory[0xDFE0] = 4;
         
-        u8 tmp = sub_25C7();
+        u8 tmp = CheckSpriteCollision();
         if(tmp)
         {
             //258E
             memory[0xDFE0] = 0;
-            memory[0xC202] = memory[0xFFA0];
+            wCurPieceX = memory[0xFFA0];
             DrawCurrentBlock_C010();
-            memory[0xFFAA] = 1;
+            hButtonHoldCounter = 1;
         }
     }
-    else if(gJoyPressed & GBKEY_RIGHT)
+    else if(hJoyDown & GBKEY_RIGHT)
     {
         //2573
-        memory[0xFFAA]--;
-        if(memory[0xFFAA])
+        hButtonHoldCounter--;
+        if(hButtonHoldCounter)
             return;
         
         a = 0x09;
         
         //257B 
-        memory[0xFFAA] = a;
-        memory[0xC202] += 8;
+        hButtonHoldCounter = a;
+        wCurPieceX += 8;
         DrawCurrentBlock_C010();
         memory[0xDFE0] = 4;
         
-        u8 tmp = sub_25C7();
+        u8 tmp = CheckSpriteCollision();
         if(tmp)
         {
             //258E
             memory[0xDFE0] = 0;
-            memory[0xC202] = memory[0xFFA0];
+            wCurPieceX = memory[0xFFA0];
             DrawCurrentBlock_C010();
-            memory[0xFFAA] = 1;
+            hButtonHoldCounter = 1;
         }
     }
-    else if(gJoyHeld & GBKEY_LEFT)
+    else if(hJoyPressed & GBKEY_LEFT)
     {
         a = 0x17; 
         
         //25B2 
-        memory[0xFFAA] = a;
-        memory[0xC202] -= 8;
+        hButtonHoldCounter = a;
+        wCurPieceX -= 8;
         DrawCurrentBlock_C010();
         memory[0xDFE0] = 4;
         
-        u8 tmp = sub_25C7();
+        u8 tmp = CheckSpriteCollision();
         if(tmp)
         {
             //258E
             memory[0xDFE0] = 0;
-            memory[0xC202] = memory[0xFFA0];
+            wCurPieceX = memory[0xFFA0];
             DrawCurrentBlock_C010();
-            memory[0xFFAA] = 1;
+            hButtonHoldCounter = 1;
         }
     }
-    else if(gJoyPressed & GBKEY_LEFT)
+    else if(hJoyDown & GBKEY_LEFT)
     {
         //2573
-        memory[0xFFAA]--;
-        if(memory[0xFFAA])
+        hButtonHoldCounter--;
+        if(hButtonHoldCounter)
             return;
         
         a = 0x09;
         
         //257B 
-        memory[0xFFAA] = a;
-        memory[0xC202] -= 8;
+        hButtonHoldCounter = a;
+        wCurPieceX -= 8;
         DrawCurrentBlock_C010();
         memory[0xDFE0] = 4;
         
-        u8 tmp = sub_25C7();
+        u8 tmp = CheckSpriteCollision();
         if(tmp)
         {
             //258E
             memory[0xDFE0] = 0;
-            memory[0xC202] = memory[0xFFA0];
+            wCurPieceX = memory[0xFFA0];
             DrawCurrentBlock_C010();
-            memory[0xFFAA] = 1;
+            hButtonHoldCounter = 1;
         }
     }
     else
     {
-        memory[0xFFAA] = 0x17;
+        hButtonHoldCounter = 0x17;
     }
 }
 
 
-u8 sub_25C7()
+u8 CheckSpriteCollision()
 {
     u16 adr = 0xC010;
     for(u32 i=0; i<4; i++)
@@ -3268,7 +3269,7 @@ u8 sub_25C7()
         }
         memory[0xFFB3] = memory[adr++];
         
-        u16 ptr = sub_2A2B();
+        u16 ptr = stub_2A2B();
         if(memory[ptr+0x3000] != 0x2F)
         {
             memory[0xFF9B] = 1;
@@ -3284,10 +3285,10 @@ u8 sub_25C7()
 }
 
 
-void sub_25F5()
+void LockCurPiece()
 {
     //This seems to be related to checking if a block has landed?
-    if(memory[0xFF98] != 1)
+    if(hCurPieceState != 1)
         return;
     
     u16 adr = 0xC010;
@@ -3302,7 +3303,7 @@ void sub_25F5()
         
         memory[0xFFB3] = memory[adr++];
         
-        u16 ptr = sub_2A2B();
+        u16 ptr = stub_2A2B();
         
         while(REG_DISPSTAT & 3);
         
@@ -3310,18 +3311,18 @@ void sub_25F5()
         memory[ptr+0x3000] = memory[adr++];
     }
     
-    memory[0xFF98] = 2;
+    hCurPieceState = 2;
     memory[0xC200] = 0x80;
 }
 
 
-void sub_262D()
+void stub_262D()
 {
     //Unimplemented
 }
 
 
-void sub_26A5()
+void stub_26A5()
 {
     for(int i=0; i<0x1B; i++)
     {
@@ -3335,7 +3336,7 @@ void sub_26A5()
 }
 
 
-void sub_26B9()
+void stub_26B9()
 {
     //Unimplemented - Unused?
 }
@@ -3383,15 +3384,18 @@ void DrawPreviewBlock_C020()
 }
 
 
-void sub_26FD()
+void stub_26FD()
 {
     //Unimplemented
 }
 
 
-void sub_270A()
+void stub_270A(vu8 *dst, const u8 *src)
 {
-    //Unimplemented
+    while(*src != 0xFF)
+    {
+        *dst++ = *src++;
+    }
 }
 
 
@@ -3401,13 +3405,13 @@ void Stub_Interrupt_Handler()
 }
 
 
-void sub_27E9()
+void stub_27E9()
 {
     //Unimplemented
 }
 
 
-void sub_27EC(u16 *dst)
+void stub_27EC(u16 *dst)
 {
     for(int i=0; i<0x400; i++)
     {
@@ -3533,7 +3537,7 @@ void CopyTilemapSection(u8 *src, u16 *dst, u32 height)
 }
 
 
-void sub_2858(u8 *src, vu8 *dst)
+void stub_2858(u8 *src, vu8 *dst)
 {
     int src_idx = 0, dst_idx = 0;
     while(1)
@@ -3568,14 +3572,14 @@ void ReadJoypad()
     //Unimplemented
     scanKeys();
     
-    gJoyHeld = gJoyPressed;
+    hJoyPressed = hJoyDown;
     
     u32 keys = keysDown();
-    gJoyPressed = ((keys&0xF0)>>4) | ((keys&0xF)<<4);
+    hJoyDown = ((keys&0xF0)>>4) | ((keys&0xF)<<4);
 }
 
 
-u16 sub_2A2B()
+u16 stub_2A2B()
 {
     //Unimplemented
     //Returns a value in HL
@@ -3598,13 +3602,13 @@ u16 sub_2A2B()
 }
 
 
-void sub_2A58()
+void stub_2A58()
 {
     //Unimplemented
 }
 
 
-void sub_2A7E(vu8 *score, u16 *tilemap)
+void stub_2A7E(vu8 *score, u16 *tilemap)
 {
     if(!memory[0xFFE0])
         return;
@@ -3838,7 +3842,7 @@ void UpdateBlocks(vu8 *src)
 }
 
 
-void sub_6552()
+void stub_6552()
 {
     //This does nothing
 }
@@ -3851,49 +3855,49 @@ void UpdateAudio()
 
 
 //TO Add to header
-int sub_6603()
+int stub_6603()
 {
     return memory[0xDFF1] == 1;
 }
 
 
-int sub_6609()
+int stub_6609()
 {
     return memory[0xDFF1] == 5;
 }
 
 
-int sub_660F()
+int stub_660F()
 {
     return memory[0xDFF1] == 7;
 }
 
 
-void sub_6624(vu8 *de)
+void stub_6624(vu8 *de)
 {
     //Unimplemented
 }
 
 
-void sub_662C()
+void stub_662C()
 {
     //Unimplemented
 }
 
 
-void sub_6641(vu8 *de)
+void stub_6641(vu8 *de)
 {
     //Unimplemented
 }
 
 
-void sub_6649()
+void stub_6649()
 {
     //Unimplemented
 }
 
 
-void sub_664E()
+void stub_664E()
 {
     memory[0xDFE1] = 0;
     REG_NR10 = 0;
@@ -3903,164 +3907,164 @@ void sub_664E()
 }
 
 
-void sub_666C(vu8 *de)
+void stub_666C(vu8 *de)
 {
     //Unimplemented
 }
 
 
-void sub_6672()
+void stub_6672()
 {
     //Unimplemented
 }
 
 
-void sub_66A3(vu8 *de)
+void stub_66A3(vu8 *de)
 {
     //Unimplemented - Partial
     
-    if(sub_6603())
+    if(stub_6603())
         return;
     
-    if(sub_660F())
+    if(stub_660F())
         return;
     
-    if(sub_6609())
+    if(stub_6609())
         return;
     
     //a = $2
     //hl = $669E
-    sub_6967();
+    stub_6967();
 }
 
 
-void sub_66BC(vu8 *de)
+void stub_66BC(vu8 *de)
 {
     //Unimplemented
 }
 
 
-void sub_66C4()
+void stub_66C4()
 {
     //Unimplemented - Partial
     
     //de = something
-    sub_69BC();
+    stub_69BC();
     
     memory[0xDFE4]++;
     if(memory[0xDFE4] == 3)
     {
-        sub_664E();
+        stub_664E();
     }
 }
 
 
-void sub_66F4(vu8 *de)
+void stub_66F4(vu8 *de)
 {
     //Unimplemented
 }
 
 
-void sub_6704()
+void stub_6704()
 {
     //Unimplemented
 }
 
 
-void sub_673D(vu8 *de)
+void stub_673D(vu8 *de)
 {
     //Unimplemented
 }
 
 
-void sub_6751()
+void stub_6751()
 {
     //Unimplemented
 }
 
 
-void sub_6771(vu8 *de)
+void stub_6771(vu8 *de)
 {
     //Unimplemented
 }
 
 
-void sub_67DA()
+void stub_67DA()
 {
     //Unimplemented
 }
 
 
-void sub_67E2()
+void stub_67E2()
 {
     //Unimplemented
 }
 
 
-void sub_67EA()
+void stub_67EA()
 {
     //Unimplemented
 }
 
 
-void sub_6811()
+void stub_6811()
 {
     //Unimplemented
 }
 
 
-void sub_6819()
+void stub_6819()
 {
     //Unimplemented
 }
 
 
-void sub_6821()
+void stub_6821()
 {
     //Unimplemented
 }
 //END
 
-void sub_683D()
+void stub_683D()
 {
     //Unimplemented
 }
 
 
-void sub_6854()
+void stub_6854()
 {
     //Unimplemented
 }
 
 
-void sub_6879()
+void stub_6879()
 {
     if(memory[0xDFF0] == 1)
     {
-        sub_68A8();
+        stub_68A8();
     }
     else if(memory[0xDFF0] == 2)
     {
-        sub_683D();
+        stub_683D();
     }
     
     if(memory[0xDFF1] == 1)
     {
-        sub_68F3();
+        stub_68F3();
     }
     else if(memory[0xDFF1] == 2)
     {
-        sub_6854();
+        stub_6854();
     }
 }
 
 
-void sub_68A8()
+void stub_68A8()
 {
     //Unimplemented - Partial
     
     //hl = $6EDA
-    sub_693E();
+    stub_693E();
     
     memory[0xDFF6] = byte_6897[0];
     memory[0xDFF5] = 1;
@@ -4068,7 +4072,7 @@ void sub_68A8()
 }
 
 
-void sub_68C0()
+void stub_68C0()
 {
     memory[0xDFF5] = 0;
     memory[0xDFF6] = byte_689C[0];
@@ -4076,7 +4080,7 @@ void sub_68C0()
 }
 
 
-void sub_68D1()
+void stub_68D1()
 {
     memory[0xDFF5] = 1;
     memory[0xDFF6] = byte_68A1[0];
@@ -4084,7 +4088,7 @@ void sub_68D1()
 }
 
 
-void sub_68E2()
+void stub_68E2()
 {
     memory[0xDFF5] = 2;
     memory[0xDFF6] = byte_68A6[0];
@@ -4092,25 +4096,25 @@ void sub_68E2()
 }
 
 
-void sub_68F3()
+void stub_68F3()
 {
     //Unimplemented
 }
 
 
-void sub_691F()
+void stub_691F()
 {
     //Unimplemented
 }
 
 
-void sub_693E()
+void stub_693E()
 {
     //Unimplemented
 }
 
 
-void sub_6967()
+void stub_6967()
 {
     //Unimplemented
 }
@@ -4163,38 +4167,38 @@ void CopySoundRegisters()
 //Sound struct
 const SoundHandler1 off_6500[] = 
 {
-    &sub_6624,
-    &sub_6641,
-    &sub_673D,
-    &sub_66A3,
-    &sub_6771,
-    &sub_66F4,
-    &sub_666C,
-    &sub_66BC
+    &stub_6624,
+    &stub_6641,
+    &stub_673D,
+    &stub_66A3,
+    &stub_6771,
+    &stub_66F4,
+    &stub_666C,
+    &stub_66BC
 };
 
 const SoundHandler1 off_6510[] = 
 {
-    &sub_662C,
-    &sub_6649,
-    &sub_6751,
-    &sub_6649,
-    &sub_6649,
-    &sub_6704,
-    &sub_6672,
-    &sub_66C4,
+    &stub_662C,
+    &stub_6649,
+    &stub_6751,
+    &stub_6649,
+    &stub_6649,
+    &stub_6704,
+    &stub_6672,
+    &stub_66C4,
 };
 
 
-SoundHandler1 sub_69A9(const SoundHandler1 handlers[], vu8 **de, u8 a)
+SoundHandler1 stub_69A9(const SoundHandler1 handlers[], vu8 **de, u8 a)
 {
     de++;
     memory[0xDF71] = a;
-    return sub_69AD(handlers, de,a);
+    return stub_69AD(handlers, de,a);
 }
 
 
-SoundHandler1 sub_69AD(const SoundHandler1 handlers[], vu8 **de, u8 a) 
+SoundHandler1 stub_69AD(const SoundHandler1 handlers[], vu8 **de, u8 a) 
 {
     de++;
     a--;
@@ -4202,7 +4206,7 @@ SoundHandler1 sub_69AD(const SoundHandler1 handlers[], vu8 **de, u8 a)
     return *handlers[a];
 }
 
-u8 *sub_69AD_2(u8 *pointers[], vu8 **de, u8 a)
+u8 *stub_69AD_2(u8 *pointers[], vu8 **de, u8 a)
 {
     de++;
     a--;
@@ -4211,13 +4215,13 @@ u8 *sub_69AD_2(u8 *pointers[], vu8 **de, u8 a)
 }
 
 
-void sub_69BC()
+void stub_69BC()
 {
     //Unimplemented
 }
 
 //Copy from hl to sound wave pattern ram
-void sub_69C9(u8 *src)
+void stub_69C9(u8 *src)
 {
     for(int i=0; i<0x10; i++)
     {
@@ -4239,11 +4243,11 @@ void ResetSound()
     REG_NR51 = 0xFF;
     memory[0xDF78] = 0;
     
-    sub_69F8();
+    stub_69F8();
 }
 
 
-void sub_69F8()
+void stub_69F8()
 {
     REG_NR12 = 8;
     REG_NR22 = 8;
@@ -4257,7 +4261,7 @@ void sub_69F8()
     REG_NR30 = 0;
 }
 
-void sub_6A0E()
+void stub_6A0E()
 {
     //Unimplemented
     
@@ -4268,7 +4272,7 @@ void sub_6A0E()
         //6A15
         memory[0xDF9F] |= (1 << 7);
         
-        sub_69A9(off_6500, &de, *de)(de);
+        stub_69A9(off_6500, &de, *de)(de);
     }
     else
     {
@@ -4276,13 +4280,13 @@ void sub_6A0E()
         de++;
         if(*de)
         {
-            sub_69AD(off_6510, &de, *de)(de);
+            stub_69AD(off_6510, &de, *de)(de);
         }
     }
 }
 
 
-void sub_6A2E()
+void stub_6A2E()
 {
     //Unimplemented - Partial
     if(memory[0xDFF8] == 0)
@@ -4296,21 +4300,21 @@ void sub_6A2E()
 }
 
 
-void sub_6A4E()
+void stub_6A4E()
 {
     ResetSound();
 }
 
 
-void sub_6A52()
+void stub_6A52()
 {
-    //Unimplemented - Partial just call to sub_69AD to go
+    //Unimplemented - Partial just call to stub_69AD to go
     if(memory[0xDFE8] == 0)
         return;
     
     if(memory[0xDFE8] == 0xFF)
     {
-        sub_6A4E();
+        stub_6A4E();
         return;
     }
     
@@ -4320,15 +4324,15 @@ void sub_6A52()
     //ld      hl, off_6530
     //and     $1F
     //unused args?
-    //sub_69AD_2();
+    //stub_69AD_2();
     
-    sub_6B44();
+    stub_6B44();
     
-    sub_6A6D();
+    stub_6A6D();
 }
 
 
-void sub_6A6D()
+void stub_6A6D()
 {
     u8 temp = memory[0xDFE9];
     if(!temp)
@@ -4350,61 +4354,61 @@ void sub_6A6D()
 }
 
 
-void sub_6A96()
+void stub_6A96()
 {
     //Unimplemented
 }
 
 
-void sub_6B33()
+void stub_6B33()
 {
     //Unimplemented
 }
 
 
-void sub_6B3E()
+void stub_6B3E()
 {
     //Unimplemented
 }
 
 
-void sub_6B44()
+void stub_6B44()
 {
     //Unimplemented
 }
 
 
-void sub_6BEA()
+void stub_6BEA()
 {
     //Unimplemented
 }
 
 
-void sub_6BF6()
+void stub_6BF6()
 {
     //Unimplemented
 }
 
 
-void sub_6BFF()
+void stub_6BFF()
 {
     //Unimplemented
 }
 
 
-void sub_6C75()
+void stub_6C75()
 {
     //Unimplemented
 }
 
 
-void sub_6D8F()
+void stub_6D8F()
 {
     //Unimplemented
 }
 
 
-void sub_6D98()
+void stub_6D98()
 {
     //Unimplemented
 }
