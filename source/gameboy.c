@@ -103,24 +103,24 @@ void VBlank_Interrupt_Handler()
     }
     
     stub_2240();
-    stub_242C();
-    stub_2417();
-    stub_23FE();
-    stub_23EC();
-    stub_23DD();
-    stub_23CE();
-    stub_23BF();
-    stub_23B0();
-    stub_23A1();
-    stub_2392();
-    stub_2383();
-    stub_2358();
-    stub_2349();
-    stub_233A();
-    stub_232B();
-    stub_231C();
-    stub_230D();
-    stub_22FE();
+    UpdateBoardStage19();
+    UpdateBoardStage18();
+    UpdateBoardStage17();
+    UpdateBoardStage16();
+    UpdateBoardStage15();
+    UpdateBoardStage14();
+    UpdateBoardStage13();
+    UpdateBoardStage12();
+    UpdateBoardStage11();
+    UpdateBoardStage10();
+    UpdateBoardStage9();
+    UpdateBoardStage8();
+    UpdateBoardStage7();
+    UpdateBoardStage6();
+    UpdateBoardStage5();
+    UpdateBoardStage4();
+    UpdateBoardStage3();
+    UpdateBoardStage2();
     stub_1F32();
     OAM_DMA_Transfer();
     stub_192E();
@@ -130,10 +130,10 @@ void VBlank_Interrupt_Handler()
         if(hCurPieceState == 0x3)
         {
             //hl = $986D
-            stub_249B(GB_VRAM_TO_GBA_VRAM(0x986D));
+            PrintIngameScore(GB_VRAM_TO_GBA_VRAM(0x986D));
             memory[0xFFE0] = 1;
             //hl = $9C6D
-            stub_249B(GB_VRAM_TO_GBA_VRAM(0x9C6D));
+            PrintIngameScore(GB_VRAM_TO_GBA_VRAM(0x9C6D));
             memory[0xC0CE] = 0;
         }
     }
@@ -237,7 +237,7 @@ __attribute__ ((noreturn)) void GB_Main()
         
         memory[0xFFC0] = 0x37;
         memory[0xFFC1] = 0x1C;
-        gState = 0x24;
+        hState = 0x24;
         
         //Turn display on
         REG_DISPCNT = MODE_0 | BG0_ENABLE | OBJ_ON | WIN0_ON;
@@ -346,7 +346,7 @@ void GotoSpecificStateHandler(u32 idx)
 
 void GotoStateHandler()
 {
-    int idx = gState;
+    int idx = hState;
     GotoSpecificStateHandler(idx);
 }
 
@@ -363,7 +363,7 @@ void InitCopyrightScreen()
         memory[0xC300+i] = byte_64D0[i];
     
     gDelay = 0x7D;
-    gState = 0x25;    
+    hState = 0x25;    
     //while(1);
 }
 
@@ -375,7 +375,7 @@ void DelayStateHandler()
         return;
     
     //debugPrint("DelayStateHandler passed"); 
-    gState = 0x6; 
+    hState = 0x6; 
 }
 
 
@@ -389,7 +389,7 @@ void stub_419()
     memory[0xFF9B] = 0;
     memory[0xFFFB] = 0;
     memory[0xFF9F] = 0;
-    memory[0xFFE3] = 0;
+    hBoardUpdateState = 0;
     memory[0xFFE7] = 0;
     memory[0xFFC7] = 0;
     
@@ -424,12 +424,12 @@ void stub_419()
     //LCDC = $D3
     SET_LCDC(0xD3);
     
-    gState = 7;
+    hState = 7;
     gDelay = 0x7D;
     
     memory[0xFFC6] = 4;
     
-    if(memory[0xFFE4])
+    if(hDemo)
         return;
     
     memory[0xFFC6] = 0x13;
@@ -441,7 +441,7 @@ void stub_48C()
     //Unimplemented
     
     memory[0xFFC0] = 0x37;
-    memory[0xFFC2] = 0x09;
+    hTypeASelectedLevel = 0x09;
     
     memory[0xFFC5] = 0x00;
     memory[0xFFB0] = 0x00;
@@ -451,22 +451,22 @@ void stub_48C()
     memory[0xFFEB] = 0x63;
     memory[0xFFEC] = 0x30;
     
-    if(memory[0xFFE4] == 0x02)
+    if(hDemo == 0x02)
     {
         memory[0xFFC0] = 0x77;
-        memory[0xFFC3] = 0x09;
-        memory[0xFFC4] = 0x02;
+        hTypeBSelectedLevel = 0x09;
+        hTypeBSelectedHigh = 0x02;
         memory[0xFFEB] = 0x64;
         memory[0xFFEC] = 0x30;
         memory[0xFFB0] = 0x11;
-        memory[0xFFE4] = 0x1;
+        hDemo = 0x1;
     }
     else
     {
-        memory[0xFFE4] = 0x2;
+        hDemo = 0x2;
     }
     
-    gState = 0x0A;
+    hState = 0x0A;
     
     DisableLCD();
     
@@ -541,12 +541,12 @@ void stub_4E6()
             }
             else
             {
-                gState = 8;
+                hState = 8;
                 gDelay = 0;
-                memory[0xFFC2] = 0;
-                memory[0xFFC3] = 0;
-                memory[0xFFC4] = 0;
-                memory[0xFFE4] = 0;
+                hTypeASelectedLevel = 0;
+                hTypeBSelectedLevel = 0;
+                hTypeBSelectedHigh = 0;
+                hDemo = 0;
                 return;
             }
         }
@@ -561,12 +561,12 @@ void stub_4E6()
             
             if(memory[0xFFCB] == 0x29)
             {
-                gState = 0x2A;
+                hState = 0x2A;
                 gDelay = 0;
-                memory[0xFFC2] = 0;
-                memory[0xFFC3] = 0;
-                memory[0xFFC4] = 0;
-                memory[0xFFE4] = 0;
+                hTypeASelectedLevel = 0;
+                hTypeBSelectedLevel = 0;
+                hTypeBSelectedHigh = 0;
+                hDemo = 0;
                 return;
             }
             
@@ -580,12 +580,12 @@ void stub_4E6()
             }
             else
             {
-                gState = 0x2A;
+                hState = 0x2A;
                 gDelay = 0;
-                memory[0xFFC2] = 0;
-                memory[0xFFC3] = 0;
-                memory[0xFFC4] = 0;
-                memory[0xFFE4] = 0;
+                hTypeASelectedLevel = 0;
+                hTypeBSelectedLevel = 0;
+                hTypeBSelectedHigh = 0;
+                hDemo = 0;
                 return;
             }
         }
@@ -636,7 +636,7 @@ void stub_5F0()
 {
     //Unimplemented - Partial
     
-    if(!memory[0xFFE4])
+    if(!hDemo)
         return;
     
     if(memory[0xFFE9] != 0xFF)
@@ -664,7 +664,7 @@ void stub_5F0()
 
 void stub_620()
 {
-    if(!memory[0xFFE4])
+    if(!hDemo)
         return;
     
     if(memory[0xFFE9])
@@ -709,11 +709,11 @@ void stub_63E()
     memory[0xFFD3] = 0;
     memory[0xFFD4] = 0;
     memory[0xFFD5] = 0;
-    memory[0xFFE3] = 0;
+    hBoardUpdateState = 0;
     
     j_ResetSound();
     
-    gState = 0x2B;
+    hState = 0x2B;
 }
 
 
@@ -904,7 +904,7 @@ void stub_E11()
 
 void stub_E1A()
 {
-    gState = 0x1F;
+    hState = 0x1F;
     memory[0xFFCC] = 0x1F;
 }
 
@@ -942,7 +942,7 @@ void stub_F02()
 
 void stub_F0B()
 {
-    gState = 0x1F;
+    hState = 0x1F;
     memory[0xFFCC] = 0x1F;
 }
 
@@ -1015,7 +1015,7 @@ void stub_1176()
         }
     }
     
-    gState = 0x16;
+    hState = 0x16;
 }
 
 
@@ -1076,7 +1076,7 @@ void InitRocketScreen()
     //LCDC = $DB
     SET_LCDC(0xDB);
     gDelay = 0xBB;
-    gState = 0x27;
+    hState = 0x27;
     memory[0xDFE8] = 0x10;
 }
 
@@ -1112,7 +1112,7 @@ void HandleRocketScreen()
     memory[0xC210] = 0;
     memory[0xC220] = 0;
     gDelay = 0xFF;
-    gState = 0x28;
+    hState = 0x28;
 }
 
 
@@ -1124,7 +1124,7 @@ void stub_1260()
         return;
     }
     
-    gState = 0x29;
+    hState = 0x29;
     wPreviewPiece = 0x35;
     memory[0xC223] = 0x35;
     gDelay = 0xFF;
@@ -1141,7 +1141,7 @@ void stub_1280()
         return;
     }
     
-    gState = 0x02;
+    hState = 0x02;
     
     stub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D08), 0x2F);
     stub_1A63(GB_VRAM_TO_GBA_VRAM(0x9D09), 0x2F);
@@ -1176,7 +1176,7 @@ void stub_12A8()
     
     DrawCurrentBlock_C000(3);
     
-    gState = 3;
+    hState = 3;
     memory[0xDFF8] = 4;
 }
 
@@ -1197,7 +1197,7 @@ void stub_12DF()
             //12F4
             memory[0xFFC9] = 0x9C;
             memory[0xFFCA] = 0x82;
-            gState = 0x2C;
+            hState = 0x2C;
             return;
         }
     }
@@ -1241,7 +1241,7 @@ void stub_1317()
         return;
     
     gDelay = 0xFF;
-    gState = 0x2D;
+    hState = 0x2D;
 }
 
 
@@ -1256,7 +1256,7 @@ void stub_1369()
     
     //LCDC = $93
     SET_LCDC(0x93);
-    gState = 5;
+    hState = 5;
 }
 
 
@@ -1265,7 +1265,7 @@ void stub_137F()
     if(gDelay)
         return;
     
-    gState = 0x2E;
+    hState = 0x2E;
 }
 
 
@@ -1282,7 +1282,7 @@ void stub_1388()
     //LCDC = $DB
     SET_LCDC(0xDB);
     gDelay = 0xBB;
-    gState = 0x2F;
+    hState = 0x2F;
     memory[0xDFE8] = 0x10;
 }
 
@@ -1295,7 +1295,7 @@ void stub_13B5()
     memory[0xC210] = 0;
     memory[0xC220] = 0;
     gDelay = 0xA0;
-    gState = 0x30;
+    hState = 0x30;
 }
 
 
@@ -1303,7 +1303,7 @@ void stub_13CB()
 {
     if(gDelay)
     {
-        gState = 0x31;
+        hState = 0x31;
         gDelay = 0x80;
         FillPlayArea(0x2F);
     }
@@ -1339,7 +1339,7 @@ void stub_13E2()
     
     DrawCurrentBlock_C000(3);
     
-    gState = 0x32;
+    hState = 0x32;
     memory[0xDFF8] = 4;
 }
 
@@ -1355,7 +1355,7 @@ void stub_1419()
         
         if(wCurPieceY == 0xE0)
         {
-            gState = 0x33;
+            hState = 0x33;
             return;
         }
     }
@@ -1379,7 +1379,7 @@ void stub_1449()
     stub_22F3();
     //LCDC = $93
     SET_LCDC(0x93);
-    gState = 0x10;
+    hState = 0x10;
 }
 
 
@@ -1442,7 +1442,7 @@ void stub_14B3()
     
     //LCDC = $D3
     SET_LCDC(0xD3);
-    gState = 0x0E;
+    hState = 0x0E;
 }
 
 void stub_14F0()
@@ -1494,7 +1494,7 @@ void stub_1514()
     {
         if(!memory[0xFFC5])
         {
-            gState = 0x0E;
+            hState = 0x0E;
             stub_15C2(&wCurPieceY, 0);
         }
     }
@@ -1658,11 +1658,11 @@ void stub_15C7(vu8 *recursion_level)
     
     if(memory[0xFFC0] == 0x37)
     {
-        gState = 0x10;
+        hState = 0x10;
     }
     else
     {
-        gState = 0x12;
+        hState = 0x12;
     }
     
     stub_15C2(recursion_level, 0);
@@ -1671,7 +1671,7 @@ void stub_15C7(vu8 *recursion_level)
 
 void stub_15DB(vu8 *recursion_level)
 {
-    gState = 0xF;
+    hState = 0xF;
     stub_15C2(recursion_level, 0);
 }
 
@@ -1686,7 +1686,7 @@ void stub_15DF()
     
     ClearA0BytesFromC000();
     CopyTilemapSection_Width_6(byte_272F, &memory[0xC200], 1);
-    stub_17B2(word_1679, &wCurPieceY, memory[0xFFC2]);
+    stub_17B2(word_1679, &wCurPieceY, hTypeASelectedLevel);
     DrawCurrentBlock_C000_R2();
     
     stub_17F9();
@@ -1694,11 +1694,11 @@ void stub_15DF()
     
     //LCDC = $D3
     SET_LCDC(0xD3);
-    gState = 0x11;
+    hState = 0x11;
     
     if(memory[0xFFC7])
     {
-       gState = 0x15; 
+       hState = 0x15; 
     }
     else
     {
@@ -1716,22 +1716,22 @@ void stub_1623()
     
     if(hJoyPressed & GBKEY_START)
     {
-        gState = 0x0A;
+        hState = 0x0A;
     }
     else if(hJoyPressed & GBKEY_A)
     {
-        gState = 0x0A;
+        hState = 0x0A;
     }
     else if(hJoyPressed & GBKEY_RIGHT)
     {
-        if(memory[0xFFC2] == 0x09)
+        if(hTypeASelectedLevel == 0x09)
         {
             DrawCurrentBlock_C000_R2();
         }
         else
         {
-            memory[0xFFC2]++;
-            stub_17B2(word_1679, &wCurPieceY, memory[0xFFC2]);
+            hTypeASelectedLevel++;
+            stub_17B2(word_1679, &wCurPieceY, hTypeASelectedLevel);
             stub_17F9();
             
             DrawCurrentBlock_C000_R2();
@@ -1739,14 +1739,14 @@ void stub_1623()
     }
     else if(hJoyPressed & GBKEY_LEFT)
     {
-        if(memory[0xFFC2] == 0x00)
+        if(hTypeASelectedLevel == 0x00)
         {
             DrawCurrentBlock_C000_R2();
         }
         else
         {
-            memory[0xFFC2]--;
-            stub_17B2(word_1679, &wCurPieceY, memory[0xFFC2]);
+            hTypeASelectedLevel--;
+            stub_17B2(word_1679, &wCurPieceY, hTypeASelectedLevel);
             stub_17F9();
             
             DrawCurrentBlock_C000_R2();
@@ -1754,14 +1754,14 @@ void stub_1623()
     }
     else if(hJoyPressed & GBKEY_UP)
     {
-        if(memory[0xFFC2] < 5)
+        if(hTypeASelectedLevel < 5)
         {
             DrawCurrentBlock_C000_R2();
         }
         else
         {
-            memory[0xFFC2] -= 5;
-            stub_17B2(word_1679, &wCurPieceY, memory[0xFFC2]);
+            hTypeASelectedLevel -= 5;
+            stub_17B2(word_1679, &wCurPieceY, hTypeASelectedLevel);
             stub_17F9();
             
             DrawCurrentBlock_C000_R2();
@@ -1769,14 +1769,14 @@ void stub_1623()
     }
     else if(hJoyPressed & GBKEY_DOWN)
     {
-        if(memory[0xFFC2] >= 5)
+        if(hTypeASelectedLevel >= 5)
         {
             DrawCurrentBlock_C000_R2();
         }
         else
         {
-            memory[0xFFC2] += 5;
-            stub_17B2(word_1679, &wCurPieceY, memory[0xFFC2]);
+            hTypeASelectedLevel += 5;
+            stub_17B2(word_1679, &wCurPieceY, hTypeASelectedLevel);
             stub_17F9();
             
             DrawCurrentBlock_C000_R2();
@@ -1800,8 +1800,8 @@ void stub_168D()
     
     ClearA0BytesFromC000();
     CopyTilemapSection_Width_6(byte_2735, &memory[0xC200], 1);
-    stub_17B2(word_1736, &wCurPieceY, memory[0xFFC3]);
-    stub_17B2(word_17A5, &wPreviewPieceY, memory[0xFFC4]);
+    stub_17B2(word_1736, &wCurPieceY, hTypeBSelectedLevel);
+    stub_17B2(word_17A5, &wPreviewPieceY, hTypeBSelectedHigh);
     DrawCurrentBlock_C000_R2();
     
     stub_1813();
@@ -1809,11 +1809,11 @@ void stub_168D()
     
     //LCDC = $D3
     SET_LCDC(0xD3);
-    gState = 0x13;
+    hState = 0x13;
     
     if(memory[0xFFC7])
     {
-       gState = 0x15; 
+       hState = 0x15; 
     }
     else
     {
@@ -1824,7 +1824,7 @@ void stub_168D()
 
 void stub_16D9(vu8 *de, u32 newState)
 {
-    gState = newState;
+    hState = newState;
     *de = 0;
 }
 
@@ -1850,14 +1850,14 @@ void stub_16DE()
     }
     else if(hJoyPressed & GBKEY_RIGHT)
     {
-        if(memory[0xFFC3] == 0x09)
+        if(hTypeBSelectedLevel == 0x09)
         {
             DrawCurrentBlock_C000_R2();
         }
         else
         {
-            memory[0xFFC3]++;
-            stub_17B2(word_1736, &wCurPieceY, memory[0xFFC3]);
+            hTypeBSelectedLevel++;
+            stub_17B2(word_1736, &wCurPieceY, hTypeBSelectedLevel);
             stub_1813();
             
             DrawCurrentBlock_C000_R2();
@@ -1865,14 +1865,14 @@ void stub_16DE()
     }
     else if(hJoyPressed & GBKEY_LEFT)
     {
-        if(memory[0xFFC3] == 0x00)
+        if(hTypeBSelectedLevel == 0x00)
         {
             DrawCurrentBlock_C000_R2();
         }
         else
         {
-            memory[0xFFC3]--;
-            stub_17B2(word_1736, &wCurPieceY, memory[0xFFC3]);
+            hTypeBSelectedLevel--;
+            stub_17B2(word_1736, &wCurPieceY, hTypeBSelectedLevel);
             stub_1813();
             
             DrawCurrentBlock_C000_R2();
@@ -1880,14 +1880,14 @@ void stub_16DE()
     }
     else if(hJoyPressed & GBKEY_UP)
     {
-        if(memory[0xFFC3] < 5)
+        if(hTypeBSelectedLevel < 5)
         {
             DrawCurrentBlock_C000_R2();
         }
         else
         {
-            memory[0xFFC3] -= 5;
-            stub_17B2(word_1736, &wCurPieceY, memory[0xFFC3]);
+            hTypeBSelectedLevel -= 5;
+            stub_17B2(word_1736, &wCurPieceY, hTypeBSelectedLevel);
             stub_1813();
             
             DrawCurrentBlock_C000_R2();
@@ -1895,14 +1895,14 @@ void stub_16DE()
     }
     else if(hJoyPressed & GBKEY_DOWN)
     {
-        if(memory[0xFFC3] >= 5)
+        if(hTypeBSelectedLevel >= 5)
         {
             DrawCurrentBlock_C000_R2();
         }
         else
         {
-            memory[0xFFC3] += 5;
-            stub_17B2(word_1736, &wCurPieceY, memory[0xFFC3]);
+            hTypeBSelectedLevel += 5;
+            stub_17B2(word_1736, &wCurPieceY, hTypeBSelectedLevel);
             stub_1813();
             
             DrawCurrentBlock_C000_R2();
@@ -1994,10 +1994,10 @@ void stub_1813()
     
     u32 mem = 0xD000;
     
-    u32 idx = memory[0xFFC3];
+    u32 idx = hTypeBSelectedLevel;
     mem += (idx*0xA2);
     
-    u32 idx2 = memory[0xFFC4];
+    u32 idx2 = hTypeBSelectedHigh;
     mem += (idx2*0x1B);
     
     mem++;
@@ -2121,7 +2121,7 @@ void stub_1A6B()
     stub_204D();
     stub_26A5();
     
-    memory[0xFFE3] = 0;
+    hBoardUpdateState = 0;
     memory[0xFFE7] = 0;
     
     ClearA0BytesFromC000();
@@ -2130,7 +2130,7 @@ void stub_1A6B()
     {
         //B-Type
         memory[0xFFE6] = 0x50;
-        hLevel = memory[0xFFC3];
+        hLevel = hTypeBSelectedLevel;
         CopyTilemapSection_Height_12_Dest_9800(MainGame_TypeB_Tilemap);
         CopyTilemapSection_Height_12(MainGame_TypeB_Tilemap, GB_VRAM_TO_GBA_VRAM(0x9C00));
     }
@@ -2138,7 +2138,7 @@ void stub_1A6B()
     {
         //A-Type
         memory[0xFFE6] = 0xF1;
-        hLevel = memory[0xFFC2];
+        hLevel = hTypeASelectedLevel;
         CopyTilemapSection_Height_12_Dest_9800(MainGame_TypeA_Tilemap);
         CopyTilemapSection_Height_12(MainGame_TypeA_Tilemap, GB_VRAM_TO_GBA_VRAM(0x9C00));
     }
@@ -2200,22 +2200,22 @@ void stub_1A6B()
         //1B16
         hRemainingFrameDelay = 0x34;
         
-        *GB_VRAM_TO_GBA_VRAM(0x98B0) = memory[0xFFC4];
-        *GB_VRAM_TO_GBA_VRAM(0x9CB0) = memory[0xFFC4];
+        *GB_VRAM_TO_GBA_VRAM(0x98B0) = hTypeBSelectedHigh;
+        *GB_VRAM_TO_GBA_VRAM(0x9CB0) = hTypeBSelectedHigh;
         
-        if(memory[0xFFC4])
+        if(hTypeBSelectedHigh)
         {
             //1B26
-            if(memory[0xFFE4])
+            if(hDemo)
             {
                 //1B2C
-                //b = memory[0xFFC4]
+                //b = hTypeBSelectedHigh
                 InitDemoFillHighLines();
             }
             else
             {
                 //1B31
-                //a = memory[0xFFC4]
+                //a = hTypeBSelectedHigh
                 //de = $FFC0
                 //hl = $9A02
                 FillGarbageRows();
@@ -2226,7 +2226,7 @@ void stub_1A6B()
     //1B3B
     //LCDC = $D3
     SET_LCDC(0xD3);
-    gState = 0;
+    hState = 0;
 }
 
 
@@ -2309,7 +2309,7 @@ void stub_1C68()
         GB_Main();
     }
     
-    if(memory[0xFFE4])
+    if(hDemo)
     {
         return;
     }
@@ -2440,7 +2440,7 @@ void LoseHandler()
     FillPlayArea(0x87);
     
     gDelay = 0x46;
-    gState = 0x0D;
+    hState = 0x0D;
 }
 
 
@@ -2514,7 +2514,7 @@ void stub_1F71()
     if(!hJoyPressed)
         return;
     
-    gState = 2;
+    hState = 2;
 }
 
 
@@ -2544,10 +2544,10 @@ void AddScoreForTetris()
     if(memory[0xFFC0] != 0x37)
         return;
     
-    if(gState)
+    if(hState)
         return;
     
-    if(memory[0xFFE3] != 0x05)
+    if(hBoardUpdateState != 0x05)
         return;
     
     u32 points;
@@ -2590,7 +2590,7 @@ void AddScoreForTetris()
 void FillPlayArea(u8 val)
 {
     //Unimplemented - Partial
-    memory[0xFFE3] = 2;
+    hBoardUpdateState = 2;
     
     stub_2038(val);
 }
@@ -2633,7 +2633,7 @@ void GetNextPiece()
     u8 masked_c = wPreviewPiece & 0xFC;
     u8 val = 0;
     
-    if(memory[0xFFE4])
+    if(hDemo)
     {
         //207F
         u16 adr = 0xC300 | memory[0xFFB0];
@@ -2807,7 +2807,7 @@ void stub_2240()
         //2280
         memory[0xFF9C] = 0;
         gDelay = 13;
-        memory[0xFFE3] = 1;
+        hBoardUpdateState = 1;
         
         //228A
         hCurPieceState = 0;
@@ -2835,85 +2835,85 @@ void stub_22F3()
 }
 
 
-void stub_22FE()
+void UpdateBoardStage2()
 {
-    if(memory[0xFFE3] != 0x02)
+    if(hBoardUpdateState != 0x02)
         return;
     
     //hl = $9A22
     //de = $CA22
-    stub_2506(&memory[0xCA22], GB_VRAM_TO_GBA_VRAM(0x9A22));
+    UpdateBoardRow(&memory[0xCA22], GB_VRAM_TO_GBA_VRAM(0x9A22));
 }
 
 
-void stub_230D()
+void UpdateBoardStage3()
 {
-    if(memory[0xFFE3] != 0x03)
+    if(hBoardUpdateState != 0x03)
         return;
     
     //hl = $9A02
     //de = $CA02
-    stub_2506(&memory[0xCA02], GB_VRAM_TO_GBA_VRAM(0x9A02));
+    UpdateBoardRow(&memory[0xCA02], GB_VRAM_TO_GBA_VRAM(0x9A02));
 }
 
 
-void stub_231C()
+void UpdateBoardStage4()
 {
-    if(memory[0xFFE3] != 0x04)
+    if(hBoardUpdateState != 0x04)
         return;
     
     //hl = $99E2
     //de = $C9E2
-    stub_2506(&memory[0xCA02], GB_VRAM_TO_GBA_VRAM(0x99E2));
+    UpdateBoardRow(&memory[0xCA02], GB_VRAM_TO_GBA_VRAM(0x99E2));
 }
 
 
-void stub_232B()
+void UpdateBoardStage5()
 {
-    if(memory[0xFFE3] != 0x05)
+    if(hBoardUpdateState != 0x05)
         return;
     
     //hl = $99C2
     //de = $C9C2
-    stub_2506(&memory[0xC9C2], GB_VRAM_TO_GBA_VRAM(0x99C2));
+    UpdateBoardRow(&memory[0xC9C2], GB_VRAM_TO_GBA_VRAM(0x99C2));
 }
 
 
-void stub_233A()
+void UpdateBoardStage6()
 {
-    if(memory[0xFFE3] != 0x06)
+    if(hBoardUpdateState != 0x06)
         return;
     
     //hl = $99A2
     //de = $C9A2
-    stub_2506(&memory[0xC9A2], GB_VRAM_TO_GBA_VRAM(0x99A2));
+    UpdateBoardRow(&memory[0xC9A2], GB_VRAM_TO_GBA_VRAM(0x99A2));
 }
 
 
-void stub_2349()
+void UpdateBoardStage7()
 {
-    if(memory[0xFFE3] != 0x07)
+    if(hBoardUpdateState != 0x07)
         return;
     
     //hl = $9982
     //de = $C982
-    stub_2506(&memory[0xC982], GB_VRAM_TO_GBA_VRAM(0x9982));
+    UpdateBoardRow(&memory[0xC982], GB_VRAM_TO_GBA_VRAM(0x9982));
 }
 
 
-void stub_2358()
+void UpdateBoardStage8()
 {
-    if(memory[0xFFE3] != 0x08)
+    if(hBoardUpdateState != 0x08)
         return;
     
     //hl = $9962
     //de = $C962
-    stub_2506(&memory[0xC962], GB_VRAM_TO_GBA_VRAM(0x9962));
+    UpdateBoardRow(&memory[0xC962], GB_VRAM_TO_GBA_VRAM(0x9962));
     
     if(memory[0xFFC5])
     {
         //2375
-        if(gState != 0x1A)
+        if(hState != 0x1A)
         {
             if(memory[0xFFD4])
             {
@@ -2924,7 +2924,7 @@ void stub_2358()
     else
     {
         //236D
-        if(!gState)
+        if(!hState)
         {
             memory[0xDFF8] = 1;
         }
@@ -2932,136 +2932,216 @@ void stub_2358()
 }
 
 
-void stub_2383()
+void UpdateBoardStage9()
 {
-    if(memory[0xFFE3] != 0x09)
+    if(hBoardUpdateState != 0x09)
         return;
     
     //hl = $9942
     //de = $C942
-    stub_2506(&memory[0xC942], GB_VRAM_TO_GBA_VRAM(0x9942));
+    UpdateBoardRow(&memory[0xC942], GB_VRAM_TO_GBA_VRAM(0x9942));
 }
 
 
-void stub_2392()
+void UpdateBoardStage10()
 {
-    if(memory[0xFFE3] != 0x0A)
+    if(hBoardUpdateState != 0x0A)
         return;
     
     //hl = $9922
     //de = $C922
-    stub_2506(&memory[0xC922], GB_VRAM_TO_GBA_VRAM(0x9922));
+    UpdateBoardRow(&memory[0xC922], GB_VRAM_TO_GBA_VRAM(0x9922));
 }
 
 
-void stub_23A1()
+void UpdateBoardStage11()
 {
-    if(memory[0xFFE3] != 0x0B)
+    if(hBoardUpdateState != 0x0B)
         return;
     
     //hl = $9902
     //de = $C902
-    stub_2506(&memory[0xC902], GB_VRAM_TO_GBA_VRAM(0x9902));
+    UpdateBoardRow(&memory[0xC902], GB_VRAM_TO_GBA_VRAM(0x9902));
 }
 
 
-void stub_23B0()
+void UpdateBoardStage12()
 {
-    if(memory[0xFFE3] != 0x0C)
+    if(hBoardUpdateState != 0x0C)
         return;
     
     //hl = $98E2
     //de = $C8E2
-    stub_2506(&memory[0xC8E2], GB_VRAM_TO_GBA_VRAM(0x98E2));
+    UpdateBoardRow(&memory[0xC8E2], GB_VRAM_TO_GBA_VRAM(0x98E2));
 }
 
 
-void stub_23BF()
+void UpdateBoardStage13()
 {
-    if(memory[0xFFE3] != 0x0D)
+    if(hBoardUpdateState != 0x0D)
         return;
     
     //hl = $98C2
     //de = $C8C2
-    stub_2506(&memory[0xC8C2], GB_VRAM_TO_GBA_VRAM(0x98C2));
+    UpdateBoardRow(&memory[0xC8C2], GB_VRAM_TO_GBA_VRAM(0x98C2));
 }
 
 
-void stub_23CE()
+void UpdateBoardStage14()
 {
-    if(memory[0xFFE3] != 0x0E)
+    if(hBoardUpdateState != 0x0E)
         return;
     
     //hl = $98A2
     //de = $C8A2
-    stub_2506(&memory[0xC8A2], GB_VRAM_TO_GBA_VRAM(0x98A2));
+    UpdateBoardRow(&memory[0xC8A2], GB_VRAM_TO_GBA_VRAM(0x98A2));
 }
 
 
-void stub_23DD()
+void UpdateBoardStage15()
 {
-    if(memory[0xFFE3] != 0x0F)
+    if(hBoardUpdateState != 0x0F)
         return;
     
     //hl = $9882
     //de = $C882
-    stub_2506(&memory[0xC882], GB_VRAM_TO_GBA_VRAM(0x9882));
+    UpdateBoardRow(&memory[0xC882], GB_VRAM_TO_GBA_VRAM(0x9882));
 }
 
 
-void stub_23EC()
+void UpdateBoardStage16()
 {
-    if(memory[0xFFE3] != 0x10)
+    if(hBoardUpdateState != 0x10)
         return;
     
     //hl = $9862
     //de = $C862
-    stub_2506(&memory[0xC862], GB_VRAM_TO_GBA_VRAM(0x9862));
+    UpdateBoardRow(&memory[0xC862], GB_VRAM_TO_GBA_VRAM(0x9862));
     
     stub_24AB();
 }
 
 
-void stub_23FE()
+void UpdateBoardStage17()
 {
-    if(memory[0xFFE3] != 0x11)
+    if(hBoardUpdateState != 0x11)
         return;
     
     //hl = $9842
     //de = $C842
-    stub_2506(&memory[0xC842], GB_VRAM_TO_GBA_VRAM(0x9842));
+    UpdateBoardRow(&memory[0xC842], GB_VRAM_TO_GBA_VRAM(0x9842));
     
     //hl = $9C6D
-    stub_249B(GB_VRAM_TO_GBA_VRAM(0x9C6D));
+    PrintIngameScore(GB_VRAM_TO_GBA_VRAM(0x9C6D));
     
     memory[0xFFE0] = 1;
 }
 
 
-void stub_2417()
+void UpdateBoardStage18()
 {
-    //Unimplemented - Partial
-    if(memory[0xFFE3] != 0x12)
+    if(hBoardUpdateState != 0x12)
         return;
     
     //hl = $9822
     //de = $C822
-    stub_2506(&memory[0xC822], GB_VRAM_TO_GBA_VRAM(0x9822));
+    UpdateBoardRow(&memory[0xC822], GB_VRAM_TO_GBA_VRAM(0x9822));
     
     //hl = $986D
-    stub_249B(GB_VRAM_TO_GBA_VRAM(0x986D));
+    PrintIngameScore(GB_VRAM_TO_GBA_VRAM(0x986D));
 }
 
 
-void stub_242C()
+void UpdateBoardStage19()
 {
-    //Unimplemented
+    if(hBoardUpdateState != 0x13)
+        return;
+    
+    wPreventHoldDown = hBoardUpdateState;
+    
+    //hl = $9802
+    //de = $C802
+    UpdateBoardRow(&memory[0xC802], GB_VRAM_TO_GBA_VRAM(0x9802));
+    
+    hBoardUpdateState = 0x00;
+    
+    if(memory[0xFFC5])
+    {
+        //2447
+        if(hState)
+            return;
+    }
+    else
+    {
+        //248F
+        if(hState != 0x1A)
+        {
+            return;
+        }
+        
+        if(memory[0xFFD4])
+        {
+            //2497
+            memory[0xFFD4] = 0;
+            return;
+        }
+    }    
+    
+    //2449
+    u16 *tilemap = GB_VRAM_TO_GBA_VRAM(0x994E);
+    vu8 *score = &memory[0xFF9F];
+    u16 numBytes = 0x02;
+    
+    if(memory[0xFFC0] != 0x37)
+    {
+        tilemap = GB_VRAM_TO_GBA_VRAM(0x9950);
+        score = &hNumFinishedLines;
+        numBytes = 0x01;
+    }
+    
+    //245F
+    DrawScore(score, tilemap, numBytes);
+    
+    if(memory[0xFFC0] == 0x37)
+    {
+        GetNextPiece();
+        return;
+    }
+    
+    //2468
+    if(hNumFinishedLines)
+    {
+        GetNextPiece();
+        return;
+    }
+    
+    //246D
+    gDelay = 0x64;
+    memory[0xDFE8] = 0x02;
+    
+    if(!memory[0xFFC5])
+    {
+        //247E
+        if(hTypeBSelectedLevel == 0x09)
+        {
+            hState = 0x22;
+        }
+        else
+        {
+            hState = 0x05;
+        }
+    }
+    else
+    {
+        //247B
+        memory[0xFFD5] = memory[0xFFC5];
+    }
 }
 
 
-void stub_249B(u16 *tilemap)
+void PrintIngameScore(u16 *tilemap)
 {
-    if(gState)
+    if(hState)
         return;
     
     if(memory[0xFFC0] == 0x37)
@@ -3078,7 +3158,7 @@ void stub_24AB()
 }
 
 
-void stub_2506(vu8 *src, u16 *dst)
+void UpdateBoardRow(vu8 *src, u16 *dst)
 {
     //Unimplemented
     //DE = src
@@ -3089,7 +3169,7 @@ void stub_2506(vu8 *src, u16 *dst)
         *dst++ = *src++;
     }
     
-    memory[0xFFE3]++;
+    hBoardUpdateState++;
 }
 
 
@@ -3547,7 +3627,7 @@ void stub_2858(u8 *src, vu8 *dst)
             u8 val = src[src_idx];
             if(val == 0xFF)
             {
-                memory[0xFFE3] = 2;
+                hBoardUpdateState = 2;
                 return;
             }
             

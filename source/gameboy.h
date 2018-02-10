@@ -34,6 +34,8 @@ typedef void (*SoundHandler1)(vu8 *);
 #define REG_WAVERAM     ( (vu8  *) (REG_BASE + 0x90))
 #define REG_DIV         (*(vu8  *) (REG_BASE + 0x108))
 
+#define wPreventHoldDown                                memory[0xC0C7]
+
 #define wCurPieceY                                      memory[0xC201]
 #define wCurPieceX                                      memory[0xC202]
 #define wCurPiece                                       memory[0xC203]
@@ -62,7 +64,14 @@ typedef void (*SoundHandler1)(vu8 *);
 #define hP2High                                         memory[0xFFAD]
 #define hNextPreviewPiece                               memory[0xFFAE]
 #define hDemoNextPiecePtr                               memory[0xFFAF]
-#define gState                                          memory[0xFFE1]
+#define hTypeASelectedLevel                             memory[0xFFC2]
+#define hTypeBSelectedLevel                             memory[0xFFC3]
+#define hTypeBSelectedHigh                              memory[0xFFC4]
+#define hState                                          memory[0xFFE1]
+#define hVBlankCounter                                  memory[0xFFE2]
+#define hBoardUpdateState                               memory[0xFFE3]
+#define hDemo                                           memory[0xFFE4]
+#define hCurPieceDropCount                              memory[0xFFE5]
 
 #define GB_VRAM_TO_GBA_VRAM(adr)  (((u16*)(VRAM+0x9800)) + (adr-0x9800))
 #define SET_LCDC(val) \
@@ -252,27 +261,27 @@ void HandleFinishedRows();
 void stub_2240();
 void MoveUpFinishedRows();
 void stub_22F3();
-void stub_22FE();
-void stub_230D();
-void stub_231C();
-void stub_232B();
-void stub_233A();
-void stub_2349();
-void stub_2358();
-void stub_2383();
-void stub_2392();
-void stub_23A1();
-void stub_23B0();
-void stub_23BF();
-void stub_23CE();
-void stub_23DD();
-void stub_23EC();
-void stub_23FE();
-void stub_2417();
-void stub_242C();
-void stub_249B();
+void UpdateBoardStage2();
+void UpdateBoardStage3();
+void UpdateBoardStage4();
+void UpdateBoardStage5();
+void UpdateBoardStage6();
+void UpdateBoardStage7();
+void UpdateBoardStage8();
+void UpdateBoardStage9();
+void UpdateBoardStage10();
+void UpdateBoardStage11();
+void UpdateBoardStage12();
+void UpdateBoardStage13();
+void UpdateBoardStage14();
+void UpdateBoardStage15();
+void UpdateBoardStage16();
+void UpdateBoardStage17();
+void UpdateBoardStage18();
+void UpdateBoardStage19();
+void PrintIngameScore();
 void stub_24AB();
-void stub_2506(vu8 *src, u16 *dst);
+void UpdateBoardRow(vu8 *src, u16 *dst);
 void HandleRotationAndShift();
 u8 CheckSpriteCollision();
 void LockCurPiece();
