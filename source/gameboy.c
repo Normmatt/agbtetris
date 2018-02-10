@@ -23,7 +23,7 @@ vu8 memory[0x10000] EWRAM_DATA;
 void stub_153()
 {
     //Unimplemented - Unused?
-    stub_2A2B();
+    SpritePosToBoardPos();
 }
 
 
@@ -102,7 +102,7 @@ void VBlank_Interrupt_Handler()
         }
     }
     
-    stub_2240();
+    HandleRowBlink();
     UpdateBoardStage19();
     UpdateBoardStage18();
     UpdateBoardStage17();
@@ -139,8 +139,8 @@ void VBlank_Interrupt_Handler()
     }
     
     memory[0xC0CE]++;
-    REG_BG0HOFS = 0;
-    REG_BG0VOFS = 0;
+    REG_SCX = 0;
+    REG_SCY = 0;
     hVBlankSignal = 1;    
 }
 
@@ -165,8 +165,8 @@ __attribute__ ((noreturn)) void GB_Main()
         
         irqEnable(IRQ_VBLANK);
         
-        REG_BG0HOFS = 0;
-        REG_BG0VOFS = 0;
+        REG_SCX = 0;
+        REG_SCY = 0;
         
         memory[0xFFA4] = 0;
         
@@ -229,7 +229,7 @@ __attribute__ ((noreturn)) void GB_Main()
         for(int i=0; i<0x80; i++)
             memory[(0xFFFE)-i] = 0;
         
-        stub_27E9();
+        FillTileMap0();
         ResetSound();
         
         irqEnable(IRQ_VBLANK);
@@ -264,8 +264,8 @@ __attribute__ ((noreturn)) void GB_Main()
             if(keysDown() == (KEY_A|KEY_B|KEY_SELECT|KEY_START))
                 break;
             
-            if (gDelay != 0) {
-                gDelay -= 1;
+            if (hDelay != 0) {
+                hDelay -= 1;
             }
             if (memory[0xFFA7] != 0) {
                 memory[0xFFA7] -= 1;
@@ -362,7 +362,7 @@ void InitCopyrightScreen()
     for(int i=0; i<sizeof(byte_64D0); i++)
         memory[0xC300+i] = byte_64D0[i];
     
-    gDelay = 0x7D;
+    hDelay = 0x7D;
     hState = 0x25;    
     //while(1);
 }
@@ -371,7 +371,7 @@ void InitCopyrightScreen()
 void DelayStateHandler()
 {
     //debugPrint("DelayStateHandler called"); 
-    if(gDelay != 0)
+    if(hDelay != 0)
         return;
     
     //debugPrint("DelayStateHandler passed"); 
@@ -425,7 +425,7 @@ void stub_419()
     SET_LCDC(0xD3);
     
     hState = 7;
-    gDelay = 0x7D;
+    hDelay = 0x7D;
     
     memory[0xFFC6] = 4;
     
@@ -491,7 +491,7 @@ void stub_4E6()
 {
     //Seems to handle the input on the title screen
     
-    if(gDelay == 0)
+    if(hDelay == 0)
     {
         memory[0xFFC6]--;
         if(memory[0xFFC6] == 0)
@@ -499,7 +499,7 @@ void stub_4E6()
             stub_48C();
             return;
         }
-        gDelay = 0x7D;
+        hDelay = 0x7D;
     }
     
     stub_B07();
@@ -542,7 +542,7 @@ void stub_4E6()
             else
             {
                 hState = 8;
-                gDelay = 0;
+                hDelay = 0;
                 hTypeASelectedLevel = 0;
                 hTypeBSelectedLevel = 0;
                 hTypeBSelectedHigh = 0;
@@ -562,7 +562,7 @@ void stub_4E6()
             if(memory[0xFFCB] == 0x29)
             {
                 hState = 0x2A;
-                gDelay = 0;
+                hDelay = 0;
                 hTypeASelectedLevel = 0;
                 hTypeBSelectedLevel = 0;
                 hTypeBSelectedHigh = 0;
@@ -581,7 +581,7 @@ void stub_4E6()
             else
             {
                 hState = 0x2A;
-                gDelay = 0;
+                hDelay = 0;
                 hTypeASelectedLevel = 0;
                 hTypeBSelectedLevel = 0;
                 hTypeBSelectedHigh = 0;
@@ -995,7 +995,7 @@ void stub_113C()
 void stub_1176()
 {
     //IE = 1;
-    if(gDelay)
+    if(hDelay)
         return;
     
     ClearA0BytesFromC000();
@@ -1075,7 +1075,7 @@ void InitRocketScreen()
     
     //LCDC = $DB
     SET_LCDC(0xDB);
-    gDelay = 0xBB;
+    hDelay = 0xBB;
     hState = 0x27;
     memory[0xDFE8] = 0x10;
 }
@@ -1106,19 +1106,19 @@ void stub_1216()
 
 void HandleRocketScreen()
 {
-    if(gDelay)
+    if(hDelay)
         return;
     
     memory[0xC210] = 0;
     memory[0xC220] = 0;
-    gDelay = 0xFF;
+    hDelay = 0xFF;
     hState = 0x28;
 }
 
 
 void stub_1260()
 {
-    if(gDelay)
+    if(hDelay)
     {
         stub_145E();
         return;
@@ -1127,7 +1127,7 @@ void stub_1260()
     hState = 0x29;
     wPreviewPiece = 0x35;
     memory[0xC223] = 0x35;
-    gDelay = 0xFF;
+    hDelay = 0xFF;
     
     FillPlayArea(0x2F);
 }
@@ -1135,7 +1135,7 @@ void stub_1260()
 
 void stub_1280()
 {
-    if(gDelay)
+    if(hDelay)
     {
         stub_145E();
         return;
@@ -1152,13 +1152,13 @@ void stub_1280()
 
 void stub_12A8()
 {
-    if(gDelay)
+    if(hDelay)
     {
         stub_145E();
         return;
     }
     
-    gDelay = 0x0A;
+    hDelay = 0x0A;
     
     wCurPieceY--;
     
@@ -1183,11 +1183,11 @@ void stub_12A8()
 
 void stub_12DF()
 {
-    if(!gDelay)
+    if(!hDelay)
     {
         //12E4
         
-        gDelay = 0x0A;
+        hDelay = 0x0A;
     
         wPreviewPieceY--;
         wCurPieceY--;
@@ -1219,10 +1219,10 @@ void stub_1317()
 {
     //Prints CONGRATULATIONS! after rocket scene
     
-    if(gDelay)
+    if(hDelay)
         return;
     
-    gDelay = 0x06; //Maybe this should be extended on GBA?
+    hDelay = 0x06; //Maybe this should be extended on GBA?
     
     //131F
     u16 adr = memory[0xFFC9] << 8 | memory[0xFFCA];
@@ -1240,14 +1240,14 @@ void stub_1317()
     if(memory[0xFFCA] != 0x92)
         return;
     
-    gDelay = 0xFF;
+    hDelay = 0xFF;
     hState = 0x2D;
 }
 
 
 void stub_1369()
 {
-    if(gDelay)
+    if(hDelay)
         return;
     
     DisableLCD();
@@ -1262,7 +1262,7 @@ void stub_1369()
 
 void stub_137F()
 {
-    if(gDelay)
+    if(hDelay)
         return;
     
     hState = 0x2E;
@@ -1281,7 +1281,7 @@ void stub_1388()
     
     //LCDC = $DB
     SET_LCDC(0xDB);
-    gDelay = 0xBB;
+    hDelay = 0xBB;
     hState = 0x2F;
     memory[0xDFE8] = 0x10;
 }
@@ -1289,22 +1289,22 @@ void stub_1388()
 
 void stub_13B5()
 {
-    if(gDelay)
+    if(hDelay)
         return;
     
     memory[0xC210] = 0;
     memory[0xC220] = 0;
-    gDelay = 0xA0;
+    hDelay = 0xA0;
     hState = 0x30;
 }
 
 
 void stub_13CB()
 {
-    if(gDelay)
+    if(hDelay)
     {
         hState = 0x31;
-        gDelay = 0x80;
+        hDelay = 0x80;
         FillPlayArea(0x2F);
     }
     else
@@ -1316,13 +1316,13 @@ void stub_13CB()
 
 void stub_13E2()
 {
-    if(gDelay)
+    if(hDelay)
     {
         stub_145E();
         return;
     }
     
-    gDelay = 0x0A;
+    hDelay = 0x0A;
     
     wCurPieceY--;
     if(wCurPieceY != 0x6A)
@@ -1346,10 +1346,10 @@ void stub_13E2()
 
 void stub_1419()
 {
-    if(!gDelay)
+    if(!hDelay)
     {
         //141E
-        gDelay = 0x0A;
+        hDelay = 0x0A;
         wPreviewPieceY--;
         wCurPieceY--;
         
@@ -1948,10 +1948,10 @@ void stub_17B9(const u16 *src, vu8 *dst, u8 idx)
 void stub_17CA(vu8* state)
 {
     //Unimplemented
-    if(gDelay)
+    if(hDelay)
         return;
     
-    gDelay = 0x10;
+    hDelay = 0x10;
     
     *state ^= 0x80;
 }
@@ -2439,7 +2439,7 @@ void LoseHandler()
     
     FillPlayArea(0x87);
     
-    gDelay = 0x46;
+    hDelay = 0x46;
     hState = 0x0D;
 }
 
@@ -2464,12 +2464,12 @@ void stub_1DDF()
 
 void stub_1E1B()
 {
-    if(gDelay)
+    if(hDelay)
         return;
     
     memory[0xC0C6] = 1;
     
-    gDelay = 5;
+    hDelay = 5;
 }
 
 
@@ -2737,12 +2737,12 @@ void HandleFinishedRows()
 }
 
 
-void stub_2240()
+void HandleRowBlink()
 {
     if(hCurPieceState != 3)
         return;
     
-    if(gDelay)
+    if(hDelay)
         return;
     
     u16 de = 0xC0A3;
@@ -2806,7 +2806,7 @@ void stub_2240()
     {
         //2280
         memory[0xFF9C] = 0;
-        gDelay = 13;
+        hDelay = 13;
         hBoardUpdateState = 1;
         
         //228A
@@ -2815,7 +2815,7 @@ void stub_2240()
     else
     {
         //227A
-        gDelay = 10;
+        hDelay = 10;
     }
 }
 
@@ -3018,7 +3018,7 @@ void UpdateBoardStage16()
     //de = $C862
     UpdateBoardRow(&memory[0xC862], GB_VRAM_TO_GBA_VRAM(0x9862));
     
-    stub_24AB();
+    UpdateLevel();
 }
 
 
@@ -3116,7 +3116,7 @@ void UpdateBoardStage19()
     }
     
     //246D
-    gDelay = 0x64;
+    hDelay = 0x64;
     memory[0xDFE8] = 0x02;
     
     if(!memory[0xFFC5])
@@ -3152,7 +3152,7 @@ void PrintIngameScore(u16 *tilemap)
 }
 
 
-void stub_24AB()
+void UpdateLevel()
 {
     //Unimplemented
 }
@@ -3349,7 +3349,7 @@ u8 CheckSpriteCollision()
         }
         memory[0xFFB3] = memory[adr++];
         
-        u16 ptr = stub_2A2B();
+        u16 ptr = SpritePosToBoardPos();
         if(memory[ptr+0x3000] != 0x2F)
         {
             memory[0xFF9B] = 1;
@@ -3383,7 +3383,7 @@ void LockCurPiece()
         
         memory[0xFFB3] = memory[adr++];
         
-        u16 ptr = stub_2A2B();
+        u16 ptr = SpritePosToBoardPos();
         
         while(REG_DISPSTAT & 3);
         
@@ -3485,9 +3485,9 @@ void Stub_Interrupt_Handler()
 }
 
 
-void stub_27E9()
+void FillTileMap0()
 {
-    //Unimplemented
+    stub_27EC(GB_VRAM_TO_GBA_VRAM(0x9BFF));
 }
 
 
@@ -3588,7 +3588,7 @@ void CopyDataTo8000(const u8 *src, u32 len)
 
 void stub_283E()
 {
-    //Unimplemented
+    //This is a dummy return function
 }
 
 void CopyTilemapSection_Height_12_Dest_9800(u8 *src)
@@ -3659,7 +3659,7 @@ void ReadJoypad()
 }
 
 
-u16 stub_2A2B()
+u16 SpritePosToBoardPos()
 {
     //Unimplemented
     //Returns a value in HL

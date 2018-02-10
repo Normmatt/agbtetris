@@ -10,6 +10,8 @@ typedef void (*SoundHandler1)(vu8 *);
 //	Causes the timer to count at (16756991 / 1024) MHz.
 #define TIMER_DIV_1024  (3)
 
+#define REG_SCX         REG_BG0HOFS
+#define REG_SCY         REG_BG0VOFS
 #define REG_NR10        (*(vu8  *) (REG_BASE + 0x60))
 #define REG_NR11        (*(vu8  *) (REG_BASE + 0x62))
 #define REG_NR12        (*(vu8  *) (REG_BASE + 0x63))
@@ -56,7 +58,7 @@ typedef void (*SoundHandler1)(vu8 *);
 #define hRemainingFrameDelay                            memory[0xFF99]
 #define hLvlFrameDelay                                  memory[0xFF9A]
 #define hNumFinishedLines                               memory[0xFF9E]
-#define gDelay                                          memory[0xFFA6]
+#define hDelay                                          memory[0xFFA6]
 #define hLevel                                          memory[0xFFA9]
 #define hButtonHoldCounter                              memory[0xFFAA]
 #define hGamePaused                                     memory[0xFFAB]
@@ -258,7 +260,7 @@ void stub_20CC();
 void HandleDrop();
 void stub_20FF();
 void HandleFinishedRows();
-void stub_2240();
+void HandleRowBlink();
 void MoveUpFinishedRows();
 void stub_22F3();
 void UpdateBoardStage2();
@@ -280,7 +282,7 @@ void UpdateBoardStage17();
 void UpdateBoardStage18();
 void UpdateBoardStage19();
 void PrintIngameScore();
-void stub_24AB();
+void UpdateLevel();
 void UpdateBoardRow(vu8 *src, u16 *dst);
 void HandleRotationAndShift();
 u8 CheckSpriteCollision();
@@ -295,7 +297,7 @@ void DrawPreviewBlock_C020();
 void stub_26FD();
 void stub_270A(vu8 *dst, const u8 *src);
 void Stub_Interrupt_Handler();
-void stub_27E9();
+void FillTileMap0();
 void stub_27EC();
 void CopyData();
 void LoadFontData();
@@ -310,7 +312,7 @@ void CopyTilemapSection();
 void stub_2858(u8 *src, vu8 *dst);
 void DisableLCD();
 void ReadJoypad();
-u16 stub_2A2B();
+u16 SpritePosToBoardPos();
 void stub_2A58();
 void stub_2A7E(vu8 *score, u16 *tilemap);
 void DrawScore_C3(vu8 *score, u16 *tilemap);
