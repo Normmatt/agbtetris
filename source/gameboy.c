@@ -403,9 +403,9 @@ void stub_419()
     }
     
     //hl = $C801 
-    stub_26FD();
+    stub_26FD(&memory[0xC801]);
     //hl = $C80C
-    stub_26FD();
+    stub_26FD(&memory[0xC80C]);
     
     for(int i=0; i<12; i++)
     {
@@ -2600,7 +2600,7 @@ void stub_2038(u8 val)
     {
         for(int i=0; i<10; i++)
         {
-            memory[0xC802+i+(h*0x20-8)] = val;
+            memory[0xC802+i+(h*0x20)] = val;
         }
         
     }
@@ -3175,9 +3175,7 @@ void UpdateBoardRow(vu8 *src, u16 *dst)
 
 
 void HandleRotationAndShift()
-{
-    return;
-    
+{    
     //Unimplemented - Partial   
     memory[0xFFA0] = wCurPiece;
     
@@ -3466,10 +3464,14 @@ void DrawPreviewBlock_C020()
     UpdateBlocks(&memory[0xC210]);
 }
 
-
-void stub_26FD()
+//This seems to setup the barriers to prevent moving blocks too far left/right
+void stub_26FD(vu8 *dst)
 {
-    //Unimplemented
+    for(int i=0; i<0x20; i++)
+    {
+        *dst = 0x8E;
+        dst += 0x20;
+    }
 }
 
 

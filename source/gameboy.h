@@ -302,7 +302,7 @@ void DrawCurrentBlock_C000_R2();
 void DrawCurrentBlock_C000(u8 recursion_level);
 void DrawCurrentBlock_C010();
 void DrawPreviewBlock_C020();
-void stub_26FD();
+void stub_26FD(vu8 *dst);
 void stub_270A(vu8 *dst, const u8 *src);
 void Stub_Interrupt_Handler();
 void FillTileMap0();
