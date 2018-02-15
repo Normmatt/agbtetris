@@ -383,7 +383,7 @@ void stub_419()
 {
     //debugPrint("stub_419 called");
     
-    memory[0xFFE9] = 0;
+    hUnused_disableJoypad = 0;
     hCurPieceState = 0;
     memory[0xFF9C] = 0;
     memory[0xFF9B] = 0;
@@ -445,19 +445,19 @@ void stub_48C()
     
     memory[0xFFC5] = 0x00;
     memory[0xFFB0] = 0x00;
-    memory[0xFFED] = 0x00;
-    memory[0xFFEA] = 0x00;
+    hDemoSimulatedJoyDown = 0x00;
+    hDemoJoyDownFrames = 0x00;
     
-    memory[0xFFEB] = 0x63;
-    memory[0xFFEC] = 0x30;
+    hDemoControlDataPtrHigh = 0x63;
+    hDemoControlDataPtrLow = 0x30;
     
     if(hDemo == 0x02)
     {
         memory[0xFFC0] = 0x77;
         hTypeBSelectedLevel = 0x09;
         hTypeBSelectedHigh = 0x02;
-        memory[0xFFEB] = 0x64;
-        memory[0xFFEC] = 0x30;
+        hDemoControlDataPtrHigh = 0x64;
+        hDemoControlDataPtrLow = 0x30;
         memory[0xFFB0] = 0x11;
         hDemo = 0x1;
     }
@@ -483,7 +483,7 @@ void stub_48C()
 
 void stub_4E1()
 {
-    memory[0xFFE9] = 0xFF;
+    hUnused_disableJoypad = 0xFF;
 }
 
 
@@ -537,7 +537,7 @@ void stub_4E6()
             //1Player stuff?
             if(hJoyDown & GBKEY_DOWN)
             {
-               memory[0xFFF4] = hJoyDown;
+               hHeartMode = hJoyDown;
             }
             else
             {
@@ -618,11 +618,11 @@ void stub_5EA()
 {
     //Unused?
     
-    memory[0xFFED] = 0;
+    hDemoSimulatedJoyDown = 0;
     
     hJoyPressed = 0;
-    memory[0xFFEE] = hJoyDown;
-    hJoyDown = memory[0xFFED];
+    hDemoStoredJoyDown = hJoyDown;
+    hJoyDown = hDemoSimulatedJoyDown;
 }
 
 
@@ -634,31 +634,29 @@ void stub_5EF()
 
 void stub_5F0()
 {
-    //Unimplemented - Partial
-    
     if(!hDemo)
         return;
     
-    if(memory[0xFFE9] != 0xFF)
+    if(hUnused_disableJoypad != 0xFF)
         return;
     
-    if(hJoyDown == memory[0xFFED])
+    if(hJoyDown == hDemoSimulatedJoyDown)
     {
-        memory[0xFFEA]++;
+        hDemoJoyDownFrames++;
         return;
     }
     
     //0601
-    u16 adr = memory[0xFFEB] << 8 | memory[0xFFEC]; //TODO: Verify this isn't in vram
+    u16 adr = hDemoControlDataPtrHigh << 8 | hDemoControlDataPtrLow; //TODO: Verify this isn't in vram
     
-    memory[adr++] = memory[0xFFED];
-    memory[adr++] = memory[0xFFEA];
+    memory[adr++] = hDemoSimulatedJoyDown;
+    memory[adr++] = hDemoJoyDownFrames;
     
-    memory[0xFFEB] = (adr >> 8) & 0xFF;
-    memory[0xFFEC] = (adr >> 0) & 0xFF;
+    hDemoControlDataPtrHigh = (adr >> 8) & 0xFF;
+    hDemoControlDataPtrLow = (adr >> 0) & 0xFF;
     
-    memory[0xFFED] = hJoyDown;
-    memory[0xFFEA] = 0;
+    hDemoSimulatedJoyDown = hJoyDown;
+    hDemoJoyDownFrames = 0;
 }
 
 
@@ -667,10 +665,10 @@ void stub_620()
     if(!hDemo)
         return;
     
-    if(memory[0xFFE9])
+    if(hUnused_disableJoypad)
         return;
     
-    hJoyDown = memory[0xFFEE];
+    hJoyDown = hDemoStoredJoyDown;
 }
 
 
@@ -1273,11 +1271,11 @@ void stub_1388()
 {
     stub_1216();
     CopyTilemapSection_Width_6(byte_27D7, &memory[0xC200], 3);
-    wCurPiece = memory[0xFFF3];
+    wCurPiece = hSRocketType;
     
     DrawCurrentBlock_C000(3);
     
-    memory[0xFFF3] = 0;
+    hSRocketType = 0;
     
     //LCDC = $DB
     SET_LCDC(0xDB);
@@ -1334,7 +1332,7 @@ void stub_13E2()
     memory[0xC210] = 0;
     wPreviewPieceY = wCurPieceY + 0x10;
     wPreviewPieceX = 0x54;
-    wPreviewPieceX = 0x5C;
+    wPreviewPiece  = 0x5C;
     memory[0xC220] = 0x80;
     
     DrawCurrentBlock_C000(3);
@@ -2152,7 +2150,7 @@ void stub_1A6B()
     *(vram + 0x400) = hLevel;
     
     //TODO
-    if(memory[0xFFF4])
+    if(hHeartMode)
     {
         //1AD0
         vram++;
@@ -2233,7 +2231,7 @@ void stub_1A6B()
 void stub_1B43()
 {
     u32 idx = hLevel;
-    if(memory[0xFFF4])
+    if(hHeartMode)
     {
         idx += 0x0A;
         if(idx >= 0x15) //TODO Check this is correct
@@ -2682,7 +2680,7 @@ void GetNextPiece()
                 
                 //20AF
                 d = tmp;
-                val = memory[0xFFAE];
+                val = hNextPreviewPiece;
                 
                 h--;
                 if(h == 0)
@@ -2693,8 +2691,11 @@ void GetNextPiece()
                     break;
             }
             
+            //TEST
+            //d = 0; //T block
+            
             //20BD
-            memory[0xFFAE] = d;
+            hNextPreviewPiece = d;
             debugPrintf("hNextPreviewPiece = %02X (%d)",d,d);
         }
     }
@@ -3175,6 +3176,8 @@ void UpdateBoardRow(vu8 *src, u16 *dst)
 
 void HandleRotationAndShift()
 {
+    return;
+    
     //Unimplemented - Partial   
     memory[0xFFA0] = wCurPiece;
     
@@ -3536,6 +3539,9 @@ void LoadFontData()
     
     CopyDataFrom2Bpp((u32 *)(CHAR_BASE_ADR(0)+0x4E0), TitleScreen_Tiles_2BPP, 0xA0);
     CopyDataFrom2Bpp((u32 *)(CHAR_BASE_ADR(0)+0x600), HeadingBoxTiles, 0xD00);
+    
+    CopyDataFrom2Bpp((u32 *)(CHAR_BASE_ADR(4)+0x4E0), TitleScreen_Tiles_2BPP, 0xA0);
+    CopyDataFrom2Bpp((u32 *)(CHAR_BASE_ADR(4)+0x600), HeadingBoxTiles, 0xD00);
 }
 
 
@@ -3836,8 +3842,8 @@ void UpdateBlocks(vu8 *src)
         {
             //2B3C
             //2B38
-            //rotation_info++;
-            //rotation_info++;
+            rotation_info++;
+            rotation_info++;
             continue;
         }
         

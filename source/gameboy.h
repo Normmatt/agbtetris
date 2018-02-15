@@ -74,6 +74,14 @@ typedef void (*SoundHandler1)(vu8 *);
 #define hBoardUpdateState                               memory[0xFFE3]
 #define hDemo                                           memory[0xFFE4]
 #define hCurPieceDropCount                              memory[0xFFE5]
+#define hUnused_disableJoypad                           memory[0xFFE9]
+#define hDemoJoyDownFrames                              memory[0xFFEA]
+#define hDemoControlDataPtrHigh                         memory[0xFFEB]
+#define hDemoControlDataPtrLow                          memory[0xFFEC]
+#define hDemoSimulatedJoyDown                           memory[0xFFED]
+#define hDemoStoredJoyDown                              memory[0xFFEE]
+#define hSRocketType                                    memory[0xFFF3]
+#define hHeartMode                                      memory[0xFFF4]
 
 #define GB_VRAM_TO_GBA_VRAM(adr)  (((u16*)(VRAM+0x9800)) + (adr-0x9800))
 #define SET_LCDC(val) \
