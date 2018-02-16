@@ -36,6 +36,14 @@ typedef void (*SoundHandler1)(vu8 *);
 #define REG_WAVERAM     ( (vu8  *) (REG_BASE + 0x90))
 #define REG_DIV         (*(vu8  *) (REG_BASE + 0x108))
 
+#define wScoreLow                                       memory[0xC0A0]
+#define wScoreMid                                       memory[0xC0A1]
+#define wScoreHigh                                      memory[0xC0A2]
+
+#define wDropsCountHigh                                 memory[0xC0C0]
+#define wDropsCountLow                                  memory[0xC0C1]
+#define wDropsScoreHigh                                 memory[0xC0C2]
+#define wDropsScoreLow                                  memory[0xC0C3]
 #define wPreventHoldDown                                memory[0xC0C7]
 
 #define wCurPieceY                                      memory[0xC201]
@@ -264,7 +272,7 @@ void FillPlayArea(u8 val);
 void stub_2038(u8 val);
 void stub_204D();
 void GetNextPiece();
-void stub_20CC();
+void HandleDrop_downPressed();
 void HandleDrop();
 void stub_20FF();
 void HandleFinishedRows();

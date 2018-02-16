@@ -2571,7 +2571,7 @@ void AddScoreForTetris()
         return;
     }
     
-    int score = memory[0xC0A0] | memory[0xC0A1] << 8 | memory[0xC0A2] << 16;
+    int score = wScoreLow | wScoreMid << 8 | wScoreHigh << 16;
     
     //This might need to be done once more?
     for(int i=0; i<hLevel; i++)
@@ -2579,9 +2579,9 @@ void AddScoreForTetris()
         AddToScore(&score, points);
     }
     
-    memory[0xC0A0] = (score >>  0) & 0xFF;
-    memory[0xC0A1] = (score >>  8) & 0xFF;
-    memory[0xC0A2] = (score >> 16) & 0xFF;
+    wScoreLow = (score >>  0) & 0xFF;
+    wScoreMid = (score >>  8) & 0xFF;
+    wScoreHigh = (score >> 16) & 0xFF;
 }
 
 
@@ -2707,9 +2707,127 @@ void GetNextPiece()
 }
 
 
-void stub_20CC()
+void HandleDrop_downPressed()
 {
-    //Unimplemented
+    //Unimplemented - Partial
+    if(wPreventHoldDown)
+    {
+        //20D2
+        if((hJoyDown & (GBKEY_RIGHT|GBKEY_LEFT|GBKEY_DOWN)) != GBKEY_DOWN)
+        {
+            stub_20FF();
+        }
+        
+        //20DA
+        wPreventHoldDown = 0;
+    }
+    
+    //20DE
+    if(memory[0xFFA7])
+    {
+        DrawCurrentBlock_C010();
+        return;
+    }
+    
+    //if state isn't falling
+    if(hCurPieceState)
+    {
+        DrawCurrentBlock_C010();
+        return;
+    }
+    
+    //if board requires updating
+    if(hBoardUpdateState)
+    {
+        DrawCurrentBlock_C010();
+        return;
+    }
+    
+    memory[0xFFA7] = 3;
+    hCurPieceDropCount++;
+    
+    //TODO: DUPLICATE of below... REFACTOR THIS
+    //211D
+    memory[0xFFA0] = wCurPieceY;
+    wCurPieceY += 8;
+    DrawCurrentBlock_C010();
+    
+    if(!CheckSpriteCollision())
+    {
+        return;
+    }
+    
+    //212E
+    //If there was a collision revert back to previous state
+    wCurPieceY = memory[0xFFA0];
+    DrawCurrentBlock_C010();
+    
+    hCurPieceState = 1; //fallen
+    wPreventHoldDown = 1;
+    
+    if(hCurPieceDropCount)
+    {
+        //2143
+        u8 c = hCurPieceDropCount;
+        
+        if(memory[0xFFC0] == 0x37)
+        {
+            //2181                
+            u8 points = 0;
+            while(--c)
+            {
+                points++;
+            }
+            
+            //2189
+            int score = wScoreLow | wScoreMid << 8 | wScoreHigh << 16;
+            
+            AddToScore(&score, points);
+            
+            wScoreLow = (score >>  0) & 0xFF;
+            wScoreMid = (score >>  8) & 0xFF;
+            wScoreHigh = (score >> 16) & 0xFF;
+            
+            memory[0xC0CE] = 1;
+        }
+        else
+        {
+            //214A
+            u16 hl = wDropsCountHigh << 8 | wDropsCountLow;
+            
+            hl += c;
+            
+            wDropsCountHigh = hl >> 8;
+            wDropsCountLow  = hl >> 0;
+        }
+        
+        //215B
+        hCurPieceDropCount = 0;
+    }
+    
+    //215E
+    //Check if Y is at the top of the board
+    if(wCurPieceY != 0x18)
+    {
+        return;
+    }
+    
+    //Check if X is in the center?
+    if(wCurPieceX != 0x3F)
+    {
+        return;
+    }
+    
+    if(memory[0xFFFB] != 1)
+    {
+        memory[0xFFFB]++;
+        return;
+    }
+    
+    //2172
+    j_ResetSound();
+    hState = 1;
+    memory[0xDFF0] = 2;
 }
 
 
@@ -2717,7 +2835,7 @@ void HandleDrop()
 {
     if((hJoyDown & (GBKEY_RIGHT|GBKEY_LEFT|GBKEY_DOWN)) == GBKEY_DOWN)
     {
-        stub_20CC();
+        HandleDrop_downPressed();
     }
     else
     {
@@ -2728,7 +2846,111 @@ void HandleDrop()
 
 void stub_20FF()
 {
-    //Unimplemented
+    hCurPieceDropCount = 0;
+    
+    if(hRemainingFrameDelay)
+    {
+        //2109
+        hRemainingFrameDelay--;
+        DrawCurrentBlock_C010();
+    }
+    else
+    {
+        //2110
+        if(hCurPieceState == 3)
+        {
+            return;
+        }
+        
+        if(hBoardUpdateState != 0)
+        {
+            return;
+        }
+        
+        hRemainingFrameDelay = hLvlFrameDelay;
+        
+        //211D
+        memory[0xFFA0] = wCurPieceY;
+        wCurPieceY += 8;
+        DrawCurrentBlock_C010();
+        
+        if(!CheckSpriteCollision())
+        {
+            return;
+        }
+        
+        //212E
+        //If there was a collision revert back to previous state
+        wCurPieceY = memory[0xFFA0];
+        DrawCurrentBlock_C010();
+        
+        hCurPieceState = 1; //fallen
+        wPreventHoldDown = 1;
+        
+        if(hCurPieceDropCount)
+        {
+            //2143
+            u8 c = hCurPieceDropCount;
+            
+            if(memory[0xFFC0] == 0x37)
+            {
+                //2181                
+                u8 points = 0;
+                while(--c)
+                {
+                    points++;
+                }
+                
+                //2189
+                int score = wScoreLow | wScoreMid << 8 | wScoreHigh << 16;
+            
+                AddToScore(&score, points);
+                
+                wScoreLow = (score >>  0) & 0xFF;
+                wScoreMid = (score >>  8) & 0xFF;
+                wScoreHigh = (score >> 16) & 0xFF;
+                
+                memory[0xC0CE] = 1;
+            }
+            else
+            {
+                //214A
+                u16 hl = wDropsCountHigh << 8 | wDropsCountLow;
+                
+                hl += c;
+                
+                wDropsCountHigh = hl >> 8;
+                wDropsCountLow  = hl >> 0;
+            }
+            
+            //215B
+            hCurPieceDropCount = 0;
+        }
+        
+        //215E
+        //Check if Y is at the top of the board
+        if(wCurPieceY != 0x18)
+        {
+            return;
+        }
+        
+        //Check if X is in the center?
+        if(wCurPieceX != 0x3F)
+        {
+            return;
+        }
+        
+        if(memory[0xFFFB] != 1)
+        {
+            memory[0xFFFB]++;
+            return;
+        }
+        
+        //2172
+        j_ResetSound();
+        hState = 1;
+        memory[0xDFF0] = 2;
+    }
 }
 
 
@@ -3373,10 +3595,10 @@ void LockCurPiece()
         return;
     
     u16 adr = 0xC010;
-    memory[0xFFB2] = memory[adr++];
-    
     for(int i=0; i<4; i++)
     {
+        memory[0xFFB2] = memory[adr++];
+        
         if(memory[adr] == 0)
         {
             break;
@@ -3390,6 +3612,7 @@ void LockCurPiece()
         
         *GB_VRAM_TO_GBA_VRAM(ptr) = memory[adr];
         memory[ptr+0x3000] = memory[adr++];
+        adr++;
     }
     
     hCurPieceState = 2;
